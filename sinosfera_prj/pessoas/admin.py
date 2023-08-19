@@ -13,9 +13,9 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Pessoa)
 class PessoaAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('PESSOA', {'fields': (('id', 'nome_completo', 'user',), 'telefone_celular', 'email',)}),)
+        ('PESSOA', {'fields': (('id', 'nome_completo', 'usuario',), 'telefone_celular', 'email',)}),)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome_completo', 'user', 'telefone_celular', 'email',)
+    list_display = ('id', 'nome_completo', 'usuario', 'telefone_celular', 'email',)
     search_fields = ('nome_completo',)
     ordering = ('id', 'nome_completo',)
     list_filter = ('municipio_de_trabalho_da_pessoa',)

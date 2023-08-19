@@ -76,6 +76,9 @@ INSTALLED_APPS = [
     'planos',
     'projetos',
     'relatorios',
+    'home',
+    'blog',
+    'support',
     'slick_reporting',
 ]
 
