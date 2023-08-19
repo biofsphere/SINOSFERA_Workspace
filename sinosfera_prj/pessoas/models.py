@@ -10,7 +10,7 @@ custom_username_validators = [ASCIIUsernameValidator()]
 # == PESSOAS E COORDENADORES == #
 # ============================= #
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     """
         Generates a user model to enalbe customizations.
     """
@@ -29,7 +29,7 @@ class Pessoa(models.Model):
         Extends User data with several fields.
     """    
     user = models.ForeignKey(
-        User, 
+        CustomUser, 
         on_delete=models.SET_NULL,
         null=True,
         help_text='Selecione o usuario do sistema responsável pela inserção dos dados',

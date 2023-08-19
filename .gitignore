@@ -165,4 +165,6 @@ cython_debug/
 notes.mkd
 todo.mkd
 ref/
+media/
+staticfiles/
 

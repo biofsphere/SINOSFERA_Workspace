@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.linkedin',
     # 'allauth.socialaccount.providers.github',
     'bootstrap5',
-    'crispy-forms',
+    'crispy_forms',
     'crispy_bootstrap5',
     'crispy_bootstrap4',
     'leaflet',
@@ -133,7 +133,7 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'accounts.CustomUser' # for customizing the user model
+AUTH_USER_MODEL = 'pessoas.CustomUser' # for customizing the user model
 
 AUTHENTICATION_BACKENDS = [
 

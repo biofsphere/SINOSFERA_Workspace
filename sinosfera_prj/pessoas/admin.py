@@ -1,11 +1,11 @@
 
 from django.contrib import admin
-from .models import Pessoa, User
+from .models import Pessoa, CustomUser
 
-@admin.register(User)
+@admin.register(CustomUser)
 class UserAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
-    list_display = ('id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'municipio',)
+    list_display = ('id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active',)
     search_fields = ('username', 'email',)
     ordering = ('id', 'username', 'first_name', 'last_name', 'email',)
 
@@ -13,9 +13,9 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Pessoa)
 class PessoaAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('PESSOA', {'fields': (('id', 'nome_completo', 'user',), 'telefone', 'email',)}),)
+        ('PESSOA', {'fields': (('id', 'nome_completo', 'user',), 'telefone_celular', 'email',)}),)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome_completo', 'user', 'telefone', 'email',)
+    list_display = ('id', 'nome_completo', 'user', 'telefone_celular', 'email',)
     search_fields = ('nome_completo',)
     ordering = ('id', 'nome_completo',)
     list_filter = ('municipio_de_trabalho_da_pessoa',)
