@@ -7,9 +7,11 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractBaseUser, User
 
 
-###################################################
-### TABELAS DE EXECUÇÃO DOS PLANOS POR PROJETOS ###
-###################################################
+############################################
+### TABELAS DE INICIATIVAS PARA EXECUÇÃO ###
+############################################
+
+
 
 #==============#
 #== PROJETOS ==#
@@ -17,44 +19,56 @@ from django.contrib.auth.models import AbstractBaseUser, User
 
 
 class Projeto(models.Model):
-    # CATEGORIAS_DE_PROJETOS = [
-    #     ('Projeto socioambiental', (
-    #         ('01', 'Projeto regional'),
-    #         ('02', 'Projeto municipal'),
-    #     )),
-    #     ('Evento acadêmico', ( 
-    #         ('03', 'Congresso'),
-    #         ('04', 'Seminário'),
-    #         ('05', 'Fórum'),
-    #         ('06', 'Simpósio'),
-    #         ('07', 'Colóquio'),
-    #         ('08', 'Painel'),
-    #         ('09', 'Reunião acadêmica'),
-    #         ('10', 'Outro evento acadêmico'),
-    #     )),
-    #     ('Evento não-acadêmico', (
-    #         ('11', 'Festa ou celebração'),
-    #         ('12', 'Feira ou mercado'),
-    #         ('13', 'Exibição ou exposição'),
-    #         ('14', 'Campanha ou mobilização'),
-    #         ('15', 'Curso ou treinamento'),
-    #         ('16', 'Outro evento não-acadêmico'),
-    #     )),
-    #     ('Mini-projetos', (
-    #         ('17', 'Projeto de restauração'),
-    #         ('18', 'Projeto de remediação'),
-    #         ('19', 'Projeto de fauna')
-    #         ('20', 'Plano de manejo',),            
-    #         ('21', 'Plano de comunicação'),
-    #         ('22', 'Plano de monitoramento'),
-    #         ('23', 'Outro projeto menor'),
-    #     )),
-    #     ('Outros projetos', (
-    #         ('24', 'Construção ou edificação,'),
-    #         ('25', 'Pesquisa ou estudo'),
-    #         ('26', 'Outra categoria qualquer'),
-    #     )),
-    # ]
+    
+    CATEGORIAS_DE_PROJETOS = [
+        ('Projeto socioambiental', (
+            ('01', 'Projeto regional'),
+            ('02', 'Projeto municipal'),
+        )),
+        ('Projeto ambiental', (
+            ('03', '03 - Projeto de restauração ecológica'),
+            ('04', '04 - Plano de manejo de fauna'),
+            ('05', '05 - Plano de manejo de flora'),
+            ('06', '06 - Plano de manejo de solo'),
+            ('07', '07 - Plano de manejo de água'),
+            ('08', '08 - Plano de manejo de UR ou UC'),
+            ('09', '09 - Plano de monitoramento ambiental'),
+            ('10', '10 - Outro projeto ambiental'),
+        )),
+        ('Projeto social', (
+            ('11', '11 - Plano de comunicação'),
+            ('12', '12 - Projeto de avaliação'),
+            ('13', '13 - Plano de mobilização social'),
+            ('14', '14 - Outro projeto social'),
+        )),
+        ('Projeto acadêmico', ( 
+            ('15', '15 - Congresso'),
+            ('16', '16 - Seminário'),
+            ('17', '17 - Fórum'),
+            ('18', '18 - Simpósio'),
+            ('19', '19 - Colóquio'),
+            ('20', '20 - Painel'),
+            ('21', '21 - Reunião acadêmica'),
+            ('22', '22 - Curso ou programa educacional'),
+            ('23', '23 - Projeto de pesquisa ou estudo'),
+            ('24', '24 - Outro projeto acadêmico'),
+        )),
+        ('Evento não-acadêmico', (
+            ('25', '25 - Festa ou celebração'),
+            ('26', '26 - Feira ou mercado'),
+            ('27', '27 - Exibição ou exposição'),
+            ('28', '28 - Campanha ou mobilização'),
+            ('29', '29 - Curso ou treinamento'),
+            ('30', '30 - Outro evento não-acadêmico'),
+        )),
+        ('Projeto de desenvolvimento', (
+            ('31', '31 - Construção ou reforma,'),
+            ('32', '32 - Instalação'),
+            ('33', '33 - Desenvolvimento de TI'),
+            ('34', '34 - Outro projeto de desenvolvimento'),
+        )),
+        ('Qualquer outra categoria de projeto'),
+    ]
     
     nome = models.CharField(
         'Nome ou título', 
@@ -83,14 +97,14 @@ class Projeto(models.Model):
         default=True,
         )
 
-    categoria = models.OneToOneField(
-        'categorias.Categoria_de_projeto', 
-        on_delete=models.SET_NULL, 
-        #choices = CATEGORIAS_DE_PROJETOS,
-        blank=True, 
-        null=True,
-        verbose_name='Categoria de projeto', 
-    )
+    # categoria = models.OneToOneField(
+    #     'categorias.Categoria_de_projeto', 
+    #     on_delete=models.SET_NULL, 
+    #     #choices = CATEGORIAS_DE_PROJETOS,
+    #     blank=True, 
+    #     null=True,
+    #     verbose_name='Categoria de projeto', 
+    # )
 
     municipio = models.ForeignKey(
         'locais.Municipio',
