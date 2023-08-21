@@ -546,14 +546,97 @@ class Etapa(models.Model):
         verbose_name = 'Etapa'
         verbose_name_plural = '13 - Etapas'
 
-
-
-
 #================#
 #== ATIVIDADES ==#
 #================#
 
 class Atividade(models.Model):    
+    """Model to input details about project activities."""
+    # == Dados básicos da atividade == #
+    nome = models.CharField(
+        'Nome ou título da atividade', 
+        help_text='Defina um título ou nome curto para a atividade36+.',  
+        max_length=120,
+        blank=True,
+        null=True,
+        )
+    descricao = models.TextField(
+        'Descrição',  
+        help_text='Descreva a atividade com o maior número possível de detalhes relevantes.', 
+        blank=True,
+        null=True,
+        )
+    inicio = models.DateTimeField(
+        'Início',
+        default=None, 
+        help_text='Especifique a data e hora de início da atividade.', 
+        blank=True,
+        null=True, 
+        )
+    fim = models.DateTimeField(
+        'Fim',
+        default=None, 
+        help_text='Especifique a data e hora de finalização da atividade.', 
+        blank=True,
+        null=True,  
+        )
+    concluida = models.BooleanField(
+        'Concluída',
+        help_text='Marque a caixa de seleção se esta atividade já está concluída ou já foi executada.', 
+        #choices=BOOL_CHOICES, 
+        blank=True, 
+        null=False,
+        default=False,
+        )
+    # == VÍNCULOS DA ATIVIDADE == #
+    projeto_vinculado = models.ForeignKey(
+        Projeto, 
+        on_delete=models.SET_NULL, 
+        help_text='Insira o projeto ao qual essa atividade se vincula',
+        blank=True, 
+        null=True, 
+        verbose_name='Projeto vinculado', 
+    )
+    objetivo_especifico_vinculado = models.ForeignKey(
+        Obj_esp, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Objetivo específico vinculado', 
+        )
+    meta_vinculada = models.ForeignKey(
+        MetaObj, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione a meta a que esta atividade se vincula, se houver.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Meta vinculada', 
+        )
+    etapa_vinculada = models.ForeignKey(
+        Etapa, 
+        on_delete=models.SET_NULL, 
+        help_text='Insira a etapa que esta atividade está diretamente vinculada, se houver',
+        blank=True,
+        null=True, 
+        verbose_name='Etapa vinculada', 
+    )
+    solicitacao_de_fundos_vinculada = models.ForeignKey(
+        'fundos.Solicitacao',
+        on_delete=models.SET_NULL,
+        help_text='Selecione a solicitação de fundo vinculada a esta atividade, se houver.',
+        blank=True,
+        null=True,
+        verbose_name='Solicitação de fundos vinculada',
+    )
+    base_curricular_vinculada = models.TextField(
+        'Base curricular', 
+        max_length=300, 
+        help_text='Se for atividade docente, descreva brevemente as relações com a base curricular vigente.', 
+        blank=True,
+        null=True,
+        )    
+    # == Classificação da Atividade == #
     CATEGORIAS_DE_ATIVIDADES = [ 
         ('Docência da Educação Básica', (
             ('01', '01 - Artística, lúdica,'),
@@ -606,155 +689,53 @@ class Atividade(models.Model):
             ('36', '36 - Outra categoria qualquer'),
         )),
         ]
-    
-    nome = models.CharField(
-        'Nome ou título', 
-        help_text='Defina um título para a atividade.',  
-        max_length=120,
-        blank=True,
-        null=True,
-        )
-
-    descricao = models.TextField(
-        'Descrição',  
-        help_text='Descreva a atividade com o maior número possível de detalhes relevantes.', 
-        blank=True,
-        null=True,
-        )
-
-    base_curricular = models.TextField(
-        'Base curricular', 
-        max_length=300, 
-        help_text='Se for atividade docente, descreva brevemente as relações com a base curricular vigente.', 
-        blank=True,
-        null=True,
-        )
-
-    categoria = models.CharField(
-        'Categoria', 
-        choices = CATEGORIAS_DE_ATIVIDADES, 
-        help_text='Selecione uma das categorias de atividades ou tarefas disponíveis', 
-        max_length=100,
-        blank=True,
-        null=True,
-        )
-
-    #BOOL_CHOICES = ((True, 'Sim'), (False, 'Não'))
-
-    executada = models.BooleanField(
-        'Concluída',
-        help_text='Marque a caix de seleção se esta atividade já está concluída ou já foi executada', 
-        #choices=BOOL_CHOICES, 
-        blank=True, 
-        null=False,
-        default=False,
-        )
-
-    coordenador = models.ForeignKey(
-        'pessoas.Pessoa', 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione a pessoa responsável pela atividade (coordenador, âncora).', 
-        blank=True, 
-        null=True, 
-        verbose_name='Responsável pela atividade', 
-        )
-
-    etapa_vinculada = models.ForeignKey(
-        Etapa, 
-        on_delete=models.SET_NULL, 
-        help_text='Insira a etapa que esta atividade está diretamente vinculada, se houver',
-        blank=True,
-        null=True, 
-        verbose_name='Etapa vinculada', 
-    )
-
-    meta_vinculada = models.ForeignKey(
-        MetaObj, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione a meta a que esta atividade se vincula, se houver.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Meta vinculada', 
-        )
-
-    obj_esp_vinculado = models.ForeignKey(
-        Obj_esp, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Objetivo específico vinculado', 
-        )
-
-    proj_vinculado = models.ForeignKey(
-        Projeto, 
-        on_delete=models.SET_NULL, 
-        help_text='Insira o projeto ao qual essa atividade se vincula',
-        blank=True, 
-        null=True, 
-        verbose_name='Projeto vinculado', 
-    )
-
-    local_vinculado = models.ForeignKey(
-        'places.Local', 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o local de referência onde esta etapa ou atividade está vinculada, se houver',
-        blank=True, 
-        null=True, 
-        verbose_name='Local de referência vinculado',
-    )
-    
+    # categoria = models.CharField(
+    #     'Categoria', 
+    #     choices = CATEGORIAS_DE_ATIVIDADES, 
+    #     help_text='Selecione uma das categorias de atividades ou tarefas disponíveis', 
+    #     max_length=100,
+    #     blank=True,
+    #     null=True,
+    #     )
+    # == Localização da atividade == #
     municipio = models.ForeignKey(
-        'places.Municipio',  
+        'locais.Municipio',  
         on_delete=models.SET_NULL, 
         verbose_name='Município sede da atividade', 
         blank=True,
         null=True,
         )
-
-    onde = models.CharField(
-        'Onde ocorreu a atividade', 
-        max_length=120, 
+    ur_vinculada = models.ForeignKey(
+        'locais.Unidade_de_referencia', 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o local de referência onde esta atividade está vinculada, se houver',
         blank=True, 
         null=True, 
+        verbose_name='Unidade de referência vinculada',
     )
-
-    inicio = models.DateTimeField(
-        'Início',
-        default=None, 
-        help_text='Especifique a data e hora de início da atividade.', 
-        blank=True,
-        null=True, 
-        )
-    
-    final = models.DateTimeField(
-        'Fim',
-        default=None, 
-        help_text='Especifique a data e hora de finalização da atividade.', 
-        blank=True,
-        null=True,  
-        )
-    
-    resultados = models.TextField(
-        'Resultados', 
-        max_length=600, 
-        help_text='Descreva o que se alcançou com a atividade após concluída.', 
-        blank=True,
-        null=True,
-        )
+    # onde = models.CharField(
+    #     'Local da atividade', 
+    #     help_text='Especifique o local ou ambiente onde se deu a atividade.',
+    #     max_length=120, 
+    #     blank=True, 
+    #     null=True, 
+    # )
+    # resultados = models.TextField(
+    #     'Resultados', 
+    #     max_length=600, 
+    #     help_text='Descreva o que se alcançou com a atividade após concluída.', 
+    #     blank=True,
+    #     null=True,
+    #     )
 
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
     arquivos = models.FileField(
-        upload_to=r'projects_media\atv_media', 
+        upload_to='projetos/atividades', 
         blank=True, 
         null=True,
         )
-
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da Atividade."""
-    #     return reverse('atividade-detalhe', args=[str(self.id)])
 
     def __str__(self):
         return 'ATV' + str(self.id).zfill(5) + '-' + self.nome
