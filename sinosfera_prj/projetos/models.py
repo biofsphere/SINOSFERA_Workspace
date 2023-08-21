@@ -368,7 +368,7 @@ class MetaObj(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     arquivos = models.FileField(
-        upload_to=r'projects_media\met_media', 
+        upload_to='projetos\metas', 
         blank=True, 
         null=True,
         )
@@ -554,51 +554,58 @@ class Etapa(models.Model):
 #================#
 
 class Atividade(models.Model):    
-    # CATEGORIAS_DE_ATIVIDADES = [ 
-    #     ('Docência da Educação Básica', (
-    #         ('01', '01 - Artística, lúdica,'),
-    #         ('02', '02 - Audiovisual, multimídia'),
-    #         ('03', '03 - Demonstração, experiência'),
-    #         ('04', '04 - Debate, diálogo'),
-    #         ('05', '05 - Leitura, escrita'),
-    #         ('06', '06 - Palestra, expositiva'),
-    #         ('07', '07 - Trilha, visita, campo'),
-    #         ('08', '08 - Oficina, mini-curso'),
-    #         ('09', '09 - Avaliação, teste,'),
-    #         ('10', '10 - Ativismo, mobilização'),
-    #         ('11', '11 - Outra metodologia'),
-    #     )),
-    #     ('Atendimento sem docência', (
-    #         ('12', '12 - Visita',),
-    #         ('13', '13 - Assessoria'),
-    #         ('14', '14 - Outro atendimento'),
-    #     )),
-    #     ('Capacitação técnica', (
-    #         ('15', '15 - Curso de capacitação',),
-    #         ('16', '16 - Oficina prática'),
-    #         ('17', '17 - Palestra'),
-    #         ('18', '18 - Outra capacitação'),
-    #     )),
-    #     ('Manutenção de recurso', (
-    #         ('19', '19 - Limpeza',),
-    #         ('20', '20 - Conserto'),
-    #         ('21', '21 - Mudança'),
-    #         ('22', '22 - Outra manutenção'),
-    #     )),
-    #     ('Gestão ou administração', (
-    #         ('23', '23 - Reunião interna'),
-    #         ('24', '24 - Atividade individual'),
-    #         ('25', '25 - Supervisão'),
-    #         ('26', '26 - Logística'),
-    #         ('27', '27 - Tramitação'),
-    #         ('28', '28 - Comunicação'),
-    #         ('29', '29 - Outra atividade de gestão'),
-    #     )),
-    #     ('Outra categoria de atividade', (
-    #         ('30', '30 - Comunicação social'),
-    #         ('31', '31 - Outra atividade qualquer'),
-    #     )),
-    #     ]
+    CATEGORIAS_DE_ATIVIDADES = [ 
+        ('Docência da Educação Básica', (
+            ('01', '01 - Artística, lúdica,'),
+            ('02', '02 - Audiovisual, multimídia'),
+            ('03', '03 - Demonstração, experiência'),
+            ('04', '04 - Debate, diálogo'),
+            ('05', '05 - Leitura, escrita'),
+            ('06', '06 - Palestra, expositiva'),
+            ('07', '07 - Trilha, visita, campo'),
+            ('08', '08 - Oficina, mini-curso'),
+            ('09', '09 - Avaliação, teste,'),
+            ('10', '10 - Ativismo, mobilização'),
+            ('11', '11 - Outra metodologia'),
+        )),
+        ('Atendimento sem docência', (
+            ('12', '12 - Visita',),
+            ('13', '13 - Assessoria'),
+            ('14', '14 - Outro atendimento'),
+        )),
+        ('Capacitação técnica', (
+            ('15', '15 - Curso de capacitação',),
+            ('16', '16 - Oficina prática'),
+            ('17', '17 - Palestra'),
+            ('18', '18 - Outra capacitação'),
+        )),
+        ('Manutenção de recurso', (
+            ('19', '19 - Limpeza',),
+            ('20', '20 - Conserto'),
+            ('21', '21 - Mudança'),
+            ('22', '22 - Outra manutenção'),
+        )),
+        ('Confecção', (
+            ('23', '23 - Jardinagem'),
+            ('24', '24 - Material didático'),
+            ('25', '25 - Peças de comunicação'),
+            ('26', '26 - Artesanato'),
+            ('27', '27 - Outra confecção'),
+        ))
+        ('Gestão ou administração', (
+            ('28', '28 - Reunião interna'),
+            ('29', '29 - Atividade individual'),
+            ('30', '30 - Supervisão'),
+            ('31', '31 - Logística'),
+            ('32', '32 - Tramitação'),
+            ('33', '33 - Comunicação'),
+            ('34', '34 - Organização'),
+            ('35', '35 - Outra atividade de gestão'),
+        )),
+        ('Outra categoria de atividade', (
+            ('36', '36 - Outra categoria qualquer'),
+        )),
+        ]
     
     nome = models.CharField(
         'Nome ou título', 
@@ -609,8 +616,7 @@ class Atividade(models.Model):
         )
 
     descricao = models.TextField(
-        'Descrição', 
-        max_length=600, 
+        'Descrição',  
         help_text='Descreva a atividade com o maior número possível de detalhes relevantes.', 
         blank=True,
         null=True,
@@ -619,32 +625,25 @@ class Atividade(models.Model):
     base_curricular = models.TextField(
         'Base curricular', 
         max_length=300, 
-        help_text='Se for atividade docente, descreva as relações com a base curricular vigente.', 
+        help_text='Se for atividade docente, descreva brevemente as relações com a base curricular vigente.', 
         blank=True,
         null=True,
         )
 
-    categoria = models.OneToOneField(
-        'categories.Categoria_atv', 
-        on_delete=models.SET_NULL, 
-        blank=True, 
+    categoria = models.CharField(
+        'Categoria', 
+        choices = CATEGORIAS_DE_ATIVIDADES, 
+        help_text='Selecione uma das categorias de atividades ou tarefas disponíveis', 
+        max_length=100,
+        blank=True,
         null=True,
-        verbose_name='Categoria de atividade', 
-    )
-
-    # categoria = models.CharField(
-    #     'Categoria', 
-    #     choices = CATEGORIAS_DE_ATIVIDADES, 
-    #     help_text='Selecione uma das categorias de atividades ou tarefas disponíveis', 
-    #     max_length=100,
-    #     blank=True,
-    #     null=True,
-    #     )
+        )
 
     #BOOL_CHOICES = ((True, 'Sim'), (False, 'Não'))
 
     executada = models.BooleanField(
-        'Executada', 
+        'Concluída',
+        help_text='Marque a caix de seleção se esta atividade já está concluída ou já foi executada', 
         #choices=BOOL_CHOICES, 
         blank=True, 
         null=False,
@@ -652,9 +651,9 @@ class Atividade(models.Model):
         )
 
     coordenador = models.ForeignKey(
-        'people.Pessoa', 
+        'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
-        help_text='Selecione a pessoa âncora, coordenadora, responsável pela atividade.', 
+        help_text='Selecione a pessoa responsável pela atividade (coordenador, âncora).', 
         blank=True, 
         null=True, 
         verbose_name='Responsável pela atividade', 

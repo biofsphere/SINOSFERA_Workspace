@@ -1,8 +1,4 @@
-from datetime import date, datetime
-from django.urls import reverse
 from django.db import models
-
-
 
 ##############################
 ### TABELAS DE TIPOLOGIAS  ###
@@ -12,7 +8,7 @@ from django.db import models
 #== CATEGORIAS DE INSTITUIÇÕES ==#
 #================================#
 
-class Categoria_ins(models.Model):
+class Categoria_de_instituicao(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -36,10 +32,6 @@ class Categoria_ins(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de Instituição."""
-    #     return reverse('categoria_ins-detalhe', args=[str(self.id)])
-
     def __str__(self):
         return 'CIN' + str(self.id).zfill(2) + '-' + self.nome
 
@@ -48,17 +40,17 @@ class Categoria_ins(models.Model):
         verbose_name = 'Categoria de instituição'
         verbose_name_plural = 'Categorias de instituições'
 
-#========================================#
-#== CATEGORIAS DE LOCAIS DE REFERÊNCIA ==#
-#========================================#
+#==========================================#
+#== CATEGORIAS DE UNIDADES DE REFERÊNCIA ==#
+#==========================================#
 
-class Categoria_loc(models.Model):
+class Categoria_de_ur(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
         null=True, 
         unique=True, 
-        help_text='Defina uma categoria de local de referência ainda não existente no sistema'
+        help_text='Defina uma categoria de unidade de referência ainda não existente no sistema'
     )
     descricao = models.TextField(
         max_length=300,
@@ -74,24 +66,20 @@ class Categoria_loc(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de UR."""
-    #     return reverse('categoria_loc-detalhe', args=[str(self.id)])
-
     def __str__(self):
-        return 'CLO' + str(self.id).zfill(2) + '-' + self.nome
+        return 'CUR' + str(self.id).zfill(2) + '-' + self.nome
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Categoria de local de referência'
-        verbose_name_plural = 'Categorias de locais de referência'
+        verbose_name = 'Categoria de unidade de referência'
+        verbose_name_plural = 'Categorias de unidades de referência'
 
 
 #========================================#
 #== CATEGORIAS DE PESSOAS (PROFISSÕES) ==#
 #========================================#
 
-class Categoria_pro(models.Model):
+class Profissao(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -113,12 +101,8 @@ class Categoria_pro(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da profissão."""
-    #     return reverse('categoria_pro-detalhe', args=[str(self.id)])
-
     def __str__(self):
-        return 'CPR' + str(self.id).zfill(2) + '-' + self.nome
+        return 'PRO' + str(self.id).zfill(2) + '-' + self.nome
 
     class Meta:
         ordering = ('nome',)
@@ -130,7 +114,7 @@ class Categoria_pro(models.Model):
 #== CATEGORIAS DE PLANOS MUNICIPAIS ==#
 #=====================================#
 
-class Categoria_pla(models.Model):
+class Categoria_de_plano_plurianual(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -152,10 +136,6 @@ class Categoria_pla(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de Plano Municipal."""
-    #     return reverse('categoria_pla-detalhe', args=[str(self.id)])
-
     def __str__(self):
         return 'CPL' + str(self.id).zfill(2) + '-' + self.nome
 
@@ -169,7 +149,7 @@ class Categoria_pla(models.Model):
 #== CATEGORIAS DE PROJETOS ==#
 #============================#
 
-class Categoria_prj(models.Model):
+class Categoria_de_projeto(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -191,10 +171,6 @@ class Categoria_prj(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da Categoria de Projeto."""
-    #     return reverse('categoria_prj-detalhe', args=[str(self.id)])
-
     def __str__(self):
         return 'CPJ' + str(self.id).zfill(2) + '-' + self.nome
 
@@ -208,7 +184,7 @@ class Categoria_prj(models.Model):
 #== CATEGORIAS DE METAS ==#
 #=========================#
 
-class Categoria_met(models.Model):
+class Categoria_de_meta(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -230,10 +206,6 @@ class Categoria_met(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de meta."""
-    #     return reverse('categoria_met-detalhe', args=[str(self.id)])
-
     def __str__(self):
         return 'CMT' + str(self.id).zfill(2) + '-' + self.nome
 
@@ -247,7 +219,7 @@ class Categoria_met(models.Model):
 #== CATEGORIAS DE ETAPAS ==#
 #==========================#
 
-class Categoria_eta(models.Model):
+class Categoria_de_etapa(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -269,10 +241,6 @@ class Categoria_eta(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de etapa."""
-    #     return reverse('categoria_eta-detalhe', args=[str(self.id)])
-
     def __str__(self):
         return 'CET' + str(self.id).zfill(2) + '-' + self.nome
 
@@ -286,7 +254,7 @@ class Categoria_eta(models.Model):
 #== CATEGORIAS DE ATIVIDADES ==#
 #==============================#
 
-class Categoria_atv(models.Model):
+class Categoria_de_atividade(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
@@ -307,10 +275,6 @@ class Categoria_atv(models.Model):
         '''Grava usuário logado que gravou o item'''
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
-
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da categoria de atividade."""
-    #     return reverse('categoria_atv-detalhe', args=[str(self.id)])
 
     def __str__(self):
         return 'CAT' + str(self.id).zfill(2) + '-' + self.nome
