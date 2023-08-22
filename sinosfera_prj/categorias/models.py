@@ -1,5 +1,6 @@
 # from django.db import models
 
+
 # ##############################
 # ### TABELAS DE TIPOLOGIAS  ###
 # ##############################

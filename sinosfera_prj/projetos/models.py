@@ -18,14 +18,15 @@ from django.contrib.auth.models import AbstractBaseUser, User
 
 
 class Projeto(models.Model):
+    """Tabela de inserção dos dados relativos aos projetos municipais, em sua grande maioria. Outros projetos podem ser inseridos, mas a tabela foi construída com base nas necessidades de projetos municipais vinculados ao VerdeSinos.""",
     programa_vinculado = models.ForeignKey(
         'programas.Programa',
         on_delete=models.SET_NULL,
         help_text='Selecione o Programa de mobilização social a que este projeto se vincula.',
         blank=True,
         null=True,
-        verbose_name='Programa de mobilização vinculado',
-    )
+        verbose_name='Programa de mobilização a que este projeto se vincula',
+        )
     nome = models.CharField(
         'Nome ou título do projeto', 
         help_text='Defina um nome ou título curto ao projeto.', 
@@ -33,8 +34,8 @@ class Projeto(models.Model):
         blank=True,
         null=True,
         )
-    objetivo_geral = models.TextField(
-        'Objetivo geral', 
+    objetivo_geral_do_projeto = models.TextField(
+        'Objetivo geral do projeto', 
         help_text='Descreva o objetivo geral do projeto, ou o impacto que este deseja causar na sociedade e no meio ambiente.', 
         max_length=600,
         blank=True,
@@ -42,75 +43,99 @@ class Projeto(models.Model):
         )
     BOOL_CHOICES = ((True, 'Ativo'), (False, 'Encerrado'))
     encerrado = models.BooleanField(
-        'Situação',
+        'Situação do Projeto',
         help_text='Selecione à situação atual deste projeto.', 
         choices=BOOL_CHOICES, 
         blank=True, 
         null=False,
         default=True,
         )
-    municipio = models.ForeignKey(
-        'locais.Municipio',
-        help_text='Selecione o município sede deste projeto.',  
-        on_delete=models.SET_NULL,  
-        verbose_name='Município sede do projeto', 
+    resumo_descritivo_do_projeto = models.TextField(
+        'Resumo descritivo do Projeto',
+        help_text='Descreva de modo geral o que é, quem está envolvido, onde se dará a execução, quando deverá ocorrer a execução, como e porque o Projeto será executado.',
         blank=True,
         null=True,
         )
-    coordenador = models.ForeignKey(
+    fundos_de_execucao_do_projeto = models.TextField(
+        'Descrição geral das fontes de recursos do Projeto',
+        help_text='Descreva suscintamente de onde deverão vir ou vieram os recursos para este Projeto.',
+        blank=True,
+        null=True,
+        )
+    fundos_estimados_do_verde_sinos = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Especifique o total de fundos do VerdeSinos que este Projeto vai acessar ou acessou.',
+        verbose_name='Total de fundos do VerdeSinos',
+        )
+    fundos_estimados_de_contra_partida = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Especifique o total de contra-partida que este projeto vai acessar ou acessou.',
+        verbose_name='Total de fundos de contra-partida',
+        )
+    valor_total_do_projeto = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        editable=False,
+        verbose_name='Valor total do Projeto',
+    )
+    #== Ancoragens do Projeto ==#
+    municipio_ancora_do_projeto = models.ForeignKey(
+        'locais.Municipio',
+        on_delete=models.SET_NULL,
+        verbose_name='Município sede ou âncora do Projeto',
+        help_text='Selecione o município cosiderado a sede ou âncora deste projeto.', 
+        blank=True,
+        null=True, 
+        )
+    instituicao_ancora_do_projeto = models.ForeignKey(
+        'instituicoes.Instituicao',
+        on_delete=models.SET_NULL,
+        verbose_name='Instituição âncora do Projeto',
+        help_text='Selecione a Instituição considerada a proponente principal ou a âncora do Projeto',
+        blank=True,
+        null=True,
+        )
+    pessoa_ancora_do_projeto = models.ForeignKey(
         'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
-        help_text='Selecione a pessoa âncora ou coordenadora geral deste projeto.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Coordenador(a) geral', 
-        )
-    instituicao_ancora = models.ManyToManyField(
-        'places.Instituicao', 
-        help_text='Selecione as instituições parceiras nesse projeto',
+        help_text='Especifique a pessoa âncora, ou coordenadora deste projeto.', 
         blank=True,
-        verbose_name='Instituições parceiras nesse projeto', 
+        null=True,
+        verbose_name='Coordenador(a) geral de Projeto', 
         )
     inicio = models.DateField(
-        'Início',
+        'Data de início do Projeto',
         default=date.today, 
-        help_text='Especifique uma data de início para o projeto.', 
+        help_text='Especifique uma data estimada ou definida de início deste Projeto.', 
         blank=True,
         null=False, 
         )
-    final = models.DateField(
-        'Fim',
+    fim = models.DateField(
+        'Data de fim do Projeto',
         default=date.today, 
-        help_text='Defina uma data para a conclusão do projeto.', 
+        help_text='Especifique uma data estimada ou definida para a conclusão deste Projeto.', 
         blank=True,
         null=False, 
-        )
-    projetos_vinculados = models.ManyToManyField(
-        'self', 
-        help_text='Insira um ou mais projetos que estão diretamente vinculados a este projeto',
-        blank=True,
-        verbose_name='Projetos vinculados', 
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
-        upload_to=r'projects_media\prj_media', 
+        upload_to='projetos', 
         blank=True, 
         null=True,
         )
     
-    # inserido_por = models.ForeignKey(
-    #     User,
-    #     on_delete=models.SET_NULL, 
-    #     help_text='Esse campo se preenche automaticamente com o nome do usuário que grava a inserção de dados',
-    #     blank=True, 
-    #     null=True,
-    #     )
-
     def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
+        """Grava usuário logado que gravou o item"""
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
+
+    def save(self, *args, **kwargs):
+        """Grava o modelo com o valor total do Projeto."""
+        self.valor_total_do_projeto = self.fundos_estimados_do_verde_sinos + self.fundos_estimados_de_contra_partida
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         """Traz a URL de perfil do Projeto."""
@@ -122,13 +147,12 @@ class Projeto(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Projeto'
-        verbose_name_plural = '10 - Projetos'
+        verbose_name_plural = 'Projetos'
 
 
 #==================#
 #== SUB-PROJETOS ==#
 #==================#
-
 
 class Sub_projeto(models.Model):
     CATEGORIAS_DE_SUB_PROJETOS = [
@@ -177,110 +201,84 @@ class Sub_projeto(models.Model):
         ('Qualquer outro tipo de sub-projeto'),
     ]
     projeto_vinculado = models.ForeignKey(
-        Pro
+        Projeto,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Selecione o Projeto a que estes Sub-projeto se vincula.',
+        verbose_name='Projeto a que este Sub-projeto se vincula',
+        )
+    categoria_de_subprojeto = models.CharField(
+        max_length=2,
+        choices=CATEGORIAS_DE_SUB_PROJETOS
+        help_text='Selecione a categoria mais adequada para este Sub-projeto.',
+        verbose_name='Categoria de Sub-projeto',
+        )
     nome = models.CharField(
-        'Nome ou título do sub-projeto', 
-        help_text='Defina o nome ou título do projeto.', 
+        'Nome ou título do Sub-projeto', 
+        help_text='Defina o nome ou título para este Sub-projeto.', 
         max_length=120,
         blank=True,
         null=True,
         )
-    objetivo_geral = models.TextField(
-        'Objetivo geral', 
-        help_text='Descreva o objetivo geral do projeto, ou o impacto que este deseja causar na sociedade e no meio ambiente.', 
-        max_length=600,
+    objetivo_geral_de_projeto = models.TextField(
+        'Objetivo geral do Sub-projeto', 
+        help_text='Descreva o objetivo geral deste Sub-projeto.', 
+        max_length=300,
         blank=True,
         null=True,
         )
     BOOL_CHOICES = ((True, 'Ativo'), (False, 'Encerrado'))
     encerrado = models.BooleanField(
-        'Situação',
-        help_text='Selecione à situação atual do projeto.', 
+        'Situação do Sub-projeto',
+        help_text='Selecione à situação atual do Sub-projeto.', 
         choices=BOOL_CHOICES, 
         blank=True, 
         null=False,
         default=True,
         )
-    municipio = models.ForeignKey(
-        'locais.Municipio',
-        help_text='Selecione o município sede do projeto.',  
-        on_delete=models.SET_NULL,  
-        verbose_name='Município sede do projeto', 
-        blank=True,
-        null=True,
-        )
     coordenador = models.ForeignKey(
         'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
-        help_text='Especifique a pessoa coordenadora do projeto.', 
+        help_text='Especifique a pessoa coordenadora deste Sub-projeto.', 
         blank=True, 
         null=True, 
-        verbose_name='Coordenador geral', 
-        )
-    acoes_vinculadas = models.ManyToManyField(
-        'plans.Acao', 
-        help_text='Especifique uma ou mais ações prioritárias do programa de ações do plano plurianual ao qual o projeto se vincula.', 
-        blank=True, 
-        verbose_name='Ações prioritárias vinculadas', 
-        )
-    instituicoes_vinculadas = models.ManyToManyField(
-        'places.Instituicao', 
-        help_text='Selecione as instituições parceiras nesse projeto',
-        blank=True,
-        verbose_name='Instituições parceiras nesse projeto', 
+        verbose_name='Coordenador de Sub-projeto', 
         )
     inicio = models.DateField(
-        'Início',
+        'Data de início do Sub-projeto',
         default=date.today, 
-        help_text='Especifique uma data de início para o projeto.', 
+        help_text='Especifique uma data de início para o Sub-projeto.', 
         blank=True,
         null=False, 
         )
-    final = models.DateField(
-        'Fim',
+    fim = models.DateField(
+        'Data de fim do Sub-projeto',
         default=date.today, 
-        help_text='Defina uma data para a conclusão do projeto.', 
+        help_text='Defina uma data para a conclusão do Sub-projeto.', 
         blank=True,
         null=False, 
-        )
-    projetos_vinculados = models.ManyToManyField(
-        'self', 
-        help_text='Insira um ou mais projetos que estão diretamente vinculados a este projeto',
-        blank=True,
-        verbose_name='Projetos vinculados', 
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
-        upload_to=r'projects_media\prj_media', 
+        upload_to='projetos/sub_projetos', 
         blank=True, 
         null=True,
         )
-    
-    # inserido_por = models.ForeignKey(
-    #     User,
-    #     on_delete=models.SET_NULL, 
-    #     help_text='Esse campo se preenche automaticamente com o nome do usuário que grava a inserção de dados',
-    #     blank=True, 
-    #     null=True,
-    #     )
 
     def save_model(self, request, obj, form, change):
         '''Grava usuário logado que gravou o item'''
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
-    def get_absolute_url(self):
-        """Traz a URL de perfil do Projeto."""
-        return reverse('projeto-detalhe', args=[str(self.id)])
-
     def __str__(self):
-        return 'PRJ' + str(self.id).zfill(3) + '-' + self.nome
+        return 'SPR' + str(self.id).zfill(3) + '-' + self.nome
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Projeto'
-        verbose_name_plural = '10 - Projetos'
+        verbose_name = 'Sub-projeto'
+        verbose_name_plural = 'Sub-projetos'
 
 
 #===========================#
@@ -289,14 +287,14 @@ class Sub_projeto(models.Model):
 
 class Objetivo_especifico_de_projeto(models.Model):    
     nome = models.CharField(
-        'Nome ou título', 
+        'Nome ou título do objetivo específico do Projeto', 
         help_text='Defina um título ou nome curto para o objetivo específico do projeto.', 
         max_length=120,
         blank=True,
         null=True,
         )
-    descricao = models.TextField(
-        'Descrição', 
+    descricao_do_objetivo_especifico = models.TextField(
+        'Descrição do objetivo específico do projeto', 
         help_text='Descreva o objetivo de forma específica, observável, que seja alcançável e relevante.', 
         max_length=600,
         blank=True,
@@ -309,8 +307,7 @@ class Objetivo_especifico_de_projeto(models.Model):
         null=False,
         default=False,
         )
-
-    proj_vinculado = models.ForeignKey(
+    projeto_vinculado = models.ForeignKey(
         Projeto, 
         on_delete=models.SET_NULL, 
         help_text='Selecione o projeto ao qual o objetivo específico está vinculado, se houver.', 
@@ -318,7 +315,6 @@ class Objetivo_especifico_de_projeto(models.Model):
         null=True, 
         verbose_name='Projeto vinculado', 
         )
-
     coordenador = models.ForeignKey(
         'people.Pessoa',  
         on_delete=models.SET_NULL, 
@@ -327,19 +323,13 @@ class Objetivo_especifico_de_projeto(models.Model):
         null=True, 
         verbose_name='Coordenador geral do objetivo específico', 
         )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-
     arquivos = models.FileField(
-        upload_to=r'projects_media\obj_media', 
+        upload_to='projetos/objetivos_especificos_de_projeto', 
         blank=True, 
         null=True,
         )
-
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil do Objetivo Específico."""
-    #     return reverse('obj_esp-detalhe', args=[str(self.id)])
 
     def __str__(self):
         return 'OBJ' + str(self.id).zfill(3) + '-' + self.nome
@@ -348,7 +338,7 @@ class Objetivo_especifico_de_projeto(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Objetivo específico'
-        verbose_name_plural = '11 - Objetivos específicos'
+        verbose_name_plural = 'Objetivos específicos'
 
 
 
@@ -357,14 +347,14 @@ class Objetivo_especifico_de_projeto(models.Model):
 #===========#
 
 class Meta_de_objetivo_especifico_de_projeto(models.Model):
-    # CATEGORIAS_DE_METAS = [
-    #     ('01', '01 - Ambiental'),
-    #     ('02', '02 - Social'),
-    #     ('03', '03 - Econômica'),
-    #     ('04', '04 - Legal'),
-    #     ('05', '05 - Mista'),
-    #     ('06', '06 - Outra'),
-    # ]
+    CATEGORIAS_DE_METAS = [
+        ('01', '01 - Ambiental'),
+        ('02', '02 - Social'),
+        ('03', '03 - Econômica'),
+        ('04', '04 - Legal'),
+        ('05', '05 - Mista'),
+        ('06', '06 - Outra'),
+    ]
     
     nome = models.CharField(
         'Nome ou título da meta', 
