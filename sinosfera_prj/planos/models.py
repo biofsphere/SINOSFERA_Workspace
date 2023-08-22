@@ -1,39 +1,81 @@
 from datetime import date, datetime
 from django.urls import reverse
 from django.db import models
-from email.policy import default
-from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractBaseUser, User
 
 ###############################
 ### TABELAS DE PLANEJAMENTO ###
 ###############################
 
-#======================#
-#== PLANO PLURIANUAL ==#
-#======================#
+#===========#
+#== PLANO ==#
+#===========#
 
 class Plano(models.Model):
+    """Tabela de inserção de dados sobre planos geralmente plurianuais, regionais ou municipais. Porém podem ser inseridos outros escopos temporais e geográficos."""
     nome = models.CharField(
-        'Nome ou título', 
-        help_text='Esse é o plano maior. Pode ser um plano municipal ou regional. Defina um nome para o plano plurianual.', 
+        'Nome ou título do Plano', 
+        help_text='Defina um nome curto para o Plano.', 
         max_length=120,
         blank=True,
         null=True,
         )
-
-    obj_geral = models.TextField(
-        'Objetivo geral', 
-        help_text='Descreva de modo geral o que o plano plurianual pretende alcançar.', 
-        max_length=600,
+    objetivo_geral_do_plano = models.TextField(
+        'Objetivo geral do Plano', 
+        help_text='Descreva de modo geral o que o Plano pretende alcançar na sociedade e no meio ambiente.', 
         blank=True,
         null=True,
         )
-
-    municipios = models.ManyToManyField(
-        'places.Municipio', 
-        verbose_name='Municípios', 
+    resumo_descritivo = models.TextField(
+        'Resumo descritivo do Plano',
+        help_text='Descreva de modo geral o que é, quem está envolvido, onde se dará a execução, quando deverá ocorrer a execução, como e porque o Plano será executado.',
+        blank=True,
+        null=True,
+        )
+    fundos_de_execucao = models.TextField(
+        'Fundos de execução do Plano',
+        help_text='Descreva brevemente as fontes de recursos para execução dest Plano.',
+        blank=True,
+        null=True,
+        )
+    ESCOPOS_TEMPORAIS = [
+        ('ML', 'MUITO LONGO (mais de 8 anos)'),
+        ('L', 'LONGO (de 4 a 8 anos)'),
+        ('M', 'MÉDIO (de dois a 4 anos)'),
+        ('C', 'CURTO (de 1 a dois anos)'),
+        ('MC', 'MUITO CURTO (menos de 1 ano)'),
+    ]
+    prazo_de_execucao =  models.CharField(
+        max_length=2,
+        choices=ESCOPOS_TEMPORAIS,
+        help_text='Selecione o prazo estabelecido para execução completa deste Plano',
+        blank=True,
+        null=True,
+    )
+    ESCOPOS_GEOGRAFICOS = [
+        ('NAC', 'Nacional'),
+        ('MRE', 'Macroregional'),
+        ('EST', 'Estadual'),
+        ('MIC', 'Microregional'),
+        ('MUN', 'Municipal'),
+        ('LOC', 'Local'),
+    ]
+    escopo_geografico =  models.CharField(
+        max_length=3,
+        choices=ESCOPOS_GEOGRAFICOS,
+        help_text='Selecione o escopo geográfico do Plano',
+        blank=True,
+        null=True,  
+    )
+    #== Ancoragens do Plano ==#
+    municipio_ancora_do_plano = models.ForeignKey(
+        'locais.Municipio', 
+        verbose_name='Município âncora do Plano',
+        help_text='Selecione o município cosiderado a sede ou âncora deste plano.', 
         blank=True, 
+        )
+    instituicao_ancora_do_plano = models.ForeignKey(
+        ''
         )
 
     coordenador = models.ForeignKey(
