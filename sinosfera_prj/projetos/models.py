@@ -351,35 +351,37 @@ class Meta_de_objetivo_especifico_de_projeto(models.Model):
         ('01', '01 - Ambiental'),
         ('02', '02 - Social'),
         ('03', '03 - Econômica'),
-        ('04', '04 - Legal'),
-        ('05', '05 - Mista'),
-        ('06', '06 - Outra'),
+        ('04', '04 - Outra'),
     ]
-    
+    categoria_de_meta = models.CharField(
+        'Categoria de meta',
+        choices = CATEGORIAS_DE_METAS,  
+        help_text='Selecione a categoria que essa meta se enquadra melhor.', 
+        max_length=100,
+        blank=True, 
+        null=True, 
+    )
     nome = models.CharField(
         'Nome ou título da meta', 
-        help_text='Defina um título ou nome para a meta que deseja alcançar.', 
+        help_text='Defina um título ou nome curto para a meta que deseja alcançar.', 
         max_length=120,
         blank=True,
         null=True,
         )
-
     descricao = models.TextField(
-        'Descrição', 
-        help_text='Descreva a meta de forma específica, mensurável, alcançável dentro de um prazo hábil.', 
+        'Descrição da meta', 
+        help_text='Descreva a meta detalhadamente, de forma específica, mensurável, alcançável dentro de um prazo hábil.', 
         max_length=600,
         blank=True,
         null=True,
         )
-
     indicadores = models.TextField(
         'Indicadores', 
         max_length=300, 
-        help_text="Considere a categoria da meta e especifique aqui o(s) indicador(es) quantitativo(s).", 
+        help_text="Considere a categoria da meta e especifique aqui o(s) indicador(es) quantitativo(s) que evidenciarão o seu alcance.", 
         blank=True, 
         null=True, 
-    )
-
+        )
     verificacao = models.TextField(
         'Métodos de verificação', 
         max_length=300, 
@@ -387,81 +389,50 @@ class Meta_de_objetivo_especifico_de_projeto(models.Model):
         blank=True, 
         null=True, 
     )
-
-    # categoria = models.CharField(
-    #     'Categoria de meta',
-    #     choices = CATEGORIAS_DE_METAS,  
-    #     help_text='Selecione a categoria que essa meta se enquadra melhor.', 
-    #     max_length=100,
-    #     blank=True, 
-    #     null=True, 
-    # )
-
     prazo = models.DateField(
         'Prazo',
         help_text='Data em que se espera que esta meta seja atingida.',
         blank=True, 
         null=True, 
     )
-
-    #BOOL_CHOICES = ((True, 'Sim'), (False, 'Não'))
-
     alcancada = models.BooleanField(
         'Alcançada', 
-        #choices=BOOL_CHOICES, 
         blank=True, 
         null=False,
         default=False,
+        help_text='Marque a caxa de seleção se essa meta já foi alcançada.',
         )
-
-    categoria = models.OneToOneField(
-        'categories.Categoria_met', 
+    objetivo_especifico_vinculado_a_meta = models.ForeignKey(
+        Objetivo_especifico_de_projeto, 
         on_delete=models.SET_NULL, 
-        #choices = CATEGORIAS_DE_METAS,
-        blank=True, 
-        null=True,
-        verbose_name='Categoria de meta', 
-    )
-
-    obj_esp_vinculado = models.ForeignKey(
-        Obj_esp, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o objetivo específico a que este meta se vincula.', 
+        help_text='Selecione o objetivo específico de Projeto a que esta Meta se vincula.', 
         blank=True, 
         null=True, 
-        verbose_name='Objetivo específico vinculado', 
+        verbose_name='Objetivo específico vinculado à Meta', 
         )
-
-    proj_vinculado = models.ForeignKey(
+    projeto_vinculado_a_meta = models.ForeignKey(
         Projeto, 
         on_delete=models.SET_NULL, 
-        help_text='Selecione o projeto ao qual esta meta está vinculada.',
+        help_text='Selecione o Projeto a que esta Meta está vinculada.',
         blank=True, 
         null=True, 
-        verbose_name='Projeto vinculado', 
+        verbose_name='Projeto vinculado a Meta', 
     )
-
-    coordenador = models.ForeignKey(
+    coordenador_de_meta = models.ForeignKey(
         'people.Pessoa',  
         on_delete=models.SET_NULL, 
         help_text='Selecione a pessoa âncora ou coordenadora desta meta, se houver.', 
         blank=True, 
         null=True, 
-        verbose_name='Coordenador geral desta meta', 
+        verbose_name='Coordenador geral de Meta', 
         )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-
     arquivos = models.FileField(
         upload_to='projetos\metas', 
         blank=True, 
         null=True,
         )
-
-    # def get_absolute_url(self):
-    #     """Traz a URL de perfil da Meta de um objetivo específico."""
-    #     return reverse('metaobj-detalhe', args=[str(self.id)])
 
     def __str__(self):
         return 'MET' + str(self.id).zfill(3) + '-' + self.nome
@@ -470,7 +441,7 @@ class Meta_de_objetivo_especifico_de_projeto(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Meta'
-        verbose_name_plural = '12 - Metas'
+        verbose_name_plural = 'Metas'
 
 
 
