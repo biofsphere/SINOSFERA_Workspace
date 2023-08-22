@@ -1,7 +1,8 @@
 from datetime import date, datetime
 from django.urls import reverse
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, User
+from django.contrib.auth.models import AbastractBaseUser, User
+
 
 ###############################
 ### TABELAS DE PLANEJAMENTO ###
@@ -11,12 +12,51 @@ from django.contrib.auth.models import AbstractBaseUser, User
 #== PLANO ==#
 #===========#
 
+class Categoria_de_plano(models.Model):
+    """Tabela de categorias pré-existentes de planos geralmente plurianuais, os quais podem ser municipais, regionais, ou quaisquer outros escopos geográficos e temporais."""
+    nome_da_categoria_de_plano = models.CharField(
+        'Categoria de Plano',
+        max_length=150,
+        help_text='Defina uma categoria de plano ainda não existent no sistema.',
+        blank=True,
+        null=True,
+        unique=True,
+        )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva suscintamente que grupo de planos esta categoria inclui.',
+        )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome_da_categoria_de_plano
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de plano plurianual'
+        verbose_name_plural = 'Categorias de planos plurianuais'
+
+
 class Plano(models.Model):
     """Tabela de inserção de dados sobre planos geralmente plurianuais, regionais ou municipais. Porém podem ser inseridos outros escopos temporais e geográficos."""
+    categoria = models.ForeignKey(
+        Categoria_de_plano,
+        help_text='Selecione uma categoria para este plano. Se não existir, insira uma categoria nova clicando em "+".',
+        blank=True,
+        null=True,
+        )
     nome = models.CharField(
         'Nome ou título do Plano', 
         help_text='Defina um nome curto para o Plano.', 
-        max_length=120,
+        max_length=150,
         blank=True,
         null=True,
         )
@@ -26,15 +66,15 @@ class Plano(models.Model):
         blank=True,
         null=True,
         )
-    resumo_descritivo = models.TextField(
+    resumo_descritivo_do_plano = models.TextField(
         'Resumo descritivo do Plano',
         help_text='Descreva de modo geral o que é, quem está envolvido, onde se dará a execução, quando deverá ocorrer a execução, como e porque o Plano será executado.',
         blank=True,
         null=True,
         )
-    fundos_de_execucao = models.TextField(
+    fundos_de_execucao_do_plano = models.TextField(
         'Fundos de execução do Plano',
-        help_text='Descreva brevemente as fontes de recursos para execução dest Plano.',
+        help_text='Descreva brevemente as fontes de recursos para execução deste Plano.',
         blank=True,
         null=True,
         )
@@ -45,7 +85,7 @@ class Plano(models.Model):
         ('C', 'CURTO (de 1 a dois anos)'),
         ('MC', 'MUITO CURTO (menos de 1 ano)'),
     ]
-    prazo_de_execucao =  models.CharField(
+    prazo_de_execucao_do_plano =  models.CharField(
         max_length=2,
         choices=ESCOPOS_TEMPORAIS,
         help_text='Selecione o prazo estabelecido para execução completa deste Plano',
@@ -60,7 +100,7 @@ class Plano(models.Model):
         ('MUN', 'Municipal'),
         ('LOC', 'Local'),
     ]
-    escopo_geografico =  models.CharField(
+    escopo_geografico_do_plano =  models.CharField(
         max_length=3,
         choices=ESCOPOS_GEOGRAFICOS,
         help_text='Selecione o escopo geográfico do Plano',
@@ -69,45 +109,45 @@ class Plano(models.Model):
     )
     #== Ancoragens do Plano ==#
     municipio_ancora_do_plano = models.ForeignKey(
-        'locais.Municipio', 
+        'locais.Municipio',
+        on_delete=models.SET_NULL,
         verbose_name='Município âncora do Plano',
         help_text='Selecione o município cosiderado a sede ou âncora deste plano.', 
-        blank=True, 
+        blank=True,
+        null=True, 
         )
     instituicao_ancora_do_plano = models.ForeignKey(
-        ''
+        'instituicoes.Instituicao',
+        on_delete=models.SET_NULL,
+        verbose_name='Instituição âncora do Plano',
+        help_text='Selecione a Instituição considerada a proponente principal ou a âncora do Plano',
+        blank=True,
+        null=True,
         )
-
-    coordenador = models.ForeignKey(
-        'people.Pessoa', 
+    pessoa_ancora_do_plano = models.ForeignKey(
+        'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
         help_text='Especifique a pessoa âncora, ou coordenadora deste plano, se houver.', 
         blank=True,
         null=True,
         verbose_name='Coordenador geral', 
         )
-
-    bh = models.OneToOneField(
-        'places.Bacia_hidrografica',
-        on_delete=models.SET_NULL, 
-        verbose_name='Bacia hidrográfica', 
-        help_text='Selecione a bacia hidrográfica quando se tratar de Plano de Bacia.', 
-        blank=True, 
-        null=True, 
-    )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-
     arquivos = models.FileField(
-        upload_to=r'plans_media\pla_media', 
+        upload_to='planos',
         blank=True, 
         null=True,
         )
 
     def get_absolute_url(self):
-        """Traz a URL de perfil do Plano Plurianual."""
+        """Traz a URL de perfil do Plano."""
         return reverse('plano-detalhe', args=[str(self.id)])
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
     def __str__(self):
         return 'PLA' + str(self.id).zfill(3) + '-' + self.nome
@@ -115,8 +155,8 @@ class Plano(models.Model):
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Plano Plurianual'
-        verbose_name_plural = '07 - Planos plurianuais'
+        verbose_name = 'Plano'
+        verbose_name_plural = '07 - Planos'
 
 
 
@@ -124,119 +164,100 @@ class Plano(models.Model):
 #== PROGRAMA DE AÇÕES PRIORITÁRIAS ==#
 #====================================#
 
-class Programa(models.Model):
+class Programa_de_acoes_prioritarias(models.Model):
     nome = models.CharField(
-        'Nome ou título', 
-        help_text='Defina um nome para o program de ações ou projeto de maior escopo dentro do plano plurianual.', 
+        'Nome ou título do programa de ações prioritárias', 
+        help_text='Defina um nome ou título curto para o program de ações prioritárias do plano.', 
         max_length=120,
         blank=True,
         null=True,
         )
-
-    obj_geral = models.TextField(
-        'Objetivo geral', 
+    objetivo_geral_do_programa_de_acoes_prioritarias = models.TextField(
+        'Objetivo geral do programa de ações prioritárias', 
         help_text='Descreva de modo geral o que o programa de ações deseja alcançar.', 
         max_length=600,
         blank=True,
         null=True,
         )
-    
     coordenador = models.ForeignKey(
-        'people.Pessoa',  
+        'pessoas.Pessoa',  
         on_delete=models.SET_NULL, 
-        help_text='Especifique a pessoa âncora ou coordenadora do programa de ações prioritárias.', 
+        help_text='Selecione uma pessoa âncora ou coordenadora do programa de ações prioritárias.', 
         blank=True, 
         null=True,
-        verbose_name='Coordenador geral',  
+        verbose_name='Coordenador geral do programa de ações prioritárias',  
         )
-
     plano_vinculado = models.ForeignKey(
         Plano, 
         on_delete=models.SET_NULL, 
         help_text='Especifique a qual plano plurianual este programa de ações prioritárias está vinculado.', 
         blank=True,
         null=True, 
-        verbose_name='Plano plurianual vinculado',  
-        ) 
-
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)  
-
-    arquivos = models.FileField(
-        upload_to=r'plans_media\prg_media', 
-        blank=True, 
-        null=True,
+        verbose_name='Plano vinculado',  
         )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        """Traz a URL de perfil do Programa."""
-        return reverse('programa-detalhe', args=[str(self.id)])
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
     def __str__(self):
-        return 'PRG' + str(self.id).zfill(3) + '-' + self.nome
+        return 'PAP' + str(self.id).zfill(3) + '-' + self.nome
 
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Programa de ações'
-        verbose_name_plural = '08 - Programas de ações'
-
+        verbose_name = 'Programa de ações prioritárias'
+        verbose_name_plural = '08 - Programas de ações prioritárias'
 
 
 #========================#
 #== AÇÕES PRIORITÁRIAS ==#
 #========================#
 
-class Acao(models.Model):
+class Acao_prioritaria(models.Model):
     nome = models.CharField(
-        'Nome ou título', 
-        help_text='Defina um nome ou título para a ação prioritária.', 
+        'Nome ou título da ação prioritária', 
+        help_text='Defina um nome ou título curto para a ação prioritária.', 
         max_length=120,
         blank=True,
         null=True,
         )
-
-    obj_geral = models.TextField(
-        'Objetivo geral', 
+    objetivo_geral = models.TextField(
+        'Objetivo geral da ação prioritária', 
         help_text='Descreva de modo geral o que esta ação prioritária deseja alcançar.', 
         max_length=600,
         blank=True,
         null=True,
         )
-    
     coordenador = models.ForeignKey(
-        'people.Pessoa',  
+        'pessoas.Pessoa',  
         on_delete=models.SET_NULL, 
-        help_text='Especifique a pessoa âncora ou coordenadora da ação prioritária, se houver.',  
+        help_text='Selecione a pessoa âncora ou coordenadora desta ação prioritária, se houver.',  
         blank=True, 
         null=True, 
-        verbose_name='Coordenador geral da ação', 
+        verbose_name='Coordenador geral da ação prioritária', 
         )
-
-    programa_vinculado = models.ForeignKey(
-        Programa, 
+    programa_de_acoes_prioritarias_vinculado = models.ForeignKey(
+        Programa_de_acoes_prioritarias, 
         on_delete=models.SET_NULL, 
-        help_text='Especifique a que programa de ações a ação está vinculada.', 
+        help_text='Selecione o programa de ações prioritárias a esta ação está vinculada.', 
         blank=True, 
         null=True, 
         verbose_name='Programa de ações vinculado', 
         )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
-    arquivos = models.FileField(
-        upload_to=r'plans_media\aca_media', 
-        blank=True, 
-        null=True,
-        )
-
-    def get_absolute_url(self):
-        """Traz a URL de perfil da Ação Prioritária."""
-        return reverse('acao-detalhe', args=[str(self.id)])
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
     def __str__(self):
-        return 'ACA' + str(self.id).zfill(3) + '-' + self.nome
+        return 'APR' + str(self.id).zfill(3) + '-' + self.nome
 
 
     class Meta:
