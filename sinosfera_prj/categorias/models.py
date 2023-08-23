@@ -1,4 +1,4 @@
-# from django.db import models
+from django.db import models
 
 
 # ##############################
@@ -75,145 +75,155 @@
 #         verbose_name = 'Categoria de unidade de referência'
 #         verbose_name_plural = 'Categorias de unidades de referência'
 
+#========================================#
+#== CATEGORIAS DE PESSOAS (PROFISSÕES) ==#
+#========================================#
 
-# #========================================#
-# #== CATEGORIAS DE PESSOAS (PROFISSÕES) ==#
-# #========================================#
+class Profissao(models.Model):
+    """Tabela de inserção de Profissões como atributo as Pessoas que serão registradas no sistema."""
+    nome = models.CharField(
+        max_length=60, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma profissão ainda não existente no sistema'
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva essa profissão no âmbito do que fazem os seus profissionais'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-# class Profissao(models.Model):
-#     nome = models.CharField(
-#         max_length=60, 
-#         blank=True, 
-#         null=True, 
-#         unique=True, 
-#         help_text='Defina uma profissão ainda não existente no sistema'
-#     )
-#     descricao = models.TextField(
-#         max_length=300,
-#         blank=True,
-#         null=True,
-#         help_text='Descreva essa profissão no âmbito do que fazem os seus profissionais'
-#     )
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
-#     def save_model(self, request, obj, form, change):
-#         '''Grava usuário logado que gravou o item'''
-#         obj.inserido_por = request.user
-#         super().save_model(request, obj, form, change)
+    def __str__(self):
+        return 'PRO' + str(self.id).zfill(3) + '-' + self.nome
 
-#     def __str__(self):
-#         return 'PRO' + str(self.id).zfill(2) + '-' + self.nome
-
-#     class Meta:
-#         ordering = ('nome',)
-#         verbose_name = 'Profissão'
-#         verbose_name_plural = 'Profissões'
-
-
-# #=====================================#
-# #== CATEGORIAS DE PLANOS MUNICIPAIS ==#
-# #=====================================#
-
-# class Categoria_de_plano_plurianual(models.Model):
-#     nome = models.CharField(
-#         max_length=60, 
-#         blank=True, 
-#         null=True, 
-#         unique=True, 
-#         help_text='Defina uma categoria de plano plurianual ainda não existente no sistema'
-#     )
-#     descricao = models.TextField(
-#         max_length=300,
-#         blank=True,
-#         null=True,
-#         help_text='Descreva essa categoria no âmbito dos planos plurianuais'
-#     )
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
-
-#     def save_model(self, request, obj, form, change):
-#         '''Grava usuário logado que gravou o item'''
-#         obj.inserido_por = request.user
-#         super().save_model(request, obj, form, change)
-
-#     def __str__(self):
-#         return 'CPL' + str(self.id).zfill(2) + '-' + self.nome
-
-#     class Meta:
-#         ordering = ('nome',)
-#         verbose_name = 'Categoria de plano plurianual'
-#         verbose_name_plural = 'Categorias de planos plurianuais'
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Profissão'
+        verbose_name_plural = 'Profissões'
 
 
-# #============================#
-# #== CATEGORIAS DE PROJETOS ==#
-# #============================#
+# #==========================#
+# #== CATEGORIAS DE PLANOS ==#
+# #==========================#
 
-# class Categoria_de_projeto(models.Model):
-#     nome = models.CharField(
-#         max_length=60, 
-#         blank=True, 
-#         null=True, 
-#         unique=True, 
-#         help_text='Defina uma categoria de projeto ainda não existente no sistema'
-#     )
-#     descricao = models.TextField(
-#         max_length=300,
-#         blank=True,
-#         null=True,
-#         help_text='Descreva esta categoria no âmbito dos projetos'
-#     )
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
+class Categoria_de_plano(models.Model):
+    """Tabela de categorias pré-existentes de planos geralmente plurianuais, os quais podem ser municipais, regionais, ou quaisquer outros escopos geográficos e temporais."""
+    nome_da_categoria_de_plano = models.CharField(
+        'Categoria de Plano',
+        max_length=150,
+        help_text='Defina uma categoria de plano ainda não existent no sistema.',
+        blank=True,
+        null=True,
+        unique=True,
+        )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva suscintamente que grupo de planos esta categoria inclui.',
+        )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-#     def save_model(self, request, obj, form, change):
-#         '''Grava usuário logado que gravou o item'''
-#         obj.inserido_por = request.user
-#         super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
-#     def __str__(self):
-#         return 'CPJ' + str(self.id).zfill(2) + '-' + self.nome
+    def __str__(self):
+        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome_da_categoria_de_plano
 
-#     class Meta:
-#         ordering = ('nome',)
-#         verbose_name = 'Categoria de projeto'
-#         verbose_name_plural = 'Categorias de projetos'
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de plano'
+        verbose_name_plural = 'Categorias'
 
 
-# #=========================#
-# #== CATEGORIAS DE METAS ==#
-# #=========================#
+#================================================================#
+#== CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
+#================================================================#
 
-# class Categoria_de_meta(models.Model):
-#     nome = models.CharField(
-#         max_length=60, 
-#         blank=True, 
-#         null=True, 
-#         unique=True, 
-#         help_text='Defina uma categoria de meta ainda não existente no sistema'
-#     )
-#     descricao = models.TextField(
-#         max_length=300,
-#         blank=True,
-#         null=True,
-#         help_text='Descreva essa categoria no âmbito das metas'
-#     )
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
+#====================================================================#
+#== SUB-CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
+#====================================================================#
 
-#     def save_model(self, request, obj, form, change):
-#         '''Grava usuário logado que gravou o item'''
-#         obj.inserido_por = request.user
-#         super().save_model(request, obj, form, change)
+class Sub_categoria_de_objetivo_especifico(models.Model):
+    nome = models.CharField(
+        max_length=60, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma sub-categoria da categoria de objetivo específico, sub-projeto ou meta.',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva essa sub-categoria no âmbito dos objetivos específicos de um projeto.',
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-#     def __str__(self):
-#         return 'CMT' + str(self.id).zfill(2) + '-' + self.nome
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
-#     class Meta:
-#         ordering = ('nome',)
-#         verbose_name = 'Categoria de meta'
-#         verbose_name_plural = 'Categorias de metas'
+    def __str__(self):
+        return 'SCO' + str(self.id).zfill(2) + '-' + self.nome
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Sub-categoria de objetivo específico'
+        verbose_name_plural = 'Sub-categorias de objetivos específicos'
+
+
+class Categoria_de_objetivo_especifico(models.Model):
+    nome = models.CharField(
+        max_length=60, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma categoria ao Objetivo Especifico ainda não existente no sistema.',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva esta categoria no âmbito dos objetivos específicos de um projeto.',
+    )
+    sub_categorias = models.ManyToManyField(
+        'Sub_categoria_de_objetivo_especifico', 
+        related_name='Categorias_de_objetivos_especificos',
+        
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return 'COB' + str(self.id).zfill(2) + '-' + self.nome
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de objetivo, sub-projeto ou meta'
+        verbose_name_plural = 'Categorias de objetivos, sub-projetos ou metas'
+
+
+
 
 
 # #==========================#

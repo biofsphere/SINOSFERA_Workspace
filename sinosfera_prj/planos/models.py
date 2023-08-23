@@ -4,51 +4,14 @@ from django.db import models
 from django.contrib.auth.models import AbastractBaseUser, User
 
 
-###############################
-### TABELAS DE PLANEJAMENTO ###
-###############################
-
 #===========#
 #== PLANO ==#
 #===========#
 
-class Categoria_de_plano(models.Model):
-    """Tabela de categorias pré-existentes de planos geralmente plurianuais, os quais podem ser municipais, regionais, ou quaisquer outros escopos geográficos e temporais."""
-    nome_da_categoria_de_plano = models.CharField(
-        'Categoria de Plano',
-        max_length=150,
-        help_text='Defina uma categoria de plano ainda não existent no sistema.',
-        blank=True,
-        null=True,
-        unique=True,
-        )
-    descricao = models.TextField(
-        max_length=300,
-        blank=True,
-        null=True,
-        help_text='Descreva suscintamente que grupo de planos esta categoria inclui.',
-        )
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
-
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
-
-    def __str__(self):
-        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome_da_categoria_de_plano
-
-    class Meta:
-        ordering = ('nome',)
-        verbose_name = 'Categoria de plano plurianual'
-        verbose_name_plural = 'Categorias de planos plurianuais'
-
-
 class Plano(models.Model):
     """Tabela de inserção de dados sobre planos geralmente plurianuais, regionais ou municipais. Porém podem ser inseridos outros escopos temporais e geográficos."""
     categoria = models.ForeignKey(
-        Categoria_de_plano,
+        'categorias.Categoria_de_plano',
         help_text='Selecione uma categoria para este plano. Se não existir, insira uma categoria nova clicando em "+".',
         blank=True,
         null=True,

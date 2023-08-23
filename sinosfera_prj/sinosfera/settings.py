@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'blog',
     'support',
     'slick_reporting',
+    'categorias',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'

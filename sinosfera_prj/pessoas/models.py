@@ -56,6 +56,13 @@ class Pessoa(models.Model):
         null=True,
         unique=True,
         )
+    profissao = models.ForeignKey(
+        'categorias.Profissao',
+        on_delete=models.SET_NULL,
+        help_text='Selecione a profissão da pessoa no cadastro',
+        blank=True,
+        null=True,
+    )
     municipio_de_trabalho_da_pessoa = models.ForeignKey(
         'locais.Municipio', 
         on_delete=models.SET_NULL,  
@@ -68,7 +75,7 @@ class Pessoa(models.Model):
     perfil_atualizado_em = models.DateTimeField(auto_now=True)
     # MÉTODOS DO PERFIL DA PESSOA FÍSICA #
     def __str__(self): 
-        return 'PES' + str(self.id).zfill(3) + '-' + self.nome_completo
+        return 'PES' + str(self.id).zfill(4) + '-' + self.nome_completo
 
 
     class Meta:
