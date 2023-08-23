@@ -12,10 +12,11 @@ from django.contrib.auth.models import AbastractBaseUser, User
 #==============#
 
 class Programa(models.Model):
-    """Tabela de inserção de dados sobre programas de mobilização de projetos, tais como o VerdeSinos."""
-    plano_vinculado = models.ForeignKey(
+    """Tabela de inserção de dados sobre programas de mobilização de projetos, tais como o VerdeSinos. Não se trata de Programas de Ações Prioritárias, mas de um nível abaixo destest, onde se encaixam programas regionais que abordam um ou mais as ações prioritárias previstas nestes Programas de Ações Prioritárias dos Planos Plurianuais."""
+    plano_vinculado_ao_programa = models.ForeignKey(
         'planos.Plano',
         on_delete=models.SET_NULL,
+        related_name='programas_vinculados_ao_plano',
         verbose_name='Plano vinculado a este Programa',
         blank=True,
         null=True,
@@ -108,6 +109,11 @@ class Programa(models.Model):
         null=True,
         )
 
+    @property
+    def projetos_relacionados_ao_programa(self):
+        """Chama todos os projetos vinculados ao Programa usando o ralated_name=projetos_vinculados_ao_programa utilizado no model Projeto"""
+        return self.projetos_vinculados_ao_programa.all()
+
     def get_absolute_url(self):
         """Traz a URL de perfil do Programa."""
         return reverse('programa-detalhe', args=[str(self.id)])
@@ -124,4 +130,45 @@ class Programa(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Programa'
-        verbose_name_plural = '08 - Programas'    
+        verbose_name_plural = 'Programas'
+
+
+#===================================================================#
+#== DIRETRIZES ESPECÍFICAS DO PROGRAMA DE MOBILIZAÇÃO DE PROJETOS ==#
+#===================================================================#
+
+class diretriz_especifica_de_programa(models.Model):    
+    """Tabela de inserção de dados sobre as diretrizes específicas do programa de mobilização de projetos."""
+    programa_vinculado_a_diretriz_especifica = models.ForeignKey(
+        Programa, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o Programa ao qual a diretriz específica está vinculado.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Programa vinculado', 
+        )
+    nome = models.CharField(
+        'Nome ou título da diretriz específica', 
+        help_text='Defina um título ou nome curto para a diretriz específica do Programa.', 
+        max_length=120,
+        blank=True,
+        null=True,
+        )
+    descricao_da_diretriz_especifica = models.TextField(
+        'Descrição da diretriz específica do programa', 
+        help_text='Descreva a diretriz específica de forma genérica objetivando nortear os projetos que se vincularão a ela.', 
+        max_length=600,
+        blank=True,
+        null=True,
+        )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'DIR' + str(self.id).zfill(3) + '-' + self.nome
+
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Diretriz específica'
+        verbose_name_plural = 'Diretrizes específicas'
