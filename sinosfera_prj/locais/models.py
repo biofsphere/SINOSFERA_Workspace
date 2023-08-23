@@ -30,7 +30,7 @@ class Microbacia(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Microbracia'
-        verbose_name_plural = '03 - Microbacias'
+        verbose_name_plural = 'Microbacias'
 
 
 
@@ -54,7 +54,7 @@ class Municipio(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Município'
-        verbose_name_plural = '04 - Municípios'
+        verbose_name_plural = 'Municípios'
 
 
 #============================#
@@ -71,44 +71,39 @@ class Unidade_de_referencia(models.Model):
         blank=True,
         null=True,
         )
-
-    proprietario_pf = models.ForeignKey(
+    proprietario_pf_de_ur = models.ForeignKey(
         'pessoas.Pessoa',   
         on_delete=models.SET_NULL, 
-        help_text='Selecione o nome do proprietário do local. Se não houver, insira um proprietário como Pessoa no sistema.', 
+        help_text='Selecione o nome do proprietário do local se for Pessoa Física.', 
         blank=True,
         null=True,
         verbose_name='Pessoa física proprietária do local', 
         )
-
-    proprietario_pj = models.ForeignKey(
+    proprietario_pj_da_ur = models.ForeignKey(
         'instituicoes.Instituicao',
-        help_text='selecione uma instituição proprietária da UR. Se não houver, insira a instituição no sistema.', 
+        help_text='Selecione uma instituição proprietária da UR, se for Pessoa Jurídica.', 
         on_delete=models.SET_NULL, 
         blank=True,
         null=True,
         verbose_name='Pessoa jurídica proprietária do local', 
         )
-
-    municipio = models.ForeignKey(
+    municipio_da_ur = models.ForeignKey(
         Municipio,
-        help_text='Selecione o municipio sede desta UR.', 
+        help_text='Selecione o municipio onde se localiza a UR.', 
         on_delete=models.SET_NULL,  
-        verbose_name='Município', 
+        verbose_name='Município da UR', 
         blank=True,
         null=True,
         )
-
-    latitude = models.CharField(
+    latitude_da_ur = models.CharField(
         'Latitude',
         max_length=15,
-        help_text='Insira a latitude em graus decimais com sinais. Exemplo: -28.123456', 
+        help_text='Insira a latitude da UR, em graus decimais com sinais. Exemplo: -28.123456', 
         default='-00.000000',
         blank=True,
         null=False,
         )
-
-    longitude = models.CharField(
+    longitude_da_ur = models.CharField(
         'Longitude',
         max_length=15,
         help_text='Insira a longitude em graus decimais com sinais. Exemplo: -50.123456', 
@@ -116,17 +111,14 @@ class Unidade_de_referencia(models.Model):
         blank=True,
         null=False,
         )
-
-    projetos_vinculados = models.ManyToManyField(
-        'projectos.Projeto', 
-        verbose_name = 'Projeto(s) vinculado(s) ao local', 
-        help_text = 'Insira um ou mais projetos aos quais este local está vinculado, se houver',
-        blank=True, 
+    projetos_vinculados_a_ur = models.ManyToManyField(
+        'projectos.Projeto',
+        related_name='urs_vinculadas_ao_projeto', 
+        verbose_name = 'Projeto(s) vinculado(s) à UR', 
+        help_text = 'Insira um ou mais projetos os quais tem relação direta com a UR, se houver', 
     )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-
     arquivos = models.FileField(
         upload_to='locais/unidades_de_referencia', 
         blank=True, 
@@ -143,4 +135,4 @@ class Unidade_de_referencia(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Unidade de de referência'
-        verbose_name_plural = '05 - Unidades de referência'
+        verbose_name_plural = 'Unidades de referência'

@@ -139,6 +139,11 @@ class Plano(models.Model):
         blank=True, 
         null=True,
         )
+    
+    @property
+    def programas_relacionados_ao_plano(self):
+        """Chama todos os programas vinculados ao plano usando o ralated_name=programas_vinculados_ao_plano utilizado no model Programa"""
+        return self.programas_vinculados_ao_plano.all()
 
     def get_absolute_url(self):
         """Traz a URL de perfil do Plano."""
@@ -165,6 +170,15 @@ class Plano(models.Model):
 #====================================#
 
 class Programa_de_acoes_prioritarias(models.Model):
+    """Tabela de inserção de dados sobre os programas de ações prioritárias dos planos plurianuais."""
+    plano_vinculado_ao_programa_de_acoes_prioritarias = models.ForeignKey(
+        Plano, 
+        on_delete=models.SET_NULL, 
+        help_text='Especifique a qual plano plurianual este programa de ações prioritárias está vinculado.', 
+        blank=True,
+        null=True, 
+        verbose_name='Plano vinculado',  
+        )
     nome = models.CharField(
         'Nome ou título do programa de ações prioritárias', 
         help_text='Defina um nome ou título curto para o program de ações prioritárias do plano.', 
@@ -186,14 +200,6 @@ class Programa_de_acoes_prioritarias(models.Model):
         blank=True, 
         null=True,
         verbose_name='Coordenador geral do programa de ações prioritárias',  
-        )
-    plano_vinculado = models.ForeignKey(
-        Plano, 
-        on_delete=models.SET_NULL, 
-        help_text='Especifique a qual plano plurianual este programa de ações prioritárias está vinculado.', 
-        blank=True,
-        null=True, 
-        verbose_name='Plano vinculado',  
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -218,6 +224,15 @@ class Programa_de_acoes_prioritarias(models.Model):
 #========================#
 
 class Acao_prioritaria(models.Model):
+    """Tabela de inserção de dados sobre as ações prioritárias dos programas de ações prioritárias dos planos plurianuais."""
+    programa_de_acoes_prioritarias_vinculado = models.ForeignKey(
+        Programa_de_acoes_prioritarias, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o programa de ações prioritárias a esta ação está vinculada.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Programa de ações vinculado', 
+        )
     nome = models.CharField(
         'Nome ou título da ação prioritária', 
         help_text='Defina um nome ou título curto para a ação prioritária.', 
@@ -239,14 +254,6 @@ class Acao_prioritaria(models.Model):
         blank=True, 
         null=True, 
         verbose_name='Coordenador geral da ação prioritária', 
-        )
-    programa_de_acoes_prioritarias_vinculado = models.ForeignKey(
-        Programa_de_acoes_prioritarias, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o programa de ações prioritárias a esta ação está vinculada.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Programa de ações vinculado', 
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
