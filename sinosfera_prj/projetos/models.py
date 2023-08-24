@@ -345,7 +345,6 @@ class Atividade(models.Model):
     concluida = models.BooleanField(
         'Concluída',
         help_text='Marque a caixa de seleção se esta atividade já está concluída ou já foi executada.', 
-        #choices=BOOL_CHOICES, 
         blank=True, 
         null=False,
         default=False,
@@ -360,20 +359,12 @@ class Atividade(models.Model):
         verbose_name='Projeto vinculado', 
     )
     objetivo_especifico_vinculado = models.ForeignKey(
-        Obj_esp, 
+        Objetivo_especifico_de_projeto, 
         on_delete=models.SET_NULL, 
         help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
         blank=True, 
         null=True, 
         verbose_name='Objetivo específico vinculado', 
-        )
-    meta_vinculada = models.ForeignKey(
-        MetaObj, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione a meta a que esta atividade se vincula, se houver.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Meta vinculada', 
         )
     etapa_vinculada = models.ForeignKey(
         Etapa, 

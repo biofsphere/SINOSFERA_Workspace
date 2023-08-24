@@ -147,11 +147,6 @@ class Categoria_de_plano(models.Model):
         verbose_name = 'Categoria de plano'
         verbose_name_plural = 'Categorias'
 
-
-#================================================================#
-#== CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
-#================================================================#
-
 #====================================================================#
 #== SUB-CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
 #====================================================================#
@@ -223,9 +218,6 @@ class Categoria_de_objetivo_especifico(models.Model):
         verbose_name_plural = 'Categorias de objetivos, sub-projetos ou metas'
 
 
-
-
-
 # #==========================#
 # #== CATEGORIAS DE ETAPAS ==#
 # #==========================#
@@ -261,36 +253,72 @@ class Categoria_de_objetivo_especifico(models.Model):
 #         verbose_name_plural = 'Categorias de etapas'
 
 
-# #==============================#
-# #== CATEGORIAS DE ATIVIDADES ==#
-# #==============================#
+#==============================#
+#== CATEGORIAS DE ATIVIDADES ==#
+#==============================#
 
-# class Categoria_de_atividade(models.Model):
-#     nome = models.CharField(
-#         max_length=60, 
-#         blank=True, 
-#         null=True, 
-#         unique=True, 
-#         help_text='Defina uma categoria de atividade ainda não existente no sistema'
-#     )
-#     descricao = models.TextField(
-#         max_length=300,
-#         blank=True,
-#         null=True,
-#         help_text='Descreva essa categoria no âmbito das atividades'
-#     )
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
+class Sub_categoria_de_atividade(models.Model):
+    nome = models.CharField(
+        max_length=60, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma sub-categoria da categoria de atividade.',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva essa sub-categoria de atividade.no âmbito das categorias de atividades.',
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-#     def save_model(self, request, obj, form, change):
-#         '''Grava usuário logado que gravou o item'''
-#         obj.inserido_por = request.user
-#         super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
 
-#     def __str__(self):
-#         return 'CAT' + str(self.id).zfill(2) + '-' + self.nome
+    def __str__(self):
+        return 'SCA' + str(self.id).zfill(2) + '-' + self.nome
 
-#     class Meta:
-#         ordering = ('nome',)
-#         verbose_name = 'Categoria de atividade'
-#         verbose_name_plural = 'Categorias de atividades'
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Sub-categoria de atividade'
+        verbose_name_plural = 'Sub-categorias de atividade'
+
+
+class Categoria_de_atividade(models.Model):
+    nome = models.CharField(
+        max_length=60, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma categoria à atividade ainda não existente no sistema.',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva esta categoria no âmbito das atividades.',
+    )
+    sub_categorias = models.ManyToManyField(
+        'Sub_categoria_de_atividade', 
+        related_name='Categorias_de_atividades',
+        
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return 'CAT' + str(self.id).zfill(2) + '-' + self.nome
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de atividade'
+        verbose_name_plural = 'Categorias de atividade'

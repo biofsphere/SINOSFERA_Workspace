@@ -6,12 +6,65 @@ from django.contrib.auth.models import AbstractBaseUser, User
 #== TABELA DE SOLICITAÇÕES DE FUNDOS ==#
 #======================================#
 
+
+class Item_de_orcamento(models.Model):
+    """Tabela de inserção de dados de item de orçamento, seja este item serviço, material ou maquinário."""
+    orcamento = models.ForeignKey(
+        'orcamento_para_solicitacao_de_fundos',
+        on_delete=models.CASCADE,
+        related_name='itens_orcados',
+    )
+    nome = models.CharField(
+        max_length=120,
+        blank=True,
+        null=True,
+        help_text='Insira o nome to serviço, material ou maquinário (item de orçamento)',
+    )
+    quantidade = models.PositiveIntegerField(
+        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida especificada.',
+    )
+    unidade_de_medida = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text='Especifique a unidade de medida deste ítem de orçamento',
+    )    
+    preco_unitario = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Especifique o preço unitário do item de orçamento.',
+    )
+    preco_total_do_item = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        editable=False,
+    )
+
+    def save(self, *args, **kwargs):
+        self.preco_total_do_item = self.quantidade * self.preco_unitario
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return 'ITE' + str(self.id).zfill(6) + '-' + self.nome
+    
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Item de orçamento'
+        verbose_name_plural = 'Itens de orçamento'   
+
+
 class orcamento_para_solicitacao_de_fundos(models.Model):
+    """Tabela de inserção de dados dos orçamentos para solicitação de fundos."""
     TIPOS_DE_ORCAMENTOS = [
         ('MO', 'Mão de obra e/ou serviços'),
         ('MT', 'Materiais e/ou insumos'),
         ('MQ', 'Máquinas e/ou equipamentos'),
         ]
+    data_do_orcamento = models.DateField(
+        help_text='Identifique o orçamento informado a sua data de emissão e selecione a data aqui.',
+        blank=True,
+        null=True,
+    )
     empresa_fornecedora = models.ForeignKey(
         'instituicoes.Instituicao',
         on_delete=models.SET_NULL,
@@ -27,16 +80,33 @@ class orcamento_para_solicitacao_de_fundos(models.Model):
         blank=True,
         null=True,
         )
-    itens_inclusos_no_orcamento = models.TextField(
-        'Itens inclusos no orçamento',
-        help_text='Liste tudo que está icluso no valor total do orçamento.',
+    inclui = models.TextField(
+        'Descritivo do que está incluso no orçamento',
+        help_text='Descreva tudo que está icluso no valor total do orçamento, especificando detalhes dos serviços quando for o caso.',
+        blank=True,
+        null=True,
+    )
+    exclui = models.TextField(
+        'Descritivo do que não está incluso no orçamento',
+        help_text='Descreva o que o orçameto não inclui, quando pertinente.',
+        blank=True,
+        null=True,
+    )
+    validade = models.PositiveIntegerField(
+        help_text='Especifique em número de dias a validade do orçamento.',
+        blank=True,
+        null=True,
+    )
+    forma_de_garantia = models.CharField(
+        max_length=200,
+        help_text='Explicite a forma e tempo de garantia do produto ou serviços estabelecida pelo fornecedor.',
         blank=True,
         null=True,
     )
     valor_total_do_orcamento = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        help_text='Insira o valor total do orçamento.',
+        default=0,
         )
     dados_para_pagamento = models.TextField(
         'Dados para pagamento',
@@ -51,10 +121,18 @@ class orcamento_para_solicitacao_de_fundos(models.Model):
         blank=True, 
         null=True,
         )
+    
     def save_model(self, request, obj, form, change):
         """Grava usuário logado que gravou o item"""
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.atualiza_valor_total_do_orcamento()
+
+    def atualiza_valor_total_do_orcamento(self):
+        self.valor_total_do_orcamento = sum(item.preco_total_do_item for item in self.itens_orcados.all())
 
     def __str__(self):
         return 'ORC' + str(self.id).zfill(5)
@@ -64,6 +142,7 @@ class orcamento_para_solicitacao_de_fundos(models.Model):
         ordering = ('id',)
         verbose_name = 'Orçamento'
         verbose_name_plural = 'Orçamentos'   
+
 
 
 class Solicitacao_de_fundos(models.Model):
@@ -85,7 +164,7 @@ class Solicitacao_de_fundos(models.Model):
         verbose_name='Responsável pelo preenchimento da solicitação de fundos',
         )
     # == VÍNCULOS DA ATIVIDADE == #
-    ur_relacionada = models.OneToOneField(
+    ur_vinculada = models.OneToOneField(
         'locais.Unidade_de_referencia',
         on_delete=models.NULL,
         help_text='Selecione a UR a que esta solicitação está diretamente vinculada, se houver.',
@@ -101,11 +180,6 @@ class Solicitacao_de_fundos(models.Model):
         null=True, 
         verbose_name='Projeto vinculado à solicitação de fundos', 
         )
-    sub_projeto_vinculado = models.ForeignKey(
-        'projetos.Sub_projeto',
-        on_delete=models.SET_NULL,
-        help_text='Selecione o Sub-projeto a que esta solicitação de fundos está diretamento vinculada.',
-        )
     objetivo_especifico_vinculado = models.ForeignKey(
         'projetos.Objetivo_especifico_de_projeto', 
         on_delete=models.SET_NULL, 
@@ -113,14 +187,6 @@ class Solicitacao_de_fundos(models.Model):
         blank=True, 
         null=True, 
         verbose_name='Objetivo específico vinculado à solicitação de fundos', 
-        )
-    meta_vinculada = models.ForeignKey(
-        'projetos.Meta_de_objetivo_especifico_de_projeto', 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione a(s) meta(s) a que esta solicitação está diretamente vincula, se houver.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Meta vinculada à solicitação de fundos', 
         )
     etapa_vinculada = models.ForeignKey(
         'projetos.Etapa', 
@@ -137,9 +203,7 @@ class Solicitacao_de_fundos(models.Model):
         blank=True,
         null=True,
         )
-    
     #== ORÇAMENTOS ==#
-
     #== Mão de obra e/ou serviços ==#
     orcamento_mo_um = models.ForeignKey(
         orcamento_para_solicitacao_de_fundos,
