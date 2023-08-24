@@ -110,7 +110,7 @@ class orcamento_para_solicitacao_de_fundos(models.Model):
         )
     dados_para_pagamento = models.TextField(
         'Dados para pagamento',
-        help_text='Inclua os dados para pagamento deste orçamento conforme preferência do fornecedor.'
+        help_text='Inclua os dados para pagamento deste orçamento conforme preferência do fornecedor.',
         blank=True,
         null=True,
     )
@@ -149,7 +149,7 @@ class Solicitacao_de_fundos(models.Model):
     """Tabela de inserção de dados para solicitação de fundos."""
     municipio_solicitante = models.ForeignKey(
         'locais.Municipio',
-        on_delete=models.NULL,
+        on_delete=models.SET_NULL,
         help_text='Selecione o município para onde irão os fundos',
         blank=True,
         null=True,
@@ -157,7 +157,7 @@ class Solicitacao_de_fundos(models.Model):
         )
     responsavel_pelo_preenchimento = models.ForeignKey(
         'pessoas.Pessoa',
-        on_delete=models.NULL,
+        on_delete=models.SET_NULL,
         help_text='Selecione a pessoa responsável pelo preenchimento desta solicitação.',
         blank=True,
         null=True,
@@ -166,7 +166,7 @@ class Solicitacao_de_fundos(models.Model):
     # == VÍNCULOS DA ATIVIDADE == #
     ur_vinculada = models.OneToOneField(
         'locais.Unidade_de_referencia',
-        on_delete=models.NULL,
+        on_delete=models.SET_NULL,
         help_text='Selecione a UR a que esta solicitação está diretamente vinculada, se houver.',
         blank=True,
         null=True,
@@ -174,7 +174,7 @@ class Solicitacao_de_fundos(models.Model):
         )    
     projeto_vinculado = models.ForeignKey(
         'projetos.Projeto', 
-        on_delete=models.NULL, 
+        on_delete=models.SET_NULL, 
         help_text='Selecione o projeto a que esta solicitação está diretamente vinculada.',
         blank=True, 
         null=True, 

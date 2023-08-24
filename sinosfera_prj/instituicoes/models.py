@@ -32,8 +32,8 @@ class Instituicao(models.Model):
         null=False,
         default=False,
         )
+    CNPJNumberRegex = RegexValidator(regex = r"^\+?1?\d{14}$")
     cnpj = models.CharField(
-        CNPJNumberRegex = RegexValidator(regex = r"^\+?1?\d{14}$")
         'CNPJ',
         validators = [CNPJNumberRegex], 
         help_text='Insira somente os 14 dígitos do CNPJ.',  

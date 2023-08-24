@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from django.urls import reverse
 from django.db import models
-from django.contrib.auth.models import AbastractBaseUser, User
+from django.contrib.auth.models import User
 
 
 #===========#
@@ -12,6 +12,7 @@ class Plano(models.Model):
     """Tabela de inserção de dados sobre planos geralmente plurianuais, regionais ou municipais. Porém podem ser inseridos outros escopos temporais e geográficos."""
     categoria = models.ForeignKey(
         'categorias.Categoria_de_plano',
+        on_delete=models.SET_NULL,
         help_text='Selecione uma categoria para este plano. Se não existir, insira uma categoria nova clicando em "+".',
         blank=True,
         null=True,
