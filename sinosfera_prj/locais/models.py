@@ -111,12 +111,6 @@ class Unidade_de_referencia(models.Model):
         blank=True,
         null=False,
         )
-    projetos_vinculados_a_ur = models.ManyToManyField(
-        'projectos.Projeto',
-        related_name='urs_vinculadas_ao_projeto', 
-        verbose_name = 'Projeto(s) vinculado(s) à UR', 
-        help_text = 'Insira um ou mais projetos os quais tem relação direta com a UR, se houver', 
-    )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(

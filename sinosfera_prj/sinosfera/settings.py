@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'mapas',
     'pessoas',
     'planos',
+    'programas',
     'projetos',
     'relatorios',
     'home',

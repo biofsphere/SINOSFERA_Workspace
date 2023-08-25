@@ -28,7 +28,7 @@ class Pessoa(models.Model):
     """
         Extends User data with several fields.
     """    
-    Usuario = models.ForeignKey(
+    usuario = models.ForeignKey(
         CustomUser, 
         on_delete=models.SET_NULL,
         null=True,

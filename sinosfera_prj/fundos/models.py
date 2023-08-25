@@ -10,9 +10,10 @@ from django.contrib.auth.models import AbstractBaseUser, User
 class Item_de_orcamento(models.Model):
     """Tabela de inserção de dados de item de orçamento, seja este item serviço, material ou maquinário."""
     orcamento = models.ForeignKey(
-        'orcamento_para_solicitacao_de_fundos',
+        'Orcamento_para_solicitacao_de_fundos',
         on_delete=models.CASCADE,
         related_name='itens_orcados',
+        help_text='Selecione o orçamento no qual este item pertence.',
     )
     nome = models.CharField(
         max_length=120,
@@ -53,13 +54,20 @@ class Item_de_orcamento(models.Model):
         verbose_name_plural = 'Itens de orçamento'   
 
 
-class orcamento_para_solicitacao_de_fundos(models.Model):
+class Orcamento_para_solicitacao_de_fundos(models.Model):
     """Tabela de inserção de dados dos orçamentos para solicitação de fundos."""
     TIPOS_DE_ORCAMENTOS = [
         ('MO', 'Mão de obra e/ou serviços'),
         ('MT', 'Materiais e/ou insumos'),
         ('MQ', 'Máquinas e/ou equipamentos'),
         ]
+    solicitacao_de_fundos = models.ForeignKey(
+        'solicitacao_de_fundos',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text='Selecione a solicitação de fundos na qual este orçamento pertence.',
+    )
     data_do_orcamento = models.DateField(
         help_text='Identifique o orçamento informado a sua data de emissão e selecione a data aqui.',
         blank=True,
@@ -144,9 +152,14 @@ class orcamento_para_solicitacao_de_fundos(models.Model):
         verbose_name_plural = 'Orçamentos'   
 
 
-
 class Solicitacao_de_fundos(models.Model):
     """Tabela de inserção de dados para solicitação de fundos."""
+    data_da_solicitacao = models.DateField(
+        'Data da solicitação de fundos',
+        default=date.today, 
+        blank=True,
+        null=False, 
+        )
     municipio_solicitante = models.ForeignKey(
         'locais.Municipio',
         on_delete=models.SET_NULL,
@@ -161,7 +174,7 @@ class Solicitacao_de_fundos(models.Model):
         help_text='Selecione a pessoa responsável pelo preenchimento desta solicitação.',
         blank=True,
         null=True,
-        verbose_name='Responsável pelo preenchimento da solicitação de fundos',
+        verbose_name='Responsável pelo preenchimento',
         )
     # == VÍNCULOS DA ATIVIDADE == #
     ur_vinculada = models.OneToOneField(
@@ -200,73 +213,6 @@ class Solicitacao_de_fundos(models.Model):
         'projetos.Atividade',
         on_delete=models.CASCADE,
         help_text='Selecione a(s) atividade(s) a que esta solicitação está diretamente vinculada.',
-        blank=True,
-        null=True,
-        )
-    #== ORÇAMENTOS ==#
-    #== Mão de obra e/ou serviços ==#
-    orcamento_mo_um = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o primeiro orçamento de mão de obra três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mo_dois = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o segundo orçamento de três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mo_tres = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o terceiro orçamento de três que  devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    #== Materiais e/ou insumos ==#
-    orcamento_mt_um = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o primeiro orçamento de mão de obra três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mt_dois = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o segundo orçamento de três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mt_tres = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o terceiro orçamento de três que  devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    #== Maquinas e/ou equipamentos ==#
-    orcamento_mq_um = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o primeiro orçamento de mão de obra três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mq_dois = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o segundo orçamento de três que devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
-        blank=True,
-        null=True,
-        )
-    orcamento_mq_tres = models.ForeignKey(
-        orcamento_para_solicitacao_de_fundos,
-        on_delete=models.SET_NULL,
-        help_text='Selecione o terceiro orçamento de três que  devem compor a solicitação de fundos. Se não houver, clique em "+" para inserir.',
         blank=True,
         null=True,
         )

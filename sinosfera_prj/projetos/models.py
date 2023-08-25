@@ -171,6 +171,8 @@ class Objetivo_especifico_de_projeto(models.Model):
     categoria_de_objetivo_especifico = models.ForeignKey(
         'categorias.Categoria_de_objetivo_especifico',
         on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
         help_text='Selecione a categoria mais adequada para este objetivo específico.',
         verbose_name='Categoria de objetivo específico',
         )
@@ -281,7 +283,7 @@ class Etapa(models.Model):
         help_text='Marque a caixa de seleção se a etapa já está concluída',
         )
     coordenador = models.ForeignKey(
-        'people.Pessoa', 
+        'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
         help_text='Selecione a pessoa âncora, coordenadora, responsável pela etapa.', 
         blank=True, 

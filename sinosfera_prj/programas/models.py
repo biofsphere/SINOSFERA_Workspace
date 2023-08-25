@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from django.urls import reverse
 from django.db import models
-from django.contrib.auth.models import AbastractBaseUser, User
+from django.contrib.auth.models import User
 
 #######################################################
 ### TABELAS DE PROGRAMAS DE MOBILIZAÇÃO DE PROJETOS ###
@@ -137,7 +137,7 @@ class Programa(models.Model):
 #== DIRETRIZES ESPECÍFICAS DO PROGRAMA DE MOBILIZAÇÃO DE PROJETOS ==#
 #===================================================================#
 
-class diretriz_especifica_de_programa(models.Model):    
+class Diretriz_especifica_de_programa(models.Model):    
     """Tabela de inserção de dados sobre as diretrizes específicas do programa de mobilização de projetos."""
     programa_vinculado_a_diretriz_especifica = models.ForeignKey(
         Programa, 

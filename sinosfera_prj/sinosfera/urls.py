@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
-    path('pessoas/', include('pessoas.urls')),
+    # path('pessoas/', include('pessoas.urls')),
     path('chaining/', include('smart_selects.urls')),
     path('home/', include('home.urls')),
     path('locais/', include('locais.urls')),
