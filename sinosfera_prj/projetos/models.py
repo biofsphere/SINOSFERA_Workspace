@@ -261,6 +261,14 @@ class Objetivo_especifico_de_projeto(models.Model):
 
 class Etapa(models.Model):    
     """Tabela de inserção de dados das pequenas etapas necessárias para alcance os objetivos específicos, sub-projetos ou metas especificadas para o Projeto."""
+    objetivo_especifico_vinculado_a_etapa = models.ForeignKey(
+        Objetivo_especifico_de_projeto, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o objetivo específico a que esta etapa se vincula.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Objetivo específico vinculado à etapa', 
+        )
     nome = models.CharField(
         'Nome ou título da etapa', 
         help_text='Defina um nome ou título para a etapa de um objetivo específico.',  
@@ -290,14 +298,6 @@ class Etapa(models.Model):
         null=True, 
         verbose_name='Coordenador(a) de etapa', 
         )
-    objetivo_especifico_vinculado_a_etapa = models.ForeignKey(
-        Objetivo_especifico_de_projeto, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o objetivo específico a que esta etapa se vincula.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Objetivo específico vinculado à etapa', 
-        )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -316,6 +316,31 @@ class Etapa(models.Model):
 
 class Atividade(models.Model):    
     """Model to input details about project activities."""
+    # == VÍNCULOS DA ATIVIDADE == #
+    projeto_vinculado = models.ForeignKey(
+        Projeto, 
+        on_delete=models.SET_NULL, 
+        help_text='Insira o projeto ao qual essa atividade se vincula',
+        blank=True, 
+        null=True, 
+        verbose_name='Projeto vinculado', 
+    )
+    objetivo_especifico_vinculado = models.ForeignKey(
+        Objetivo_especifico_de_projeto, 
+        on_delete=models.SET_NULL, 
+        help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
+        blank=True, 
+        null=True, 
+        verbose_name='Objetivo específico vinculado', 
+        )
+    etapa_vinculada = models.ForeignKey(
+        Etapa, 
+        on_delete=models.SET_NULL, 
+        help_text='Insira a etapa que esta atividade está diretamente vinculada, se houver',
+        blank=True,
+        null=True, 
+        verbose_name='Etapa vinculada', 
+    )
     # == Dados básicos da atividade == #
     nome = models.CharField(
         'Nome ou título da atividade', 
@@ -351,31 +376,15 @@ class Atividade(models.Model):
         null=False,
         default=False,
         )
-    # == VÍNCULOS DA ATIVIDADE == #
-    projeto_vinculado = models.ForeignKey(
-        Projeto, 
+    coordenador = models.ForeignKey(
+        'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
-        help_text='Insira o projeto ao qual essa atividade se vincula',
+        help_text='Especifique a pessoa âncora ou coordenadora desta atividade.', 
         blank=True, 
         null=True, 
-        verbose_name='Projeto vinculado', 
-    )
-    objetivo_especifico_vinculado = models.ForeignKey(
-        Objetivo_especifico_de_projeto, 
-        on_delete=models.SET_NULL, 
-        help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
-        blank=True, 
-        null=True, 
-        verbose_name='Objetivo específico vinculado', 
+        verbose_name='Coordenador(a) de Atividade', 
         )
-    etapa_vinculada = models.ForeignKey(
-        Etapa, 
-        on_delete=models.SET_NULL, 
-        help_text='Insira a etapa que esta atividade está diretamente vinculada, se houver',
-        blank=True,
-        null=True, 
-        verbose_name='Etapa vinculada', 
-    )
+
     base_curricular_vinculada = models.TextField(
         'Base curricular', 
         max_length=300, 
@@ -383,67 +392,14 @@ class Atividade(models.Model):
         blank=True,
         null=True,
         )    
-    # == Classificação da Atividade == #
-    CATEGORIAS_DE_ATIVIDADES = [ 
-        ('Docência da Educação Básica', (
-            ('01', '01 - Artística, lúdica,'),
-            ('02', '02 - Audiovisual, multimídia'),
-            ('03', '03 - Demonstração, experiência'),
-            ('04', '04 - Debate, diálogo'),
-            ('05', '05 - Leitura, escrita'),
-            ('06', '06 - Palestra, expositiva'),
-            ('07', '07 - Trilha, visita, campo'),
-            ('08', '08 - Oficina, mini-curso'),
-            ('09', '09 - Avaliação, teste,'),
-            ('10', '10 - Ativismo, mobilização'),
-            ('11', '11 - Outra metodologia'),
-        )),
-        ('Atendimento sem docência', (
-            ('12', '12 - Visita',),
-            ('13', '13 - Assessoria'),
-            ('14', '14 - Outro atendimento'),
-        )),
-        ('Capacitação técnica', (
-            ('15', '15 - Curso de capacitação',),
-            ('16', '16 - Oficina prática'),
-            ('17', '17 - Palestra'),
-            ('18', '18 - Outra capacitação'),
-        )),
-        ('Manutenção de recurso', (
-            ('19', '19 - Limpeza',),
-            ('20', '20 - Conserto'),
-            ('21', '21 - Mudança'),
-            ('22', '22 - Outra manutenção'),
-        )),
-        ('Confecção', (
-            ('23', '23 - Jardinagem'),
-            ('24', '24 - Material didático'),
-            ('25', '25 - Peças de comunicação'),
-            ('26', '26 - Artesanato'),
-            ('27', '27 - Outra confecção'),
-        )),
-        ('Gestão ou administração', (
-            ('28', '28 - Reunião interna'),
-            ('29', '29 - Atividade individual'),
-            ('30', '30 - Supervisão'),
-            ('31', '31 - Logística'),
-            ('32', '32 - Tramitação'),
-            ('33', '33 - Comunicação'),
-            ('34', '34 - Organização'),
-            ('35', '35 - Outra atividade de gestão'),
-        )),
-        ('Outra categoria de atividade', (
-            ('36', '36 - Outra categoria qualquer'),
-        )),
-        ]
-    # categoria = models.CharField(
-    #     'Categoria', 
-    #     choices = CATEGORIAS_DE_ATIVIDADES, 
-    #     help_text='Selecione uma das categorias de atividades ou tarefas disponíveis', 
-    #     max_length=100,
-    #     blank=True,
-    #     null=True,
-    #     )
+    categoria_de_atividade = models.ForeignKey(
+        'categorias.Categoria_de_atividade',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Selecione a categoria mais adequada para esta atividade.',
+        verbose_name='Categoria de atividade',
+        )
     # == Localização da atividade == #
     municipio = models.ForeignKey(
         'locais.Municipio',  
