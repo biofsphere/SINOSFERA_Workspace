@@ -79,7 +79,7 @@ class Unidade_de_referencia(models.Model):
         null=True,
         verbose_name='Pessoa física proprietária do local', 
         )
-    proprietario_pj_da_ur = models.ForeignKey(
+    proprietario_pj_de_ur = models.ForeignKey(
         'instituicoes.Instituicao',
         help_text='Selecione uma instituição proprietária da UR, se for Pessoa Jurídica.', 
         on_delete=models.SET_NULL, 

@@ -25,7 +25,7 @@ class Programa_de_acoes_prioritariasAdmin(admin.ModelAdmin):
 class Acao_prioritariaAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'objetivo_geral', 'coordenador', 'programa_de_acoes_prioritarias_vinculado',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'coordeandor', 'programa_de_acoes_prioritarias_vinculado',)
+    list_display = ('id', 'nome', 'coordenador', 'programa_de_acoes_prioritarias_vinculado',)
     # search_fields = ('nome',)
     # ordering = ('id', 'nome',)
     # list_filter = ('municipio_de_trabalho_da_pessoa',)

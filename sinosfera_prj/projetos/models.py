@@ -183,7 +183,7 @@ class Objetivo_especifico_de_projeto(models.Model):
         blank=True,
         null=True,
         )
-    descrição_do_objetivo_especifico = models.TextField(
+    descricao_do_objetivo_especifico = models.TextField(
         'Descrição do objetivo específico', 
         help_text='Descreva o que este objetivo específico pretende alcançar.', 
         max_length=300,

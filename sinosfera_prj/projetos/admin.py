@@ -13,9 +13,9 @@ class ProjetoAdmin(admin.ModelAdmin):
 
 @admin.register(Objetivo_especifico_de_projeto)
 class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
-    fields = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordeandor', 'indicadores', 'vefificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
+    fields = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
     readonly_fields = ('id',)
-    list_display = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordeandor', 'indicadores', 'vefificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
+    list_display = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
     search_fields = ('nome', 'coordenador',)
     ordering = ('id', 'nome', 'coordenador',)
     list_filter = ('projeto_vinculado_ao_objetivo_especifico',)
@@ -33,7 +33,7 @@ class EtapaAdmin(admin.ModelAdmin):
 
 @admin.register(Atividade)
 class AtividadeAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'nome', 'descricao', 'inicio', 'fim', 'concluida', 'base_curricular_vinculada', 'categoria_de_atividade', 'municipio', 'ur_vinculada',)
+    fields = ('id', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'nome', 'descricao', 'inicio', 'fim', 'concluida', 'base_curricular_vinculada', 'categoria_de_atividade', 'municipio', 'ur_vinculada',)
     readonly_fields = ('id',)
     list_display = ('id', 'nome', 'projeto_vinculado', 'nome', 'inicio', 'fim', 'concluida', 'categoria_de_atividade', 'municipio',)
     search_fields = ('nome', 'coordenador',)
