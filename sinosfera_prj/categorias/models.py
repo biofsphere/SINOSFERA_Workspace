@@ -218,3 +218,46 @@ class Categoria_de_atividade(models.Model):
         ordering = ('nome',)
         verbose_name = 'Categoria de atividade'
         verbose_name_plural = 'Categorias de atividade'
+
+
+#==============================================#
+#== UNIDADES DE MEDIDA DE ITENS DE ORÇAMENTO ==#
+#==============================================#
+
+class Unidade_de_medida(models.Model):
+    """Tabela de inserção de Unidades de Medida para elaboração de orçamentos."""
+    nome = models.CharField(
+        max_length=30, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma profissão ainda não existente no sistema'
+    )
+    abreviatura = models.CharField(
+        max_length=5,
+        blank=True,
+        null=True,
+        unique=True,
+        help_text='Abreviação da unidade de medida.',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descrição da unidade de medida.'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return str(self.abreviatura)
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Unidade de medida'
+        verbose_name_plural = 'Unidades de medida'

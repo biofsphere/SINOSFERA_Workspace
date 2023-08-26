@@ -6,6 +6,7 @@ from .models import (
     Categoria_de_objetivo_especifico, 
     Sub_categoria_de_atividade, 
     Categoria_de_atividade,
+    Unidade_de_medida,
 )
 
 @admin.register(Profissao)
@@ -66,3 +67,11 @@ class Sub_categoria_de_atividadeAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
+
+
+@admin.register(Unidade_de_medida)
+class Unidade_de_medidaAdmin(admin.ModelAdmin):
+    fields = ('id', 'nome', 'abreviatura', 'descricao',)
+    readonly_fields = ('id',)
+    list_display = ('id', 'nome', 'abreviatura',)
+    search_fields = ('nome', 'abreviatura',)

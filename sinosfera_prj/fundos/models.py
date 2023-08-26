@@ -7,46 +7,66 @@ from django.contrib.auth.models import AbstractBaseUser, User
 #======================================#
 
 
-class Item_de_orcamento(models.Model):
+class Item(models.Model):
     """Tabela de inserção de dados de item de orçamento, seja este item serviço, material ou maquinário."""
-    orcamento = models.ForeignKey(
-        'Orcamento_para_solicitacao_de_fundos',
-        on_delete=models.CASCADE,
-        related_name='itens_orcados',
-        help_text='Selecione o orçamento no qual este item pertence.',
-    )
+    # orcamento = models.ForeignKey(
+    #     'Orcamento_para_solicitacao_de_fundos',
+    #     on_delete=models.CASCADE,
+    #     related_name='itens_orcados',
+    #     help_text='Selecione o orçamento no qual este item pertence.',
+    #     blank=True,
+    #     null=True,
+    # )
     nome = models.CharField(
         max_length=120,
         blank=True,
         null=True,
         help_text='Insira o nome to serviço, material ou maquinário (item de orçamento)',
     )
-    quantidade = models.PositiveIntegerField(
-        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida especificada.',
-    )
-    unidade_de_medida = models.CharField(
-        max_length=20,
+    TIPOS_DE_ITENS = [
+        ('MO', 'Mão de obra ou serviço'),
+        ('MT', 'Materiais ou insumo'),
+        ('MQ', 'Máquina ou equipamento'),
+        ]
+    tipo = models.CharField(
+        max_length=2,
+        choices=TIPOS_DE_ITENS,
         blank=True,
         null=True,
-        help_text='Especifique a unidade de medida deste ítem de orçamento',
+        help_text='Selecione o tipo mais adequado de item de orçamento.',
+        verbose_name='Tipo de item',
+    )
+    unidade = models.ForeignKey(
+        'categorias.Unidade_de_medida',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Selecione a unidade de medida do ítem de orçamento.',
+        verbose_name='Un.',
+    )
+    quantidade = models.PositiveIntegerField(
+        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida especificada.',
+        verbose_name='Qtd.',
     )    
     preco_unitario = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         help_text='Especifique o preço unitário do item de orçamento.',
+        verbose_name='Preço unitário',
     )
-    preco_total_do_item = models.DecimalField(
+    total_do_item = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         editable=False,
+        verbose_name='Total do item',
     )
 
     def save(self, *args, **kwargs):
-        self.preco_total_do_item = self.quantidade * self.preco_unitario
+        self.total_do_item = self.quantidade * self.preco_unitario
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return 'ITE' + str(self.id).zfill(6) + '-' + self.nome
+        return 'ITE' + str(self.id).zfill(6)
     
     class Meta:
         ordering = ('id',)
@@ -54,22 +74,17 @@ class Item_de_orcamento(models.Model):
         verbose_name_plural = 'Itens de orçamento'   
 
 
-class Orcamento_para_solicitacao_de_fundos(models.Model):
+class Orcamento(models.Model):
     """Tabela de inserção de dados dos orçamentos para solicitação de fundos."""
-    TIPOS_DE_ORCAMENTOS = [
-        ('MO', 'Mão de obra e/ou serviços'),
-        ('MT', 'Materiais e/ou insumos'),
-        ('MQ', 'Máquinas e/ou equipamentos'),
-        ]
-    solicitacao_de_fundos = models.ForeignKey(
-        'solicitacao_de_fundos',
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        help_text='Selecione a solicitação de fundos na qual este orçamento pertence.',
-    )
-    data_do_orcamento = models.DateField(
-        help_text='Identifique o orçamento informado a sua data de emissão e selecione a data aqui.',
+    # solicitacao_de_fundos = models.ForeignKey(
+    #     'solicitacao_de_fundos',
+    #     on_delete=models.CASCADE,
+    #     blank=True,
+    #     null=True,
+    #     help_text='Selecione a solicitação de fundos na qual este orçamento pertence.',
+    # )
+    data = models.DateField(
+        help_text='Seleciona a data do orçamento fornecido.',
         blank=True,
         null=True,
     )
@@ -88,37 +103,44 @@ class Orcamento_para_solicitacao_de_fundos(models.Model):
         blank=True,
         null=True,
         )
-    inclui = models.TextField(
-        'Descritivo do que está incluso no orçamento',
-        help_text='Descreva tudo que está icluso no valor total do orçamento, especificando detalhes dos serviços quando for o caso.',
+    inclui = models.ManyToManyField(
+        Item,
+        help_text='Selecione os itens inclusos neste orçamento',
         blank=True,
         null=True,
     )
     exclui = models.TextField(
-        'Descritivo do que não está incluso no orçamento',
         help_text='Descreva o que o orçameto não inclui, quando pertinente.',
         blank=True,
         null=True,
+        verbose_name='Não incluso',
     )
     validade = models.PositiveIntegerField(
-        help_text='Especifique em número de dias a validade do orçamento.',
+        help_text='Especifique por quantos dias orçamento é válido.',
         blank=True,
         null=True,
     )
     forma_de_garantia = models.CharField(
         max_length=200,
-        help_text='Explicite a forma e tempo de garantia do produto ou serviços estabelecida pelo fornecedor.',
+        help_text='Explicite a forma e tempo de garantia do fornecedor.',
         blank=True,
         null=True,
     )
-    valor_total_do_orcamento = models.DecimalField(
+    total_do_orcamento = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0,
+        editable=False,
         )
     dados_para_pagamento = models.TextField(
         'Dados para pagamento',
         help_text='Inclua os dados para pagamento deste orçamento conforme preferência do fornecedor.',
+        blank=True,
+        null=True,
+    )
+    observacoes = models.TextField(
+        'Observações',
+        help_text='Insira quaisquer observações que considerar pertinente sobre esse orçamento.',
         blank=True,
         null=True,
     )
@@ -135,12 +157,12 @@ class Orcamento_para_solicitacao_de_fundos(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def atualiza_valor_total_do_orcamento(self):
+        self.total_do_orcamento = sum(item.total_do_item for item in self.itens.all())
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.atualiza_valor_total_do_orcamento()
-
-    def atualiza_valor_total_do_orcamento(self):
-        self.valor_total_do_orcamento = sum(item.preco_total_do_item for item in self.itens_orcados.all())
 
     def __str__(self):
         return 'ORC' + str(self.id).zfill(5)
@@ -154,19 +176,19 @@ class Orcamento_para_solicitacao_de_fundos(models.Model):
 
 class Solicitacao_de_fundos(models.Model):
     """Tabela de inserção de dados para solicitação de fundos."""
-    data_da_solicitacao = models.DateField(
-        'Data da solicitação de fundos',
+    data = models.DateField(
+        'Data da solicitação',
         default=date.today, 
         blank=True,
         null=False, 
         )
-    municipio_solicitante = models.ForeignKey(
+    municipio = models.ForeignKey(
         'locais.Municipio',
         on_delete=models.SET_NULL,
         help_text='Selecione o município para onde irão os fundos',
         blank=True,
         null=True,
-        verbose_name='Município vinculado à solicitação de fundos',
+        verbose_name='Município solicitante',
         )
     responsavel_pelo_preenchimento = models.ForeignKey(
         'pessoas.Pessoa',
@@ -234,12 +256,31 @@ class Solicitacao_de_fundos(models.Model):
         choices=URGENCIAS,
         help_text='Selecione o caráter de urgência para liberação de fundos.',
         )
+    orcamentos = models.ManyToManyField(
+        Orcamento,
+        help_text='Selecione três orçamentos para cada tipo de orçamento levantado.',
+        blank=True,
+        null=True,
+    )
+    total_da_solicitacao = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        editable=False,
+        )
     observacoes = models.TextField(
         'Observações',
         help_text='Inclua quaiquer observações que considerar necessário.',
         blank=True,
         null=True,
     )
+
+    def atualiza_valor_total_da_solicitacao(self):
+        self.total_da_solicitacao = sum(orcamento.total_do_orcamento for orcamento in self.orcamentos.all())
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.atualiza_valor_total_da_solicitacao()
 
     def __str__(self):
         return 'SOL' + str(self.id).zfill(6)
