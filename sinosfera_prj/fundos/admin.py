@@ -27,10 +27,10 @@ class OrcamentoAdmin(admin.ModelAdmin):
 
 @admin.register(Solicitacao_de_fundos)
 class Solicitacao_de_fundosAdmin(admin.ModelAdmin):
-    fields = ('id', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'observacoes',)
+    fields = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'observacoes',)
     readonly_fields = ('id',)
-    list_display = ('id', 'data_da_solicitacao', 'municipio_solicitante', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'observacoes',)
-    search_fields = ('municipio_solicitante', 'responsavel_pelo_preenchimento',)
-    ordering = ('id', 'municipio_solicitante', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',)
-    list_filter = ('municipio_solicitante', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
+    list_display = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'cronograma', 'urgencia', 'observacoes',)
+    search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
+    ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',)
+    list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
 

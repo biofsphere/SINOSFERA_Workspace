@@ -261,3 +261,46 @@ class Unidade_de_medida(models.Model):
         ordering = ('nome',)
         verbose_name = 'Unidade de medida'
         verbose_name_plural = 'Unidades de medida'
+
+    
+#=============================#
+#== FUNDOS DE FINANCIAMENTO ==#
+#=============================#
+
+class Fundo(models.Model):
+    """Tabela de inserção de dados dos fundos de financiamento disponíveis."""
+    nome = models.CharField(
+        max_length=120, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina um nome ou título curto para o fundo de financiamento',
+    )
+    mantenedora = models.ForeignKey(
+        'instituicoes.Instituicao',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Instituição mantenedora',
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Propósito do fundo.'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def save_model(self, request, obj, form, change):
+        '''Grava usuário logado que gravou o item'''
+        obj.inserido_por = request.user
+        super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return str(self.nome)
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Fundo de financiamento'
+        verbose_name_plural = 'Fundos de financiamento'

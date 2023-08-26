@@ -76,13 +76,6 @@ class Item(models.Model):
 
 class Orcamento(models.Model):
     """Tabela de inserção de dados dos orçamentos para solicitação de fundos."""
-    # solicitacao_de_fundos = models.ForeignKey(
-    #     'solicitacao_de_fundos',
-    #     on_delete=models.CASCADE,
-    #     blank=True,
-    #     null=True,
-    #     help_text='Selecione a solicitação de fundos na qual este orçamento pertence.',
-    # )
     data = models.DateField(
         help_text='Seleciona a data do orçamento fornecido.',
         blank=True,
@@ -107,7 +100,6 @@ class Orcamento(models.Model):
         Item,
         help_text='Selecione os itens inclusos neste orçamento',
         blank=True,
-        null=True,
     )
     exclui = models.TextField(
         help_text='Descreva o que o orçameto não inclui, quando pertinente.',
@@ -176,6 +168,13 @@ class Orcamento(models.Model):
 
 class Solicitacao_de_fundos(models.Model):
     """Tabela de inserção de dados para solicitação de fundos."""
+    fundo_solicitado = models.ForeignKey(
+        'categorias.Fundo',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Fundo de financiamento',
+    )
     data = models.DateField(
         'Data da solicitação',
         default=date.today, 
@@ -199,13 +198,18 @@ class Solicitacao_de_fundos(models.Model):
         verbose_name='Responsável pelo preenchimento',
         )
     # == VÍNCULOS DA ATIVIDADE == #
-    ur_vinculada = models.OneToOneField(
-        'locais.Unidade_de_referencia',
+    instituicao_solicitante = models.ForeignKey(
+        'instituicoes.Instituicao',
         on_delete=models.SET_NULL,
-        help_text='Selecione a UR a que esta solicitação está diretamente vinculada, se houver.',
+        verbose_name='Insituição solicitante',
         blank=True,
         null=True,
-        verbose_name='UR vinculada à solicitação de fundos',
+    )
+    ur_vinculada = models.ManyToManyField(
+        'locais.Unidade_de_referencia',
+        help_text='Selecione uma ou mais URs destino dos fundos dessa solicitação, se houver.',
+        blank=True,
+        verbose_name='UR(s) vinculada(s) à solicitação de fundos',
         )    
     projeto_vinculado = models.ForeignKey(
         'projetos.Projeto', 
@@ -215,28 +219,22 @@ class Solicitacao_de_fundos(models.Model):
         null=True, 
         verbose_name='Projeto vinculado à solicitação de fundos', 
         )
-    objetivo_especifico_vinculado = models.ForeignKey(
+    objetivo_especifico_vinculado = models.ManyToManyField(
         'projetos.Objetivo_especifico_de_projeto', 
-        on_delete=models.SET_NULL, 
         help_text='Selecione o objetivo específico a que esta solicitação está diretamente vincula.', 
         blank=True, 
-        null=True, 
-        verbose_name='Objetivo específico vinculado à solicitação de fundos', 
+        verbose_name='Objetivo(s) específico(s) vinculado(s) à solicitação de fundos', 
         )
-    etapa_vinculada = models.ForeignKey(
+    etapa_vinculada = models.ManyToManyField(
         'projetos.Etapa', 
-        on_delete=models.SET_NULL, 
         help_text='Selecione a(s) etapa(s) a que esta solicitação está diretamente vinculada, se houver',
         blank=True,
-        null=True, 
-        verbose_name='Etapa vinculada', 
+        verbose_name='Etapa(s) vinculada(s)', 
         )
-    atividade_vinculada = models.ForeignKey(
+    atividade_vinculada = models.ManyToManyField(
         'projetos.Atividade',
-        on_delete=models.CASCADE,
         help_text='Selecione a(s) atividade(s) a que esta solicitação está diretamente vinculada.',
         blank=True,
-        null=True,
         )
     cronograma = models.TextField(
         'Cronograma de execução',
@@ -260,7 +258,6 @@ class Solicitacao_de_fundos(models.Model):
         Orcamento,
         help_text='Selecione três orçamentos para cada tipo de orçamento levantado.',
         blank=True,
-        null=True,
     )
     total_da_solicitacao = models.DecimalField(
         max_digits=10,
@@ -284,3 +281,9 @@ class Solicitacao_de_fundos(models.Model):
 
     def __str__(self):
         return 'SOL' + str(self.id).zfill(6)
+    
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Solicitação de orçamento'
+        verbose_name_plural = 'Solicitações de orçamento'
