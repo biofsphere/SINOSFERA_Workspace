@@ -1,18 +1,28 @@
 from django.contrib import admin
 from .models import (
     Item,
+    Pedido_de_item,
     Orcamento,
     Solicitacao_de_fundos,
 )
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'tipo', 'unidade', 'quantidade', 'preco_unitario', 'total_do_item',)
-    readonly_fields = ('id', 'total_do_item',)
-    list_display = ('id', 'nome', 'tipo', 'unidade', 'quantidade', 'preco_unitario', 'total_do_item',)
+    fields = ('id', 'nome', 'tipo', 'unidade',)
+    readonly_fields = ('id',)
+    list_display = ('id', 'nome', 'tipo', 'unidade',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('tipo',)
+
+
+@admin.register(Pedido_de_item)
+class Pedido_de_itemAdmin(admin.ModelAdmin):
+    fields = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_item',)
+    readonly_fields = ('id', 'total_do_item',)
+    list_display = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_item',)
+    search_fields = ('item',)
+    list_filter = ('item',)
 
 
 @admin.register(Orcamento)
@@ -27,10 +37,10 @@ class OrcamentoAdmin(admin.ModelAdmin):
 
 @admin.register(Solicitacao_de_fundos)
 class Solicitacao_de_fundosAdmin(admin.ModelAdmin):
-    fields = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'observacoes',)
+    fields = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'orcamentos','observacoes',)
     readonly_fields = ('id',)
     list_display = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'cronograma', 'urgencia', 'observacoes',)
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
-    ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',)
+    ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
     list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
 

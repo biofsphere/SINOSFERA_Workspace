@@ -9,14 +9,6 @@ from django.contrib.auth.models import AbstractBaseUser, User
 
 class Item(models.Model):
     """Tabela de inserção de dados de item de orçamento, seja este item serviço, material ou maquinário."""
-    # orcamento = models.ForeignKey(
-    #     'Orcamento_para_solicitacao_de_fundos',
-    #     on_delete=models.CASCADE,
-    #     related_name='itens_orcados',
-    #     help_text='Selecione o orçamento no qual este item pertence.',
-    #     blank=True,
-    #     null=True,
-    # )
     nome = models.CharField(
         max_length=120,
         blank=True,
@@ -44,8 +36,26 @@ class Item(models.Model):
         help_text='Selecione a unidade de medida do ítem de orçamento.',
         verbose_name='Un.',
     )
+
+    def __str__(self):
+        return 'ITE' + str(self.id).zfill(6)
+    
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Item de orçamento'
+        verbose_name_plural = 'Itens de orçamento'   
+
+
+class Pedido_de_item(models.Model):
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name='Pedido de item',
+        )
     quantidade = models.PositiveIntegerField(
-        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida especificada.',
+        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida do item.',
         verbose_name='Qtd.',
     )    
     preco_unitario = models.DecimalField(
@@ -60,18 +70,18 @@ class Item(models.Model):
         editable=False,
         verbose_name='Total do item',
     )
-
+    
     def save(self, *args, **kwargs):
         self.total_do_item = self.quantidade * self.preco_unitario
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return 'ITE' + str(self.id).zfill(6)
+        return 'PED' + str(self.id).zfill(6)
     
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Item de orçamento'
-        verbose_name_plural = 'Itens de orçamento'   
+        verbose_name = 'Pedido de item'
+        verbose_name_plural = 'Pedidos de itens'
 
 
 class Orcamento(models.Model):
@@ -97,8 +107,8 @@ class Orcamento(models.Model):
         null=True,
         )
     inclui = models.ManyToManyField(
-        Item,
-        help_text='Selecione os itens inclusos neste orçamento',
+        Pedido_de_item,
+        help_text='Selecione o(s) pedido(s) de itens deste orçamento',
         blank=True,
     )
     exclui = models.TextField(
@@ -150,7 +160,7 @@ class Orcamento(models.Model):
         super().save_model(request, obj, form, change)
 
     def atualiza_valor_total_do_orcamento(self):
-        self.total_do_orcamento = sum(item.total_do_item for item in self.itens.all())
+        self.total_do_orcamento = sum(pedido.total_do_item for pedido in self.inclui.all())
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -256,28 +266,16 @@ class Solicitacao_de_fundos(models.Model):
         )
     orcamentos = models.ManyToManyField(
         Orcamento,
-        help_text='Selecione três orçamentos para cada tipo de orçamento levantado.',
+        help_text='Selecione três orçamentos.',
         blank=True,
+        verbose_name='Orçamentos',
     )
-    total_da_solicitacao = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        editable=False,
-        )
     observacoes = models.TextField(
         'Observações',
         help_text='Inclua quaiquer observações que considerar necessário.',
         blank=True,
         null=True,
     )
-
-    def atualiza_valor_total_da_solicitacao(self):
-        self.total_da_solicitacao = sum(orcamento.total_do_orcamento for orcamento in self.orcamentos.all())
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.atualiza_valor_total_da_solicitacao()
 
     def __str__(self):
         return 'SOL' + str(self.id).zfill(6)
