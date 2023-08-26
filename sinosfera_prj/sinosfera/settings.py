@@ -36,7 +36,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'grappelli',
+    # custom UI choices
+    # 'jazzmin', # Switch on to use Jazzmin (remeber to switch off Grappelli)
+    'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
