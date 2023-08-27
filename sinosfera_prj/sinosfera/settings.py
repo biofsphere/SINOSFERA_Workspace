@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     # custom UI choices
     # 'jazzmin', # Switch on to use Jazzmin (remeber to switch off Grappelli)
-    # 'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
+    'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -249,7 +249,7 @@ DJVERSION_GIT_USE_TAG = False
 DJVERSION_GIT_USE_COMMIT = False
 
 # Grappelli settings:
-# GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin'
+GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin'
 
 
 
