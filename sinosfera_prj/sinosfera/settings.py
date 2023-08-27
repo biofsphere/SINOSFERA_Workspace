@@ -36,12 +36,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.contenttypes',
     # custom UI choices
     # 'jazzmin', # Switch on to use Jazzmin (remeber to switch off Grappelli)
-    'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
+    # 'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -238,7 +238,7 @@ BASE_COUNTRY = "BR"
 
 USE_DJANGO_JQUERY = True # True means use Jquery from CDN (necessary for using smart_selects)
 
-# Versioning:
+# Versioning settings:
 repo = Repo('D:/HDD_Code/SINOSFERA_Workspace')
 commit_count = len(list(repo.iter_commits()))
 
@@ -247,3 +247,10 @@ DJVERSION_UPDATED = date
 DJVERSION_GIT_REPO_PATH = 'D:/HDD_Code/SINOSFERA_Workspace'
 DJVERSION_GIT_USE_TAG = False
 DJVERSION_GIT_USE_COMMIT = False
+
+# Grappelli settings:
+# GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin'
+
+
+
+

@@ -208,19 +208,6 @@ class Solicitacao_de_fundos(models.Model):
         verbose_name='Responsável pelo preenchimento',
         )
     # == VÍNCULOS DA ATIVIDADE == #
-    instituicao_solicitante = models.ForeignKey(
-        'instituicoes.Instituicao',
-        on_delete=models.SET_NULL,
-        verbose_name='Insituição solicitante',
-        blank=True,
-        null=True,
-    )
-    ur_vinculada = models.ManyToManyField(
-        'locais.Unidade_de_referencia',
-        help_text='Selecione uma ou mais URs destino dos fundos dessa solicitação, se houver.',
-        blank=True,
-        verbose_name='UR(s) vinculada(s) à solicitação de fundos',
-        )    
     projeto_vinculado = models.ForeignKey(
         'projetos.Projeto', 
         on_delete=models.SET_NULL, 
@@ -229,6 +216,13 @@ class Solicitacao_de_fundos(models.Model):
         null=True, 
         verbose_name='Projeto vinculado à solicitação de fundos', 
         )
+    instituicao_solicitante = models.ForeignKey(
+        'instituicoes.Instituicao',
+        on_delete=models.SET_NULL,
+        verbose_name='Insituição solicitante',
+        blank=True,
+        null=True,
+    )    
     objetivo_especifico_vinculado = models.ManyToManyField(
         'projetos.Objetivo_especifico_de_projeto', 
         help_text='Selecione o objetivo específico a que esta solicitação está diretamente vincula.', 
@@ -245,6 +239,12 @@ class Solicitacao_de_fundos(models.Model):
         'projetos.Atividade',
         help_text='Selecione a(s) atividade(s) a que esta solicitação está diretamente vinculada.',
         blank=True,
+        )
+    ur_vinculada = models.ManyToManyField(
+        'locais.Unidade_de_referencia',
+        help_text='Selecione uma ou mais URs destino dos fundos dessa solicitação, se houver.',
+        blank=True,
+        verbose_name='UR(s) vinculada(s) à solicitação de fundos',
         )
     cronograma = models.TextField(
         'Cronograma de execução',
@@ -283,5 +283,5 @@ class Solicitacao_de_fundos(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Solicitação de orçamento'
-        verbose_name_plural = 'Solicitações de orçamento'
+        verbose_name = 'Solicitação de fundo'
+        verbose_name_plural = 'Solicitações de fundos'
