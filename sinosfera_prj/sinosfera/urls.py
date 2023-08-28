@@ -15,7 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+# from .admin import CustomAdminSite # to grab customized model order to admin panel
 from django.urls import path, include
+
+# custom_admin_site = CustomAdminSite()
+# admin.site = custom_admin_site # defines the admin site as the custom_admin_site with the customized order of models.
 
 urlpatterns = [
     path('grappelli/', include('grappelli.urls')), # grappelli URLS

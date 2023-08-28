@@ -125,7 +125,7 @@ class Plano(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Plano'
-        verbose_name_plural = '07 - Planos'
+        verbose_name_plural = 'Planos'
 
 
 
@@ -180,7 +180,7 @@ class Programa_de_acoes_prioritarias(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Programa de ações prioritárias'
-        verbose_name_plural = '08 - Programas de ações prioritárias'
+        verbose_name_plural = 'Programas de ações prioritárias'
 
 
 #========================#
@@ -234,4 +234,4 @@ class Acao_prioritaria(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Ação prioritária'
-        verbose_name_plural = '09 - Ações prioritárias'
+        verbose_name_plural = 'Ações prioritárias'

@@ -21,7 +21,8 @@ class CustomUser(AbstractUser):
 
     class Meta:
         verbose_name = 'Usuário'
-        verbose_name_plural = '00 - Usuários'
+        verbose_name_plural = 'Usuários'
+
 
 
 class Pessoa(models.Model):
@@ -82,3 +83,4 @@ class Pessoa(models.Model):
         ordering = ('nome_completo',)
         verbose_name = 'Pessoa'
         verbose_name_plural = 'Pessoas'
+

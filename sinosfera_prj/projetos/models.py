@@ -446,4 +446,4 @@ class Atividade(models.Model):
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Atividade'
-        verbose_name_plural = '14 - Atividades'
+        verbose_name_plural = 'Atividades'

@@ -128,5 +128,5 @@ class Unidade_de_referencia(models.Model):
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Unidade de de referência'
+        verbose_name = 'Unidade de referência'
         verbose_name_plural = 'Unidades de referência'
