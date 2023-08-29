@@ -71,7 +71,7 @@ class Categoria_de_plano(models.Model):
         super().save_model(request, obj, form, change)
 
     def __str__(self):
-        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome_da_categoria_de_plano
+        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome
 
     class Meta:
         ordering = ('nome',)

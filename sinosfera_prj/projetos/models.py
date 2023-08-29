@@ -218,7 +218,7 @@ class Objetivo_especifico_de_projeto(models.Model):
         help_text='Insira um valor de 0 a 100 correspondente ao percentual de alcance deste objetivo até o momento.',
         blank=True, 
         null=False,
-        default=True,
+        default=0,
         )
     inicio = models.DateField(
         'Data de início do Objetivo específico',
