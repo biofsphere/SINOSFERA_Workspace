@@ -4,22 +4,13 @@ from .models import Projeto, Objetivo_especifico_de_projeto, Etapa, Atividade
 
 @admin.register(Projeto)
 class ProjetoAdmin(admin.ModelAdmin):
-    fields = (
-        'id', 
-        'programa_vinculado_ao_projeto', 
-        'nome', 'objetivo_geral_do_projeto', 
-        'encerrado', 'resumo_descritivo_do_projeto', 
-        'fundos_de_execucao_do_projeto', 
-        'fundos_estimados_do_verde_sinos', 
-        'fundos_estimados_de_contra_partida', 
-        'valor_total_do_projeto', 
-        'municipio_ancora_do_projeto', 
-        'urs_vinculadas_ao_projeto', 
-        'instituicao_ancora_do_projeto', 
-        'pessoa_ancora_do_projeto', 
-        'inicio', 
-        'fim',
-        )
+    fieldsets = [
+        ('Programa vinculado',{'fields': ['programa_vinculado_ao_projeto',]}),
+        ('Dados básicos do projeto',{ 'fields': ['id', 'nome', 'inicio', 'fim', 'encerrado',]}),
+        ('Descrição', {'fields': ['objetivo_geral_do_projeto', 'resumo_descritivo_do_projeto',]}), 
+        ('Financiamento', {'fields': ['fundos_de_execucao_do_projeto', 'fundos_estimados_do_verde_sinos', 'fundos_estimados_de_contra_partida', 'valor_total_do_projeto',]}), 
+        ('Ancoragem', { 'fields': ['municipio_ancora_do_projeto', 'urs_vinculadas_ao_projeto', 'instituicao_ancora_do_projeto', 'pessoa_ancora_do_projeto',]}),
+        ]
     readonly_fields = ('id', 'valor_total_do_projeto',)
     list_display = (
         'id',
@@ -35,10 +26,11 @@ class ProjetoAdmin(admin.ModelAdmin):
         'inicio', 
         'fim',
         )
-    search_fields = ('nome', 'pessoa_ancora_do_projeto',)
+    search_fields = ('nome',)
     ordering = ('id', 'nome', 'municipio_ancora_do_projeto', 'pessoa_ancora_do_projeto', 'valor_total_do_projeto',)
-    list_filter = ('municipio_ancora_do_projeto',)
+    list_filter = ('municipio_ancora_do_projeto', 'pessoa_ancora_do_projeto', 'municipio_ancora_do_projeto',)
 
+    # Métodos de formatação dos dados na visualização da tabela
     def total_projeto_formatado(self, obj):
         return f'R${intcomma(obj.valor_total_do_projeto)}'
 
@@ -47,6 +39,7 @@ class ProjetoAdmin(admin.ModelAdmin):
 
     def fundos_contra_partida_formatado(self, obj):
         return f'R${intcomma(obj.fundos_estimados_de_contra_partida)}'
+    
 
 @admin.register(Objetivo_especifico_de_projeto)
 class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
