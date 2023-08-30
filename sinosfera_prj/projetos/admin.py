@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis import admin
+from leaflet.admin import LeafletGeoAdmin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from .models import Projeto, Objetivo_especifico_de_projeto, Etapa, Atividade
 
@@ -10,6 +13,7 @@ class ProjetoAdmin(admin.ModelAdmin):
         ('Descrição', {'fields': ['objetivo_geral_do_projeto', 'resumo_descritivo_do_projeto',]}), 
         ('Financiamento', {'fields': ['fundos_de_execucao_do_projeto', 'fundos_estimados_do_verde_sinos', 'fundos_estimados_de_contra_partida', 'valor_total_do_projeto',]}), 
         ('Ancoragem', { 'fields': ['municipio_ancora_do_projeto', 'urs_vinculadas_ao_projeto', 'instituicao_ancora_do_projeto', 'pessoa_ancora_do_projeto',]}),
+        ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id', 'valor_total_do_projeto',)
     list_display = (
@@ -43,7 +47,14 @@ class ProjetoAdmin(admin.ModelAdmin):
 
 @admin.register(Objetivo_especifico_de_projeto)
 class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
-    fields = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
+    fieldsets = [
+        ('Projeto vinculado',{'fields': ['projeto_vinculado_ao_objetivo_especifico',]}),
+        ('Objetivo específico, sub-projeto ou meta',{ 'fields': ['categoria_de_objetivo_especifico', ('id', 'nome',), ('inicio', 'fim', 'percentual_de_alcance_atingido',)]}),
+        ('Descrição e método de avaliação', {'fields': ['descricao_do_objetivo_especifico', 'indicadores', 'verificacao',]}), 
+        # ('Financiamento', {'fields': ['',]}), 
+        ('Ancoragem', { 'fields': ['coordenador',]}),
+        ('Arquivos', {'fields': ['arquivos',]}),
+        ]
     readonly_fields = ('id',)
     list_display = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
     search_fields = ('nome', 'coordenador',)
@@ -53,7 +64,13 @@ class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
 
 @admin.register(Etapa)
 class EtapaAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'objetivo_especifico_vinculado_a_etapa', 'descricao', 'concluida', 'coordenador',)
+    fieldsets = [
+        ('Objetivo específico, sub-projeto ou meta vinculada',{'fields': ['objetivo_especifico_vinculado_a_etapa',]}),
+        ('Etapa',{ 'fields': ['id', 'nome', 'concluida',]}),
+        ('Descrição', {'fields': ['descricao',]}), 
+        # ('Financiamento', {'fields': ['',]}), 
+        ('Ancoragem', { 'fields': ['coordenador',]}),
+        ]
     readonly_fields = ('id',)
     list_display = ('id', 'nome', 'objetivo_especifico_vinculado_a_etapa', 'descricao', 'concluida', 'coordenador',)
     search_fields = ('nome', 'coordenador',)
@@ -62,10 +79,18 @@ class EtapaAdmin(admin.ModelAdmin):
 
 
 @admin.register(Atividade)
-class AtividadeAdmin(admin.ModelAdmin):
-    fields = ('id', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'nome', 'descricao', 'inicio', 'fim', 'concluida', 'base_curricular_vinculada', 'categoria_de_atividade', 'municipio', 'ur_vinculada',)
+class AtividadeAdmin(LeafletGeoAdmin):
+    fieldsets = [
+        ('Vínculos desta atividade', {'fields': ['projeto_vinculado', ('objetivo_especifico_vinculado', 'etapa_vinculada',),]}),
+        ('Atividade',{ 'fields': ['id', ('categoria_de_atividade', 'nome',), ('inicio', 'fim', 'concluida',),]}),
+        ('Descrição', {'fields': ['descricao', 'base_curricular_vinculada',]}), 
+        ('Resultados', {'fields': ['resultados',]}), 
+        ('Ancoragem', { 'fields': ['municipio', 'ur_vinculada', 'coordenador',]}),
+        ('Localização', {'fields': ['localizacao',]}),
+        ('Arquivos', {'fields': ['arquivos',]}),
+        ]
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'projeto_vinculado', 'nome', 'inicio', 'fim', 'concluida', 'categoria_de_atividade', 'municipio',)
+    list_display = ('id', 'nome', 'projeto_vinculado', 'nome', 'inicio', 'fim', 'concluida', 'categoria_de_atividade', 'municipio', 'localizacao',)
     search_fields = ('nome', 'coordenador',)
     ordering = ('id', 'nome', 'coordenador',)
     list_filter = ('projeto_vinculado', 'coordenador', 'municipio', 'categoria_de_atividade',)

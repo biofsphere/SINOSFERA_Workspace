@@ -7,6 +7,7 @@ from .models import (
     Sub_categoria_de_atividade, 
     Categoria_de_atividade,
     Unidade_de_medida,
+    Fundo,
 )
 
 @admin.register(Profissao)
@@ -75,3 +76,13 @@ class Unidade_de_medidaAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
     list_display = ('id', 'nome', 'abreviatura',)
     search_fields = ('nome', 'abreviatura',)
+
+
+@admin.register(Fundo)
+class FundoAdmin(admin.ModelAdmin):
+    fields = ('id', 'nome', 'descricao',)
+    readonly_fields = ('id',)
+    list_display = ('id', 'nome',)
+    search_fields = ('nome',)
+    ordering = ('id', 'nome',)
+    list_filter = ('nome',)

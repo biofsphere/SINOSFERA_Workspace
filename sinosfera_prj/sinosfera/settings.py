@@ -226,17 +226,20 @@ GEOS_LIBRARY_PATH = VIRTUAL_ENV_BASE + r'\Lib\site-packages\osgeo\geos_c.dll'
 PROJ_LIBRARY_PATH = VIRTUAL_ENV_BASE + r'\Lib\site-packages\osgeo\data\proj'
 
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (-0.023, 36.87),
-    'DEFAULT_ZOOM': 5,
+    'TILES': f'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{{z}}/{{x}}/{{y}}?access_token={os.environ.get("MAPBOX_ACCESS_TOKEN")}',
+    'DEFAULT_CENTER': (-29.760742, -51.148017),
+    'DEFAULT_ZOOM': 10,
     'MAX_ZOOM': 20,
-    'MIN_ZOOM': 3,
+    'MIN_ZOOM': 7,
 }
+
+BASE_COUNTRY = "BR"
 
 # GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 # RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY')
 # RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
-BASE_COUNTRY = "BR"
+
 
 USE_DJANGO_JQUERY = True # True means use Jquery from CDN (necessary for using smart_selects)
 

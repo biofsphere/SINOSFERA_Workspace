@@ -37,7 +37,13 @@ class OrcamentoAdmin(admin.ModelAdmin):
 
 @admin.register(Solicitacao_de_fundos)
 class Solicitacao_de_fundosAdmin(admin.ModelAdmin):
-    fields = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'ur_vinculada', 'projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada', 'cronograma', 'urgencia', 'orcamentos','observacoes',)
+    fieldsets = [
+        ('Vínculos desta solicitação', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
+        ('Solicitação de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
+        ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento',]}),
+        ('Orçamentos', {'fields': ['orcamentos', 'observacoes']}),
+        ('Arquivos', {'fields': ['arquivos',]}),
+        ]
     readonly_fields = ('id',)
     list_display = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'cronograma', 'urgencia', 'observacoes',)
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)

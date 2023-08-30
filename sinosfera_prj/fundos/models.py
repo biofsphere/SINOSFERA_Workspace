@@ -276,6 +276,11 @@ class Solicitacao_de_fundos(models.Model):
         blank=True,
         null=True,
     )
+    arquivos = models.FileField(
+        upload_to='fundos/solicitacoes', 
+        blank=True, 
+        null=True,
+    )
 
     def __str__(self):
         return 'SOL' + str(self.id).zfill(6)

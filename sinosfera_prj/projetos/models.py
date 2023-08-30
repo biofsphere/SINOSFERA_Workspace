@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from email.policy import default
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractBaseUser, User
 
 
@@ -248,7 +249,7 @@ class Objetivo_especifico_de_projeto(models.Model):
         super().save_model(request, obj, form, change)
 
     def __str__(self):
-        return 'OBJ' + str(self.id).zfill(4) + '-' + self.nome
+        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
@@ -302,7 +303,7 @@ class Etapa(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'ETA' + str(self.id).zfill(5) + '-' + self.nome
+        return 'ETA' + str(self.id).zfill(5) + '-' + str(self.nome)
 
 
     class Meta:
@@ -384,7 +385,6 @@ class Atividade(models.Model):
         null=True, 
         verbose_name='Coordenador(a) de Atividade', 
         )
-
     base_curricular_vinculada = models.TextField(
         'Base curricular', 
         max_length=300, 
@@ -416,24 +416,21 @@ class Atividade(models.Model):
         null=True, 
         verbose_name='Unidade de referência vinculada',
     )
-    # onde = models.CharField(
-    #     'Local da atividade', 
-    #     help_text='Especifique o local ou ambiente onde se deu a atividade.',
-    #     max_length=120, 
-    #     blank=True, 
-    #     null=True, 
-    # )
-    # resultados = models.TextField(
-    #     'Resultados', 
-    #     max_length=600, 
-    #     help_text='Descreva o que se alcançou com a atividade após concluída.', 
-    #     blank=True,
-    #     null=True,
-    #     )
-
+    localizacao = models.PointField(
+        'Local da atividade', 
+        help_text='Encontre o local da atividade no mapa e depois insira um marcador sobre ele.', 
+        blank=True, 
+        null=True, 
+    )
+    resultados = models.TextField(
+        'Resultados', 
+        max_length=600, 
+        help_text='Registre aqui o que se alcançou com a atividade depois de concluída.', 
+        blank=True,
+        null=True,
+        )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-
     arquivos = models.FileField(
         upload_to='projetos/atividades', 
         blank=True, 
@@ -441,7 +438,7 @@ class Atividade(models.Model):
         )
 
     def __str__(self):
-        return 'ATV' + str(self.id).zfill(5) + '-' + self.nome
+        return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
