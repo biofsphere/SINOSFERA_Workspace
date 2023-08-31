@@ -18,9 +18,9 @@ class ItemAdmin(admin.ModelAdmin):
 
 @admin.register(Pedido_de_item)
 class Pedido_de_itemAdmin(admin.ModelAdmin):
-    fields = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_item',)
-    readonly_fields = ('id', 'total_do_item',)
-    list_display = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_item',)
+    fields = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_pedido_do_item',)
+    readonly_fields = ('id', 'total_do_pedido_do_item',)
+    list_display = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_pedido_do_item',)
     search_fields = ('item',)
     list_filter = ('item',)
 
