@@ -6,14 +6,22 @@ from .models import (
     Solicitacao_de_fundos,
 )
 
+class PedidoInlineAdmin(admin.TabularInline):
+    model = Pedido_de_item
+    extra = 1
+
+
+class OrcamentoInlineAdmin(admin.TabularInline):
+    model = Orcamento
+
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'tipo', 'unidade',)
+    fields = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
     readonly_fields = ('id',)
     list_display = ('id', 'nome', 'tipo', 'unidade',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
-    list_filter = ('tipo',)
+    list_filter = ('tipo', 'unidade',)
 
 
 @admin.register(Pedido_de_item)
@@ -33,6 +41,7 @@ class OrcamentoAdmin(admin.ModelAdmin):
     search_fields = ('empresa_fornecedora', 'profissional_fornecedor',)
     ordering = ('id', 'empresa_fornecedora', 'profissional_fornecedor',)
     list_filter = ('empresa_fornecedora', 'profissional_fornecedor',)
+    inlines = [PedidoInlineAdmin]
 
 
 @admin.register(Solicitacao_de_fundos)
@@ -41,7 +50,7 @@ class Solicitacao_de_fundosAdmin(admin.ModelAdmin):
         ('Vínculos desta solicitação', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
         ('Solicitação de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
         ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento',]}),
-        ('Orçamentos', {'fields': ['orcamentos', 'observacoes']}),
+        ('Orçamentos', {'fields': ['observacoes']}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id',)
@@ -49,4 +58,5 @@ class Solicitacao_de_fundosAdmin(admin.ModelAdmin):
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
     ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
     list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
+    inlines = [OrcamentoInlineAdmin]
 

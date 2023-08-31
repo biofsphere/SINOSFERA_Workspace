@@ -42,7 +42,7 @@ class Item(models.Model):
         help_text='Inclua uma breve descrição do item quando houver especificações técnicas.',
         blank=True,
         null=True,
-    ),
+    )
 
     def __str__(self):
         return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
@@ -226,8 +226,8 @@ class Pedido_de_item(models.Model):
     #calculo do valor do orçamento
     def save(self, *args, **kwargs):
         self.total_do_pedido_do_item = self.preco_unitario * self.quantidade
-        self.orcamento.total_do_orcamento += self.total_do_pedido_do_item
-        self.orcamento.save()
+        self.orcamento.total_do_orcamento += self.total_do_pedido_do_item # FIXME: object has no attribute total_do_orcamento
+        self.orcamentorcamento.save()
         return super(Pedido_de_item, self).save(*args, **kwargs)
 
 
