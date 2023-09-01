@@ -10,6 +10,7 @@ from .models import (
     Fundo,
 )
 
+
 @admin.register(Profissao)
 class ProfissaoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)

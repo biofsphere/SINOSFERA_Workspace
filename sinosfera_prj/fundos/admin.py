@@ -1,10 +1,12 @@
 from django.contrib import admin
+from django import forms
 from .models import (
     Item,
     Pedido_de_item,
     Orcamento,
     Solicitacao_de_fundos,
 )
+
 
 class PedidoInlineAdmin(admin.TabularInline):
     model = Pedido_de_item
@@ -18,7 +20,7 @@ class OrcamentoInlineAdmin(admin.TabularInline):
 class ItemAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'tipo', 'unidade',)
+    list_display = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('tipo', 'unidade',)
