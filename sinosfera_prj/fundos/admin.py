@@ -2,14 +2,14 @@ from django.contrib import admin
 from django import forms
 from .models import (
     Item,
-    Pedido_de_item,
+    Pedido,
     Orcamento,
     Solicitacao_de_fundos,
 )
 
 
 class PedidoInlineAdmin(admin.TabularInline):
-    model = Pedido_de_item
+    model = Pedido
     extra = 1
 
 
@@ -20,26 +20,26 @@ class OrcamentoInlineAdmin(admin.TabularInline):
 class ItemAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
+    list_display = ('get_item_id', 'nome', 'tipo', 'unidade', 'descricao',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('tipo', 'unidade',)
 
 
-@admin.register(Pedido_de_item)
+@admin.register(Pedido)
 class Pedido_de_itemAdmin(admin.ModelAdmin):
-    fields = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_pedido_do_item',)
+    fields = ('id', 'orcamento', 'item', 'quantidade', 'unidade', 'preco_unitario', 'total_do_pedido_do_item',)
     readonly_fields = ('id', 'total_do_pedido_do_item',)
-    list_display = ('id', 'item', 'quantidade', 'preco_unitario', 'total_do_pedido_do_item',)
+    list_display = ('get_item_id', 'item', 'quantidade', 'unidade', 'preco_unitario', 'total_do_pedido_do_item',)
     search_fields = ('item',)
     list_filter = ('item',)
 
 
 @admin.register(Orcamento)
 class OrcamentoAdmin(admin.ModelAdmin):
-    fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'inclui', 'exclui', 'validade', 'forma_de_garantia', 'total_do_orcamento', 'dados_para_pagamento', 'observacoes',)
+    fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'exclui', 'validade', 'forma_de_garantia', 'total_do_orcamento', 'dados_para_pagamento', 'observacoes',)
     readonly_fields = ('id', 'total_do_orcamento',)
-    list_display = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento',)
+    list_display = ('get_item_id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento',)
     search_fields = ('empresa_fornecedora', 'profissional_fornecedor',)
     ordering = ('id', 'empresa_fornecedora', 'profissional_fornecedor',)
     list_filter = ('empresa_fornecedora', 'profissional_fornecedor',)
