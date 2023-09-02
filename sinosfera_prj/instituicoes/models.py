@@ -105,8 +105,12 @@ class Instituicao(models.Model):
         null=True,
         )
 
+    def get_item_id(self): 
+        return 'INS' + str(self.id).zfill(3) + '-' + str(self.nome_fantasia)
+    get_item_id.short_description = 'ID Codificada'
+    
     def __str__(self): 
-        return 'INS' + str(self.id).zfill(3) + '-' + self.nome_fantasia
+        return 'INS' + str(self.id).zfill(3) + '-' + str(self.nome_fantasia)
 
     class Meta:
         ordering = ('nome_fantasia',)

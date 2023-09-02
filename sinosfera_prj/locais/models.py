@@ -24,8 +24,12 @@ class Microbacia(models.Model):
         unique=True,
         )
 
+    def get_item_id(self): 
+        return 'MBH' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
+
     def __str__(self): 
-        return 'MBH' + str(self.id).zfill(3) + '-' + self.nome
+        return 'MBH' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)
@@ -48,8 +52,12 @@ class Municipio(models.Model):
         unique=True,
     )
 
+    def get_item_id(self): 
+        return 'MUN' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
+
     def __str__(self):
-        return 'MUN' + str(self.id).zfill(3) + '-' + self.nome
+        return 'MUN' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)
@@ -95,22 +103,28 @@ class Unidade_de_referencia(models.Model):
         blank=True,
         null=True,
         )
-    latitude_da_ur = models.CharField(
-        'Latitude',
-        max_length=15,
-        help_text='Insira a latitude da UR, em graus decimais com sinais. Exemplo: -28.123456', 
-        default='-00.000000',
-        blank=True,
-        null=False,
-        )
-    longitude_da_ur = models.CharField(
-        'Longitude',
-        max_length=15,
-        help_text='Insira a longitude em graus decimais com sinais. Exemplo: -50.123456', 
-        default='-00.000000', 
-        blank=True,
-        null=False,
-        )
+    localizacao = models.PointField(
+        'Local da atividade', 
+        help_text='Encontre o local da sede da UR no mapa e depois insira um marcador sobre ela.', 
+        blank=True, 
+        null=True, 
+    )
+    # latitude_da_ur = models.CharField(
+    #     'Latitude',
+    #     max_length=15,
+    #     help_text='Insira a latitude da UR, em graus decimais com sinais. Exemplo: -28.123456', 
+    #     default='-00.000000',
+    #     blank=True,
+    #     null=False,
+    #     )
+    # longitude_da_ur = models.CharField(
+    #     'Longitude',
+    #     max_length=15,
+    #     help_text='Insira a longitude em graus decimais com sinais. Exemplo: -50.123456', 
+    #     default='-00.000000', 
+    #     blank=True,
+    #     null=False,
+    #     )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
@@ -119,12 +133,16 @@ class Unidade_de_referencia(models.Model):
         null=True,
         )
 
+    def get_item_id(self):
+        return 'URE' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
+
     def __str__(self):
-        return 'URE' + str(self.id).zfill(3) + '-' + self.nome
+        return 'URE' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
     
-    def get_absolute_url(self):
-        """Traz a URL de perfil da unidade de referência."""
-        return reverse('ur-detalhe', args=[str(self.id)])
+    # def get_absolute_url(self):
+    #     """Traz a URL de perfil da unidade de referência."""
+    #     return reverse('ur-detalhe', args=[str(self.id)])
 
     class Meta:
         ordering = ('nome',)

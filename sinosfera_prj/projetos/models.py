@@ -140,22 +140,26 @@ class Projeto(models.Model):
         null=True,
     )
     
-    def save_model(self, request, obj, form, change):
-        """Grava usuário logado que gravou o item"""
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     """Grava usuário logado que gravou o item"""
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
 
     def save(self, *args, **kwargs):
         """Grava o Projeto com o valor total dele somando os fundos do VerdeSinos com a contra-partida."""
         self.valor_total_do_projeto = self.fundos_estimados_do_verde_sinos + self.fundos_estimados_de_contra_partida
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        """Traz a URL de perfil do Projeto."""
-        return reverse('projeto-detalhe', args=[str(self.id)])
+    # def get_absolute_url(self):
+    #     """Traz a URL de perfil do Projeto."""
+    #     return reverse('projeto-detalhe', args=[str(self.id)])
+
+    def get_item_id(self):
+        return 'PRJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
 
     def __str__(self):
-        return 'PRJ' + str(self.id).zfill(4) + '-' + str(self.nome)
+        return 'PRJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)
@@ -173,8 +177,8 @@ class Objetivo_especifico_de_projeto(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text='Selecione o Projeto a que estes Sub-projeto se vincula.',
-        verbose_name='Projeto a que este Sub-projeto se vincula',
+        help_text='Selecione o Projeto a que este objetivo específico, sub-projeto ou meta se vincula.',
+        verbose_name='Projeto vinculado',
         )
     categoria_de_objetivo_especifico = models.ForeignKey(
         'categorias.Categoria_de_objetivo_especifico',
@@ -182,7 +186,7 @@ class Objetivo_especifico_de_projeto(models.Model):
         blank=True,
         null=True,
         help_text='Selecione a categoria mais adequada para este objetivo específico.',
-        verbose_name='Categoria de objetivo específico',
+        verbose_name='Categoria',
         )
     nome = models.CharField(
         'Nome ou título do objetivo específico', 
@@ -250,13 +254,17 @@ class Objetivo_especifico_de_projeto(models.Model):
         null=True,
         )
 
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     '''Grava usuário logado que gravou o item'''
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
+
+    def get_item_id(self):
+        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
 
     def __str__(self):
-        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)
+        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)
@@ -309,8 +317,12 @@ class Etapa(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
+    def get_item_id(self):
+        return 'ETA' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
+
     def __str__(self):
-        return 'ETA' + str(self.id).zfill(5) + '-' + str(self.nome)
+        return 'ETA' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:
@@ -444,8 +456,12 @@ class Atividade(models.Model):
         null=True,
         )
 
+    def get_item_id(self):
+        return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
+    get_item_id.short_description = 'ID Codificada'
+
     def __str__(self):
-        return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)
+        return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)

@@ -131,9 +131,8 @@ class Plano(models.Model):
         verbose_name_plural = 'Planos plurianuais'
 
 
-
 #====================================#
-#== PROGRAMA DE AÇÕES PRIORITÁRIAS ==#
+#== INICIATIVA DE AÇÕES PRIORITÁRIAS ==#
 #====================================#
 
 class Programa_de_acoes_prioritarias(models.Model):
@@ -171,10 +170,10 @@ class Programa_de_acoes_prioritarias(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     '''Grava usuário logado que gravou o item'''
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
 
     def get_item_id(self):
         return 'PAP' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
