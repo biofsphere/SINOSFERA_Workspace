@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 ### TABELAS DE PROGRAMAS DE MOBILIZAÇÃO DE PROJETOS ###
 #######################################################
 
-#==============#
-#== PROGRAMA ==#
-#==============#
+#========================================#
+#== PROGRAMA DE MOBILIZAÇÃO DE PROJETO ==#
+#========================================#
 
 class Programa(models.Model):
     """Tabela de inserção de dados sobre programas de mobilização de projetos, tais como o VerdeSinos. Não se trata de Programas de Ações Prioritárias, mas de um nível abaixo destest, onde se encaixam programas regionais que abordam um ou mais as ações prioritárias previstas nestes Programas de Ações Prioritárias dos Planos Plurianuais."""
@@ -17,7 +17,7 @@ class Programa(models.Model):
         'planos.Plano',
         on_delete=models.SET_NULL,
         related_name='programas_vinculados_ao_plano',
-        verbose_name='Plano vinculado a este Programa',
+        verbose_name='Plano Plurianual vinculado a este Programa de mobilização de projetos',
         blank=True,
         null=True,
         help_text='Selecione o Plano a que este Programa se vincula.',
@@ -25,13 +25,13 @@ class Programa(models.Model):
     nome = models.CharField(
         'Nome ou título do Programa',
         max_length=150,
-        help_text='Defina um nome curto para o Programa.',
+        help_text='Defina um nome curto para o Programa de mobilização de projetos.',
         blank=True,
         null=True,    
     )
     objetivo_geral_do_programa = models.TextField(
-        'Objetivo geral do Programa',
-        help_text='Descreva de modo geral o que o Programa pretente alcançar na sociedade e no meio ambiente.',
+        'Objetivo geral do Programa de mobilização de projetos',
+        help_text='Descreva de modo geral o que este Programa pretente alcançar na sociedade e no meio ambiente.',
         blank=True,
         null=True,
         )
@@ -124,13 +124,13 @@ class Programa(models.Model):
         super().save_model(request, obj, form, change)
 
     def __str__(self):
-        return 'PRG' + str(self.id).zfill(3) + '-' + self.nome
+        return 'PRG' + str(self.id).zfill(3) + '-' + str(self.nome)
 
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Programa'
-        verbose_name_plural = 'Programas'
+        verbose_name = 'Programa de mobilização de projetos'
+        verbose_name_plural = 'Programas de mobilização de projetos'
 
 
 #===================================================================#
@@ -142,10 +142,10 @@ class Diretriz_especifica_de_programa(models.Model):
     programa_vinculado_a_diretriz_especifica = models.ForeignKey(
         Programa, 
         on_delete=models.SET_NULL, 
-        help_text='Selecione o Programa ao qual a diretriz específica está vinculado.', 
+        help_text='Selecione o Programa de mobilização de projetos ao qual a diretriz específica está vinculado.', 
         blank=True, 
         null=True, 
-        verbose_name='Programa vinculado', 
+        verbose_name='Programa de mobilização de projetos vinculado', 
         )
     nome = models.CharField(
         'Nome ou título da diretriz específica', 
@@ -165,7 +165,7 @@ class Diretriz_especifica_de_programa(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'DIR' + str(self.id).zfill(3) + '-' + self.nome
+        return 'DIR' + str(self.id).zfill(3) + '-' + str(self.nome)
 
 
     class Meta:

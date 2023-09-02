@@ -17,9 +17,9 @@ class Item(models.Model):
         help_text='Insira o nome ou título do serviço, material ou maquinário (item de despesa no orçamento)',
     )
     TIPOS_DE_DESPESA = [
-        ('MO', 'Mão de obra ou serviço'),
-        ('MT', 'Materiais ou insumos'),
-        ('MQ', 'Máquinas ou equipamentos'),
+        ('MO', 'Mão de obra ou serviços'),
+        ('MT', 'Ferramentas manuais, materiais ou insumos'),
+        ('MQ', 'Máquinas ou equipamentos eletroeletrônicos'),
         ]
     tipo = models.CharField(
         max_length=2,
@@ -52,8 +52,8 @@ class Item(models.Model):
     
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Item de despesa'
-        verbose_name_plural = 'Itens de despesa'   
+        verbose_name = 'Produto ou serviço'
+        verbose_name_plural = 'Produtos ou serviços'   
 
 
 class Orcamento(models.Model):
@@ -124,17 +124,17 @@ class Orcamento(models.Model):
         null=True,
         verbose_name='Forma e tempo de garantia do fornecedor'
     )
-    exclui = models.TextField(
-        help_text='Especifique o que não está incluso neste orçamento, caso seja relevante esclarecer.',
-        blank=True,
-        null=True,
-        verbose_name='O que não está incluso neste orçamento',
-    )
     dados_para_pagamento = models.TextField(
         'Dados para pagamento',
         help_text='Inclua os dados para pagamento deste orçamento conforme preferência do fornecedor (Pix, dados para depósito, etc.).',
         blank=True,
         null=True,
+    )
+    exclui = models.TextField(
+        help_text='Especifique o que não está incluso neste orçamento, caso seja relevante esclarecer.',
+        blank=True,
+        null=True,
+        verbose_name='O que não está incluso neste orçamento',
     )
     observacoes = models.TextField(
         'Observações adicionais',
@@ -144,7 +144,7 @@ class Orcamento(models.Model):
     )
     itens = models.ManyToManyField(
         Item, 
-        through='Pedido'
+        through='Compra'
         )
     total_do_orcamento = models.DecimalField(
         max_digits=10,
@@ -159,24 +159,17 @@ class Orcamento(models.Model):
         upload_to='fundos/orcamentos', 
         blank=True, 
         null=True,
+        verbose_name='Arquivo de orçamento',
         )
     
     def save_model(self, request, obj, form, change):
         """Grava usuário logado que gravou o item"""
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
-    
-    def get_total_do_orcamento(self):
-        # Calcula o total do Orçamento somando todos os subtotais dos pedidos
-        return sum(pedido.subtotal_do_pedido for pedido in self.pedido_set.all())
-    
-    # def atualiza_valor_total_do_orcamento(self):
-    #     total = sum(item.total_do_pedido_do_item for item in self.pedido_de_item_set.all())
-    #     self.total_do_orcamento = total
-
+        
     def save(self, *args, **kwargs):
+        self.total_do_orcamento=sum(compra.subtotal_da_compra for compra in self.compra_set.all())
         super().save(*args, **kwargs)
-        self.get_total_do_orcamento()
 
     def get_item_id(self):
         if self.empresa_fornecedora:
@@ -197,26 +190,26 @@ class Orcamento(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Orçamento'
-        verbose_name_plural = 'Orçamentos'   
+        verbose_name = 'Orçamento de fornecedor(a)'
+        verbose_name_plural = 'Orçamentos de fornecedores(as)'   
 
 
-class Pedido(models.Model):
+class Compra(models.Model):
     orcamento = models.ForeignKey(
         Orcamento,
-        verbose_name='Orçamento a que este pedido pertence',
+        verbose_name='Orçamento a que esta compra pertence',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text='Selecione o orçamento a que este pedido de itens de despesa faz parte.',
+        help_text='Selecione o orçamento a que esta compra de itens de despesa faz parte.',
     )
     item = models.ForeignKey(
         Item,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        verbose_name='Item de despesa',
-        help_text='Selecione o item de despesa para esse pedido.'
+        verbose_name='Produto ou serviço',
+        help_text='Selecione o item de despesa para esta compra.'
         )
     quantidade = models.DecimalField(
         max_digits=6,
@@ -237,7 +230,7 @@ class Pedido(models.Model):
         help_text='Especifique o preço unitário do item de orçamento.',
         verbose_name='Preço unitário',
     )
-    subtotal_do_pedido = models.DecimalField(
+    subtotal_da_compra = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         editable=False,
@@ -246,7 +239,7 @@ class Pedido(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        self.subtotal_do_pedido = self.preco_unitario * self.quantidade
+        self.subtotal_da_compra = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
     def get_item_id(self):
@@ -257,16 +250,8 @@ class Pedido(models.Model):
     
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Pedido'
-        verbose_name_plural = 'Pedidos'
-
-    
-    # #calculo do valor do orçamento
-    # def save(self, *args, **kwargs):
-    #     self.total_do_pedido_do_item = self.preco_unitario * self.quantidade
-    #     self.orcamento.total_do_orcamento += self.total_do_pedido_do_item # FIXME: object has no attribute total_do_orcamento
-    #     self.orcamento.save()
-    #     return super(Pedido_de_item, self).save(*args, **kwargs)
+        verbose_name = 'Lista de compra'
+        verbose_name_plural = 'Listas de compras'
 
 
 class Requisicao(models.Model):
@@ -367,6 +352,7 @@ class Requisicao(models.Model):
         upload_to='fundos/requisicoes', 
         blank=True, 
         null=True,
+        verbose_name='Arquivo de requisição de fundos',
     )
 
     def __str__(self):

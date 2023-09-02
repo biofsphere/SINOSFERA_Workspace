@@ -67,18 +67,24 @@ class Projeto(models.Model):
         decimal_places=2,
         help_text='Especifique o total de fundos do VerdeSinos que este Projeto vai acessar ou acessou.',
         verbose_name='Total de fundos do VerdeSinos',
+        blank=True,
+        default=0,
     )
     fundos_estimados_de_contra_partida = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         help_text='Especifique o total de contra-partida que este projeto vai acessar ou acessou.',
         verbose_name='Total de fundos de contra-partida',
+        blank=True,
+        default=0,
     )
     valor_total_do_projeto = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         editable=False,
         verbose_name='Valor total do Projeto',
+        blank=True,
+        default=0,
     )
     #== Ancoragens do Projeto ==#
     municipio_ancora_do_projeto = models.ForeignKey(
@@ -94,6 +100,7 @@ class Projeto(models.Model):
         related_name='projetos_vinculados_a_ur',
         verbose_name='UR(s) vinculada(s) ao Projeto',
         help_text='Selecione uma ou mais URs que estão diretamente relacionadas ao projeto.',
+        blank=True,
     )
     instituicao_ancora_do_projeto = models.ForeignKey(
         'instituicoes.Instituicao',
@@ -148,7 +155,7 @@ class Projeto(models.Model):
         return reverse('projeto-detalhe', args=[str(self.id)])
 
     def __str__(self):
-        return 'PRJ' + str(self.id).zfill(4) + '-' + self.nome
+        return 'PRJ' + str(self.id).zfill(4) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)

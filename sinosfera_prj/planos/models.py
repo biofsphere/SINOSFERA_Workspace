@@ -124,8 +124,8 @@ class Plano(models.Model):
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Plano'
-        verbose_name_plural = 'Planos'
+        verbose_name = 'Plano plurianual'
+        verbose_name_plural = 'Planos plurianuais'
 
 
 

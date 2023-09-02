@@ -290,10 +290,10 @@ ADMIN_ORDERING = (
         'Atividade',
     )),
     ('fundos', (
-        'Item',
-        'Pedido',
-        'Orcamento',
         'Requisicao',
+        'Orcamento',
+        'Compra',
+        'Item',
     )),    
 )
 

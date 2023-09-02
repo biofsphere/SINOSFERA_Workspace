@@ -2,21 +2,24 @@ from django.contrib import admin
 from django import forms
 from .models import (
     Item,
-    Pedido,
+    Compra,
     Orcamento,
     Requisicao,
 )
 
 
-class PedidoInlineAdmin(admin.TabularInline):
-    model = Pedido
+class CompraInlineAdmin(admin.TabularInline):
+    model = Compra
+    readonly_fields = ('id', 'subtotal_da_compra',)
+    fields = ('item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_da_compra',)
     extra = 1
 
 
 class OrcamentoInlineAdmin(admin.TabularInline):
     model = Orcamento
     readonly_fields = ('id', 'total_do_orcamento',)
-    fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento',)
+    fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento', 'arquivos',)
+    # verbose_name_plural='Orçamentos'
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
@@ -28,33 +31,57 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter = ('tipo', 'unidade',)
 
 
-@admin.register(Pedido)
-class PedidoAdmin(admin.ModelAdmin):
-    fields = ('id', 'orcamento', 'item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_do_pedido',)
-    readonly_fields = ('id', 'subtotal_do_pedido',)
-    list_display = ('get_item_id', 'item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_do_pedido',)
+@admin.register(Compra)
+class CompraAdmin(admin.ModelAdmin):
+    fields = (
+        'id', 
+        #'orcamento',
+        'item', 
+        'quantidade', 
+        'unidade', 
+        'preco_unitario', 
+        'subtotal_da_compra',
+        )
+    readonly_fields = ('id', 'subtotal_da_compra',)
+    list_display = ('get_item_id', 'item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_da_compra',)
     search_fields = ('item',)
     list_filter = ('item',)
 
 
 @admin.register(Orcamento)
 class OrcamentoAdmin(admin.ModelAdmin):
-    fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'exclui', 'validade', 'forma_de_garantia', 'dados_para_pagamento', 'observacoes',)
+    fields = (
+        'requisicao',
+        'id', 
+        'data', 
+        'empresa_fornecedora',
+        'numero_NF',
+        'data_NF', 
+        'profissional_fornecedor',
+        'numero_RPA',
+        'data_RPA', 
+        'validade', 
+        'forma_de_garantia', 
+        'total_do_orcamento', 
+        'dados_para_pagamento', 
+        'exclui', 
+        'observacoes', 
+        'arquivos',)
     readonly_fields = ('id', 'total_do_orcamento',)
-    list_display = ('get_item_id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'get_total_do_orcamento',)
+    list_display = ('get_item_id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento',)
     search_fields = ('empresa_fornecedora', 'profissional_fornecedor',)
     ordering = ('id', 'empresa_fornecedora', 'profissional_fornecedor',)
     list_filter = ('empresa_fornecedora', 'profissional_fornecedor',)
-    inlines = [PedidoInlineAdmin]
+    inlines = [CompraInlineAdmin]
 
 
 @admin.register(Requisicao)
 class RequisicaoAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Vínculos desta solicitação', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
-        ('Solicitação de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
+        ('Requisição de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
         ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento',]}),
-        ('Orçamentos', {'fields': ['observacoes']}),
+        ('Observações adicionais', {'fields': ['observacoes']}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id',)
