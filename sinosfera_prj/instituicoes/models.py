@@ -92,9 +92,10 @@ class Instituicao(models.Model):
     responsavel_pela_instituicao = models.ForeignKey(
         'pessoas.Pessoa', 
         on_delete=models.SET_NULL,
-        verbose_name='Pessoa responsável, representante ou âncora da instituição', 
+        verbose_name='Contato', 
         blank=True, 
         null=True, 
+        help_text='Selecione o nome da pessoa responsável, representante ou âncora da instituição',
     )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)

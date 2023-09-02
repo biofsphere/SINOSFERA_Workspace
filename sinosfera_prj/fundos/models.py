@@ -58,13 +58,13 @@ class Item(models.Model):
 
 class Orcamento(models.Model):
     """Tabela de inserção de dados dos orçamentos para solicitação de fundos."""
-    solicitacao = models.ForeignKey(
-        'Solicitacao_de_fundos',
+    requisicao = models.ForeignKey(
+        'Requisicao',
         on_delete=models.SET_NULL,
-        help_text='Selecione a Solicitação de Fundos em que este Orçamento e faz parte.',
+        help_text='Selecione a Requisição de Fundos em que este Orçamento faz parte.',
         blank=True,
         null=True,
-        verbose_name='Solicitação de Fundos',
+        verbose_name='Requisição de Fundos',
         )
     data = models.DateField(
         help_text='Seleciona a data do orçamento fornecido.',
@@ -166,13 +166,17 @@ class Orcamento(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
     
-    def atualiza_valor_total_do_orcamento(self):
-        total = sum(item.total_do_pedido_do_item for item in self.pedido_de_item_set.all())
-        self.total_do_orcamento = total
+    def get_total_do_orcamento(self):
+        # Calcula o total do Orçamento somando todos os subtotais dos pedidos
+        return sum(pedido.subtotal_do_pedido for pedido in self.pedido_set.all())
+    
+    # def atualiza_valor_total_do_orcamento(self):
+    #     total = sum(item.total_do_pedido_do_item for item in self.pedido_de_item_set.all())
+    #     self.total_do_orcamento = total
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.atualiza_valor_total_do_orcamento()
+        self.get_total_do_orcamento()
 
     def get_item_id(self):
         if self.empresa_fornecedora:
@@ -200,10 +204,11 @@ class Orcamento(models.Model):
 class Pedido(models.Model):
     orcamento = models.ForeignKey(
         Orcamento,
+        verbose_name='Orçamento a que este pedido pertence',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name='Selecione o orçamento a que este item de despesa faz parte.'
+        help_text='Selecione o orçamento a que este pedido de itens de despesa faz parte.',
     )
     item = models.ForeignKey(
         Item,
@@ -232,7 +237,7 @@ class Pedido(models.Model):
         help_text='Especifique o preço unitário do item de orçamento.',
         verbose_name='Preço unitário',
     )
-    subtotal_do_item = models.DecimalField(
+    subtotal_do_pedido = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         editable=False,
@@ -241,7 +246,7 @@ class Pedido(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        self.subtotal_do_item = self.preco_unitario * self.quantidade
+        self.subtotal_do_pedido = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
     def get_item_id(self):
@@ -264,7 +269,7 @@ class Pedido(models.Model):
     #     return super(Pedido_de_item, self).save(*args, **kwargs)
 
 
-class Solicitacao_de_fundos(models.Model):
+class Requisicao(models.Model):
     """Tabela de inserção de dados para solicitação de fundos."""
     fundo_solicitado = models.ForeignKey(
         'categorias.Fundo',
@@ -359,7 +364,7 @@ class Solicitacao_de_fundos(models.Model):
         null=True,
     )
     arquivos = models.FileField(
-        upload_to='fundos/solicitacoes', 
+        upload_to='fundos/requisicoes', 
         blank=True, 
         null=True,
     )
@@ -370,5 +375,5 @@ class Solicitacao_de_fundos(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Solicitação de fundo'
-        verbose_name_plural = 'Solicitações de fundos'
+        verbose_name = 'Requisiçáo de fundos'
+        verbose_name_plural = 'Requisições de fundos'
