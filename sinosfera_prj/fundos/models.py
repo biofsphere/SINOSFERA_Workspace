@@ -46,6 +46,7 @@ class Item(models.Model):
 
     def get_item_id(self):
         return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
         return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
@@ -178,6 +179,7 @@ class Orcamento(models.Model):
             return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor) + ' - ' + str(self.data)
         else:
             return 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(self.data)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
         if self.empresa_fornecedora:
@@ -244,6 +246,7 @@ class Compra(models.Model):
 
     def get_item_id(self):
         return 'PED' + str(self.id).zfill(6) + ' - ' + str(self.item.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
         return 'PED' + str(self.id).zfill(6) + ' - ' + str(self.item.nome)
@@ -355,8 +358,13 @@ class Requisicao(models.Model):
         verbose_name='Arquivo de requisição de fundos',
     )
 
+    def get_item_id(self):
+        return 'REQ' + str(self.id).zfill(3) + ' ' + str(self.data) + ' ' + str(self.projeto_vinculado)[0:30]
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
+
     def __str__(self):
-        return 'SOL' + str(self.id).zfill(6)
+        return 'REQ' + str(self.id).zfill(4)
     
 
     class Meta:

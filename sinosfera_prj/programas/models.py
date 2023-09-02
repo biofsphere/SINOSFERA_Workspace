@@ -17,7 +17,7 @@ class Programa(models.Model):
         'planos.Plano',
         on_delete=models.SET_NULL,
         related_name='programas_vinculados_ao_plano',
-        verbose_name='Plano Plurianual vinculado a este Programa de mobilização de projetos',
+        verbose_name='Plano Plurianual vinculado',
         blank=True,
         null=True,
         help_text='Selecione o Plano a que este Programa se vincula.',
@@ -109,22 +109,25 @@ class Programa(models.Model):
         null=True,
         )
 
-    @property
-    def projetos_relacionados_ao_programa(self):
-        """Chama todos os projetos vinculados ao Programa usando o ralated_name=projetos_vinculados_ao_programa utilizado no model Projeto"""
-        return self.projetos_vinculados_ao_programa.all()
+    # @property
+    # def projetos_relacionados_ao_programa(self):
+    #     """Chama todos os projetos vinculados ao Programa usando o ralated_name=projetos_vinculados_ao_programa utilizado no model Projeto"""
+    #     return self.projetos_vinculados_ao_programa.all()
 
-    def get_absolute_url(self):
-        """Traz a URL de perfil do Programa."""
-        return reverse('programa-detalhe', args=[str(self.id)])
+    # def get_absolute_url(self):
+    #     """Traz a URL de perfil do Programa."""
+    #     return reverse('programa-detalhe', args=[str(self.id)])
 
     def save_model(self, request, obj, form, change):
         '''Grava usuário logado que gravou o item'''
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'PRG' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+
     def __str__(self):
-        return 'PRG' + str(self.id).zfill(3) + '-' + str(self.nome)
+        return 'PRG' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:
@@ -164,8 +167,11 @@ class Diretriz_especifica_de_programa(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
+    def get_item_id(self):
+        return 'DIR' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+
     def __str__(self):
-        return 'DIR' + str(self.id).zfill(3) + '-' + str(self.nome)
+        return 'DIR' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:

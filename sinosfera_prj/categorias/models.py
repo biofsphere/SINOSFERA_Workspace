@@ -33,8 +33,13 @@ class Profissao(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
     def __str__(self):
-        return 'PRO' + str(self.id).zfill(3) + '-' + self.nome
+        return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
+    
 
     class Meta:
         ordering = ('nome',)
@@ -70,13 +75,17 @@ class Categoria_de_plano(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'CPL' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
     def __str__(self):
-        return 'CPL' + str(self.id).zfill(2) + '-' + self.nome
+        return 'CPL' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
         verbose_name = 'Categoria de plano'
-        verbose_name_plural = 'Categorias'
+        verbose_name_plural = 'Categorias de planos'
 
 #=================================================================================#
 #== CATEGORIAS E SUB-CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
@@ -104,8 +113,13 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'SCO' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
+
     def __str__(self):
-        return 'SCO' + str(self.id).zfill(2) + '-' + self.nome
+        return 'SCO' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
@@ -140,8 +154,12 @@ class Categoria_de_objetivo_especifico(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'COB' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
     def __str__(self):
-        return 'COB' + str(self.id).zfill(2) + '-' + self.nome
+        return 'COB' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
@@ -175,8 +193,12 @@ class Sub_categoria_de_atividade(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'SCA' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
     def __str__(self):
-        return 'SCA' + str(self.id).zfill(2) + '-' + self.nome
+        return 'SCA' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
@@ -211,8 +233,13 @@ class Categoria_de_atividade(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'CAT' + str(self.id).zfill(3) + '-' + str(self.nome)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
+
     def __str__(self):
-        return 'CAT' + str(self.id).zfill(2) + '-' + self.nome
+        return 'CAT' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)

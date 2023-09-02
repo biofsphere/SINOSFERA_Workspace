@@ -19,7 +19,8 @@ class OrcamentoInlineAdmin(admin.TabularInline):
     model = Orcamento
     readonly_fields = ('id', 'total_do_orcamento',)
     fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento', 'arquivos',)
-    # verbose_name_plural='Orçamentos'
+
+
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
@@ -78,14 +79,14 @@ class OrcamentoAdmin(admin.ModelAdmin):
 @admin.register(Requisicao)
 class RequisicaoAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Vínculos desta solicitação', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
+        ('Vínculos desta requisição', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
         ('Requisição de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
         ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento',]}),
         ('Observações adicionais', {'fields': ['observacoes']}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id',)
-    list_display = ('id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'cronograma', 'urgencia', 'observacoes',)
+    list_display = ('get_item_id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'urgencia',)
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
     ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
     list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)

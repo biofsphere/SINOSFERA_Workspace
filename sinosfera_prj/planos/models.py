@@ -94,7 +94,7 @@ class Plano(models.Model):
         help_text='Especifique a pessoa âncora, ou coordenadora deste plano, se houver.', 
         blank=True,
         null=True,
-        verbose_name='Coordenador geral', 
+        verbose_name='Coordenador geral do Plano', 
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -109,17 +109,20 @@ class Plano(models.Model):
         """Chama todos os programas vinculados ao plano usando o ralated_name=programas_vinculados_ao_plano utilizado no model Programa"""
         return self.programas_vinculados_ao_plano.all()
 
-    def get_absolute_url(self):
-        """Traz a URL de perfil do Plano."""
-        return reverse('plano-detalhe', args=[str(self.id)])
+    # def get_absolute_url(self):
+    #     """Traz a URL de perfil do Plano."""
+    #     return reverse('plano-detalhe', args=[str(self.id)])
 
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     '''Grava usuário logado que gravou o item'''
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
+
+    def get_item_id(self):
+        return 'PLA' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
     def __str__(self):
-        return 'PLA' + str(self.id).zfill(3) + '-' + self.nome
+        return 'PLA' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:
@@ -173,8 +176,11 @@ class Programa_de_acoes_prioritarias(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'PAP' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+
     def __str__(self):
-        return 'PAP' + str(self.id).zfill(3) + '-' + self.nome
+        return 'PAP' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:
@@ -227,8 +233,12 @@ class Acao_prioritaria(models.Model):
         obj.inserido_por = request.user
         super().save_model(request, obj, form, change)
 
+    def get_item_id(self):
+        return 'APR' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
+
+
     def __str__(self):
-        return 'APR' + str(self.id).zfill(3) + '-' + self.nome
+        return 'APR' + str(self.id).zfill(3) + '-' + str(self.nome)[0:30] + '...'
 
 
     class Meta:

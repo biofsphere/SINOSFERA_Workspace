@@ -15,7 +15,7 @@ from .models import (
 class ProfissaoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -25,7 +25,7 @@ class ProfissaoAdmin(admin.ModelAdmin):
 class Categoria_de_planoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -35,7 +35,7 @@ class Categoria_de_planoAdmin(admin.ModelAdmin):
 class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -45,7 +45,7 @@ class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
 class Sub_categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -55,7 +55,7 @@ class Sub_categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
 class Categoria_de_atividadeAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -65,7 +65,7 @@ class Categoria_de_atividadeAdmin(admin.ModelAdmin):
 class Sub_categoria_de_atividadeAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome',)
+    list_display = ('get_item_id', 'nome',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
