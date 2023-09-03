@@ -240,7 +240,6 @@ BASE_COUNTRY = "BR"
 # RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 
-
 USE_DJANGO_JQUERY = True # True means use Jquery from CDN (necessary for using smart_selects)
 
 # Versioning settings:
@@ -254,7 +253,7 @@ DJVERSION_GIT_USE_TAG = False
 DJVERSION_GIT_USE_COMMIT = False
 
 # Grappelli settings:
-GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin'
+GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
 
 # Customized admin ordering of apps and models:
 ADMIN_ORDERING = (
