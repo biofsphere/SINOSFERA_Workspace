@@ -292,9 +292,19 @@ ADMIN_ORDERING = (
     ('fundos', (
         'Requisicao',
         'Orcamento',
-        'Compra',
         'Item',
-    )),    
+    )),
+    ('categorias', (
+        'Profissao',
+        'Categoria_de_plano',
+        'Categoria_de_objetivo_especifico',
+        'Sub_categoria_de_objetivo_especifico',
+        'Categoria_de_atividade',
+        'Sub_categoria_de_atividade',
+        'Categoria_de_publico_atendido',
+        'Unidade_de_medida',
+        'Fundo',
+    )),
 )
 
 def get_app_list(self, request, app_label=None):

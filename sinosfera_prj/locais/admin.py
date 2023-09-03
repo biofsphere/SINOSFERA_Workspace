@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis import admin
+from leaflet.admin import LeafletGeoAdmin
 from .models import Microbacia, Municipio, Unidade_de_referencia
 
 @admin.register(Microbacia)
@@ -22,7 +25,7 @@ class MunicipioAdmin(admin.ModelAdmin):
 
 
 @admin.register(Unidade_de_referencia)
-class Unidade_de_referenciaAdmin(admin.ModelAdmin):
+class Unidade_de_referenciaAdmin(LeafletGeoAdmin):
     fields = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'localizacao',)
     readonly_fields = ('id',)
     list_display = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'localizacao',)

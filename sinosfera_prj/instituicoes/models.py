@@ -43,30 +43,13 @@ class Instituicao(models.Model):
         unique=True,
         )
     #== ENDEREÇO DA INSTITUIÇÃO ==#
-    # TODO: O endereço deverá ser preenchido de forma georeferenciada fazendo-se uso de API específica de mapas ou de geocodificação.
-    # municipio = models.ForeignKey(
-    #     'locais.Municipio', 
-    #     on_delete=models.SET_NULL, 
-    #     verbose_name = 'Município sede da instituição', 
-    #     blank=True, 
-    #     null=True, 
-    #     )
-    # latitude = models.CharField(
-    #     'Latitude',
-    #     max_length=15,
-    #     help_text='Insira a latitude em graus decimais com sinais. Exemplo: -28.123456', 
-    #     default='-00.000000',
-    #     blank=True,
-    #     null=True,
-    #     )
-    # longitude = models.CharField(
-    #     'Longitude',
-    #     max_length=15,
-    #     help_text='Insira a longitude em graus decimais com sinais. Exemplo: -50.123456', 
-    #     default='-00.000000', 
-    #     blank=True,
-    #     null=True,
-    #     )
+    municipio = models.ForeignKey(
+        'locais.Municipio', 
+        on_delete=models.SET_NULL, 
+        verbose_name = 'Município sede da instituição', 
+        blank=True, 
+        null=True, 
+        )
     #== DADOS DE CONTATO COM A INSTITUIÇÃO ==#
     phoneNumberRegex = RegexValidator(regex = r"^\+?1?\d{8,15}$")
     telefone = models.CharField(
