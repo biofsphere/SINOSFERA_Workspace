@@ -460,8 +460,9 @@ class Atividade(models.Model):
         default=0, 
         editable=False,
         verbose_name='Público diretamente envolvido',
+        blank=True,
+        null=True,
         )
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
@@ -474,10 +475,6 @@ class Atividade(models.Model):
         # Calculate and return the total quantity of public attended for this activity
         return Publico.objects.filter(atividade=self).aggregate(publico_total=models.Sum('quantidade'))['publico_total']
     get_publico_total.short_description ='Público total'
-    
-    def save(self, *args, **kwargs):
-        self.publico_envolvido = self.get_publico_total()
-        super(Atividade, self).save(*args, **kwargs)
 
     def get_item_id(self):
         return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
@@ -522,6 +519,12 @@ class Publico(models.Model):
         verbose_name='QTD',
         default=0,
     )
+
+    def save(self, *args, **kwargs):
+        super(Publico, self).save(*args, **kwargs)
+        # Calculate and update the total quantity of public attended for the related activity
+        self.atividade.publico_envolvido = Publico.objects.filter(atividade=self.atividade).aggregate(publico_total=models.Sum('quantidade'))['publico_total'] or 0
+        self.atividade.save()
 
     def __str__(self):
         return 'PUB' + str(self.id).zfill(3) + '-' + str(self.categoria)
