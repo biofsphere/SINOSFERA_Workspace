@@ -247,6 +247,42 @@ class Categoria_de_atividade(models.Model):
         verbose_name_plural = 'Categorias de atividade'
 
 
+#======================================#
+#== CATEGORIAS DE PÚBLICOS ATENDIDOS ==#
+#======================================#
+
+class Categoria_de_publico(models.Model):
+    """Tabela de inserção de categorias de públicos envolvidos."""
+    nome = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma categoria de público atendido ou envolvido em atividades de projetos.'
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descreva que tipo de público esta categoria inclui.'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    # def save_model(self, request, obj, form, change):
+    #     '''Grava usuário logado que gravou o item'''
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
+
+    def __str__(self):
+        return str(self.nome)
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de público'
+        verbose_name_plural = 'Categorias de público'
+
+
 #==============================================#
 #== UNIDADES DE MEDIDA DE ITENS DE ORÇAMENTO ==#
 #==============================================#
@@ -319,10 +355,10 @@ class Fundo(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     '''Grava usuário logado que gravou o item'''
+    #     obj.inserido_por = request.user
+    #     super().save_model(request, obj, form, change)
 
     def __str__(self):
         return str(self.nome)

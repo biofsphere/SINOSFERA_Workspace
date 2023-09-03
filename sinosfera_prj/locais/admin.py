@@ -23,9 +23,9 @@ class MunicipioAdmin(admin.ModelAdmin):
 
 @admin.register(Unidade_de_referencia)
 class Unidade_de_referenciaAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'latitude_da_ur', 'longitude_da_ur',)
+    fields = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'localizacao',)
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'latitude_da_ur', 'longitude_da_ur',)
+    list_display = ('id', 'nome', 'proprietario_pf_de_ur', 'proprietario_pj_de_ur', 'municipio_da_ur', 'localizacao',)
     search_fields = ('nome', 'municipio_da_ur',)
     ordering = ('id', 'nome', 'municipio_da_ur',)
     list_filter = ('municipio_da_ur',)

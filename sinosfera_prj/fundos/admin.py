@@ -2,16 +2,15 @@ from django.contrib import admin
 from django import forms
 from .models import (
     Item,
-    Compra,
     Orcamento,
     Requisicao,
 )
 
 
-class CompraInlineAdmin(admin.TabularInline):
-    model = Compra
-    readonly_fields = ('id', 'subtotal_da_compra',)
-    fields = ('item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_da_compra',)
+class ItemInlineAdmin(admin.TabularInline):
+    model = Item
+    readonly_fields = ('id', 'subtotal_do_item',)
+    fields = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     extra = 1
 
 
@@ -24,29 +23,12 @@ class OrcamentoInlineAdmin(admin.TabularInline):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'tipo', 'unidade', 'descricao',)
-    readonly_fields = ('id',)
-    list_display = ('get_item_id', 'nome', 'tipo', 'unidade', 'descricao',)
+    fields = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+    readonly_fields = ('id', 'subtotal_do_item',)
+    list_display = ('get_item_id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('tipo', 'unidade',)
-
-
-@admin.register(Compra)
-class CompraAdmin(admin.ModelAdmin):
-    fields = (
-        'id', 
-        #'orcamento',
-        'item', 
-        'quantidade', 
-        'unidade', 
-        'preco_unitario', 
-        'subtotal_da_compra',
-        )
-    readonly_fields = ('id', 'subtotal_da_compra',)
-    list_display = ('get_item_id', 'item', 'quantidade', 'unidade', 'preco_unitario', 'subtotal_da_compra',)
-    search_fields = ('item',)
-    list_filter = ('item',)
 
 
 @admin.register(Orcamento)
@@ -73,7 +55,7 @@ class OrcamentoAdmin(admin.ModelAdmin):
     search_fields = ('empresa_fornecedora', 'profissional_fornecedor',)
     ordering = ('id', 'empresa_fornecedora', 'profissional_fornecedor',)
     list_filter = ('empresa_fornecedora', 'profissional_fornecedor',)
-    inlines = [CompraInlineAdmin]
+    inlines = [ItemInlineAdmin]
 
 
 @admin.register(Requisicao)

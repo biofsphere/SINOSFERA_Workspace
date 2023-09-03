@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from django.db import models
 from django.utils.safestring import mark_safe
-from django.contrib.auth.models import AbstractBaseUser, User
+from pessoas.models import CustomUser
 
 #======================================#
 #== TABELA DE SOLICITAÇÕES DE FUNDOS ==#
@@ -10,39 +10,85 @@ from django.contrib.auth.models import AbstractBaseUser, User
 
 class Item(models.Model):
     """Tabela de inserção de dados de item de despesa no orçamento, seja este item serviço, material ou maquinário."""
-    nome = models.CharField(
-        max_length=120,
+    orcamento = models.ForeignKey(
+        'Orcamento',
+        related_name='itens',
+        verbose_name='Orçamento a que esta compra pertence',
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
-        help_text='Insira o nome ou título do serviço, material ou maquinário (item de despesa no orçamento)',
+        help_text='Selecione o orçamento a que esta compra de itens de despesa faz parte.',
     )
     TIPOS_DE_DESPESA = [
-        ('MO', 'Mão de obra ou serviços'),
-        ('MT', 'Ferramentas manuais, materiais ou insumos'),
-        ('MQ', 'Máquinas ou equipamentos eletroeletrônicos'),
+        ('MOB', 'Mão de obra ou serviços'),
+        ('REF', 'Refeições ou alimentação'),
+        ('TRA', 'Frete ou transporte'),
+        ('FMA', 'Ferramentas manuais'),
+        ('FMO', 'Ferramentas motorizadas'),
+        ('MTC', 'Materiais de construção'),
+        ('INS', 'Materiais escolares'),
+        ('AGR', 'Insumo agropecuário'),
+        ('EQU', 'Equipamentos de TI'),
+        ('MOV', 'Móveis'),
+        ('PCO', 'Peças de comunicação'),
+        ('ROA', 'Roupas ou acessórios'),
+        ('OUT', 'Outros'),
         ]
     tipo = models.CharField(
-        max_length=2,
+        max_length=3,
         choices=TIPOS_DE_DESPESA,
         blank=True,
         null=True,
         help_text='Selecione o tipo mais adequado de despesa.',
         verbose_name='Tipo de despesa',
     )
+    nome = models.CharField(
+        max_length=60,
+        blank=True,
+        null=True,
+        help_text='Insira o nome ou título do serviço, material ou maquinário (item de despesa no orçamento)',
+    )
+    descricao = models.CharField(
+        max_length=80,
+        help_text='Inclua uma breve descrição do item de despesa quando houver especificações técnicas.',
+        blank=True,
+        null=True,
+        verbose_name='Descrição',
+        )
+    
     unidade = models.ForeignKey(
         'categorias.Unidade_de_medida',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
-        verbose_name='Un.',
+        verbose_name='UN',
     )
-    descricao = models.TextField(
-        'Descrição',
-        help_text='Inclua uma breve descrição do item de despesa no orçamento quando houver especificações técnicas.',
-        blank=True,
-        null=True,
+    quantidade = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida do item de despesa.',
+        verbose_name='QTD',
+        default=0,
+    )    
+    preco_unitario = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Especifique o preço unitário do item de orçamento.',
+        verbose_name='Preço Un.',
+        default=0,
     )
+    subtotal_do_item = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        editable=False,
+        default=0,
+        verbose_name='Subtotal',
+    )
+
+    def save(self, *args, **kwargs):
+        self.subtotal_do_item = self.preco_unitario * self.quantidade
+        super().save(*args, **kwargs)
 
     def get_item_id(self):
         return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
@@ -143,10 +189,6 @@ class Orcamento(models.Model):
         blank=True,
         null=True,
     )
-    itens = models.ManyToManyField(
-        Item, 
-        through='Compra'
-        )
     total_do_orcamento = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -154,6 +196,20 @@ class Orcamento(models.Model):
         editable=False,
         verbose_name='Valor total do orçamento',
         )
+    criado_por = models.ForeignKey(
+        CustomUser, 
+        related_name='criou_orcamento', 
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        )
+    modificado_por = models.ForeignKey(
+        CustomUser, 
+        related_name='modificou_orcamento', 
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
@@ -169,23 +225,23 @@ class Orcamento(models.Model):
         super().save_model(request, obj, form, change)
         
     def save(self, *args, **kwargs):
-        self.total_do_orcamento=sum(compra.subtotal_da_compra for compra in self.compra_set.all())
+        self.total_do_orcamento=sum(item.subtotal_do_item for item in self.item_set.all())
         super().save(*args, **kwargs)
 
     def get_item_id(self):
         if self.empresa_fornecedora:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora) + ' - ' + str(self.data)
+            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)[0:30] + '...' + str(self.data)
         elif self.profissional_fornecedor:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor) + ' - ' + str(self.data)
+            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)[0:30] + '...' + str(self.data)
         else:
             return 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(self.data)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
         if self.empresa_fornecedora:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)
+            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)[0:30] + '...'
         elif self.profissional_fornecedor:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)
+            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)[0:30] + '...'
         else:
             return 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado'
 
@@ -194,67 +250,6 @@ class Orcamento(models.Model):
         ordering = ('id',)
         verbose_name = 'Orçamento de fornecedor(a)'
         verbose_name_plural = 'Orçamentos de fornecedores(as)'   
-
-
-class Compra(models.Model):
-    orcamento = models.ForeignKey(
-        Orcamento,
-        verbose_name='Orçamento a que esta compra pertence',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        help_text='Selecione o orçamento a que esta compra de itens de despesa faz parte.',
-    )
-    item = models.ForeignKey(
-        Item,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        verbose_name='Produto ou serviço',
-        help_text='Selecione o item de despesa para esta compra.'
-        )
-    quantidade = models.DecimalField(
-        max_digits=6,
-        decimal_places=2,
-        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida do item de despesa.',
-        verbose_name='Quantidade',
-    )
-    unidade = models.ForeignKey(
-        'categorias.Unidade_de_medida',
-        on_delete=models.SET_NULL,
-        help_text='Selecione a unidade de medida do item de despesa.',
-        blank=True,
-        null=True,
-    )    
-    preco_unitario = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text='Especifique o preço unitário do item de orçamento.',
-        verbose_name='Preço unitário',
-    )
-    subtotal_da_compra = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        editable=False,
-        default=0,
-        verbose_name='Subtotal do item de despesa',
-    )
-
-    def save(self, *args, **kwargs):
-        self.subtotal_da_compra = self.preco_unitario * self.quantidade
-        super().save(*args, **kwargs)
-
-    def get_item_id(self):
-        return 'PED' + str(self.id).zfill(6) + ' - ' + str(self.item.nome)
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
-
-    def __str__(self):
-        return 'PED' + str(self.id).zfill(6) + ' - ' + str(self.item.nome)
-    
-    class Meta:
-        ordering = ('id',)
-        verbose_name = 'Lista de compra'
-        verbose_name_plural = 'Listas de compras'
 
 
 class Requisicao(models.Model):

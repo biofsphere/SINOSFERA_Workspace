@@ -1,8 +1,8 @@
 
-
 from datetime import date, datetime
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
 from django.db import models
+from django.contrib.gis.db import models
 from email.policy import default
 from django.core.validators import RegexValidator
 

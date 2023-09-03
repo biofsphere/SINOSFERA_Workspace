@@ -417,8 +417,16 @@ class Atividade(models.Model):
         blank=True,
         null=True,
         help_text='Selecione a categoria mais adequada para esta atividade.',
-        verbose_name='Categoria de atividade',
+        verbose_name='Categoria',
         )
+    sub_categoria_de_atividade = models.ForeignKey(
+        'categorias.Sub_categoria_de_atividade',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text='Selecione a subcategoria da atividade.',
+        verbose_name='Subcategoria',
+    )
     # == Localização da atividade == #
     municipio = models.ForeignKey(
         'locais.Municipio',  
@@ -448,6 +456,12 @@ class Atividade(models.Model):
         blank=True,
         null=True,
         )
+    publico_envolvido = models.PositiveIntegerField(
+        default=0, 
+        editable=False,
+        verbose_name='Público diretamente envolvido',
+        )
+
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
@@ -455,6 +469,15 @@ class Atividade(models.Model):
         blank=True, 
         null=True,
         )
+
+    def get_publico_total(self):
+        # Calculate and return the total quantity of public attended for this activity
+        return Publico.objects.filter(atividade=self).aggregate(publico_total=models.Sum('quantidade'))['publico_total']
+    get_publico_total.short_description ='Público total'
+    
+    def save(self, *args, **kwargs):
+        self.publico_envolvido = self.get_publico_total()
+        super(Atividade, self).save(*args, **kwargs)
 
     def get_item_id(self):
         return 'ATV' + str(self.id).zfill(5) + '-' + str(self.nome)[0:30] + '...'
@@ -467,3 +490,43 @@ class Atividade(models.Model):
         ordering = ('nome',)
         verbose_name = 'Atividade'
         verbose_name_plural = 'Atividades'
+
+
+class Publico(models.Model):
+    """Tabela de inserção de dados do público envolvido."""
+    atividade = models.ForeignKey(
+        Atividade,
+        verbose_name='Atividade vinculada.',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text='Selecione a atividade vinculada ao público envolvido.',
+    )
+    categoria=models.ForeignKey(
+        'categorias.Categoria_de_publico',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text='Selecione o tipo de público envolvido.',
+        verbose_name='Categoria de público',
+    )
+    detalhamento = models.CharField(
+        max_length=250,
+        help_text='Inclua uma breve descrição do público envolvido.',
+        blank=True,
+        null=True,
+        verbose_name='Detalhamento',
+        )
+    quantidade = models.PositiveIntegerField(
+        help_text='Insira a quantidade de pessoas envolvidas da categoria selecionada.',
+        verbose_name='QTD',
+        default=0,
+    )
+
+    def __str__(self):
+        return 'PUB' + str(self.id).zfill(3) + '-' + str(self.categoria)
+    
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Público envolvido'
+        verbose_name_plural = 'Públicos envolvidos'

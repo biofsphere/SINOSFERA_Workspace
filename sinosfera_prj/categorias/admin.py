@@ -6,6 +6,7 @@ from .models import (
     Categoria_de_objetivo_especifico, 
     Sub_categoria_de_atividade, 
     Categoria_de_atividade,
+    Categoria_de_publico,
     Unidade_de_medida,
     Fundo,
 )
@@ -69,6 +70,16 @@ class Sub_categoria_de_atividadeAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
+
+
+@admin.register(Categoria_de_publico)
+class Categoria_de_publicoAdmin(admin.ModelAdmin):
+    fields = ('id', 'nome',)
+    readonly_fields = ('id',)
+    list_display = ('id', 'nome',)
+    search_fields = ('nome',)
+    ordering = ('id', 'nome',)
+    # list_filter = ('nome',)
 
 
 @admin.register(Unidade_de_medida)
