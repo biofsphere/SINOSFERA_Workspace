@@ -106,7 +106,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'core.middleware.CurrentUserMiddleware',
+    # 'core.middleware.CurrentUserMiddleware',
 ]
 
 ROOT_URLCONF = 'sinosfera.urls'

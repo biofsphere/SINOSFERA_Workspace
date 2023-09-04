@@ -363,16 +363,16 @@ class Requisicao(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
     atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
 
-    def save(self, *args, **kwargs):
-        if not self.id and not self.criado_por:
-            # Set the creating user only if this is a new instance
-            self.criado_por = self._get_current_user()
-        self.atualizado_por = self._get_current_user()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.id and not self.criado_por:
+    #         # Set the creating user only if this is a new instance
+    #         self.criado_por = self._get_current_user()
+    #     self.atualizado_por = self._get_current_user()
+    #     super().save(*args, **kwargs)
 
-    def _get_current_user(self):
-        user = getattr(_thread_locals, 'user', None)
-        return user if user and user.is_authenticated else None
+    # def _get_current_user(self):
+    #     user = getattr(_thread_locals, 'user', None)
+    #     return user if user and user.is_authenticated else None
 
     def get_item_id(self):
         return 'REQ' + str(self.id).zfill(3) + ' ' + str(self.data) + ' ' + str(self.projeto_vinculado)[0:30]

@@ -5,6 +5,7 @@ from .models import (
     Orcamento,
     Requisicao,
 )
+from core.mixins import CreateUpdateUserAdminMixin
 
 
 class ItemInlineAdmin(admin.TabularInline):
@@ -59,7 +60,7 @@ class OrcamentoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Requisicao)
-class RequisicaoAdmin(admin.ModelAdmin):
+class RequisicaoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     fieldsets = [
         ('Vínculos desta requisição', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
         ('Requisição de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
