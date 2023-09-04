@@ -28,11 +28,6 @@ class Profissao(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
-
     def get_item_id(self):
         return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
@@ -352,13 +347,12 @@ class Fundo(models.Model):
         null=True,
         help_text='Propósito do fundo.'
     )
+    criado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='orcamentos_criados')
+    atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='orcamentos_atualizados')
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
-    # def save_model(self, request, obj, form, change):
-    #     '''Grava usuário logado que gravou o item'''
-    #     obj.inserido_por = request.user
-    #     super().save_model(request, obj, form, change)
+
 
     def __str__(self):
         return str(self.nome)

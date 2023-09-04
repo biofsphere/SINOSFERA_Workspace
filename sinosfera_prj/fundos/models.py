@@ -1,7 +1,12 @@
 from datetime import date, datetime
 from django.db import models
 from django.utils.safestring import mark_safe
+from django.contrib.auth import get_user
+from django.contrib.auth.models import User
 from pessoas.models import CustomUser
+import threading
+
+_thread_locals = threading.local()
 
 #======================================#
 #== TABELA DE SOLICITAÇÕES DE FUNDOS ==#
@@ -222,6 +227,7 @@ class Orcamento(models.Model):
     def save_model(self, request, obj, form, change):
         """Grava usuário logado que gravou o item"""
         obj.inserido_por = request.user
+        print(obj.inserido_por)
         super().save_model(request, obj, form, change)
         
     def save(self, *args, **kwargs):
@@ -352,11 +358,25 @@ class Requisicao(models.Model):
         null=True,
         verbose_name='Arquivo de requisição de fundos',
     )
+    criado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='requisicoes_criadas', editable=False,)
+    atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='requisicoes_atualizadas', editable=False,)
+    criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
+    atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.criado_por:
+            # Set the creating user only if this is a new instance
+            self.criado_por = self._get_current_user()
+        self.atualizado_por = self._get_current_user()
+        super().save(*args, **kwargs)
+
+    def _get_current_user(self):
+        user = getattr(_thread_locals, 'user', None)
+        return user if user and user.is_authenticated else None
 
     def get_item_id(self):
         return 'REQ' + str(self.id).zfill(3) + ' ' + str(self.data) + ' ' + str(self.projeto_vinculado)[0:30]
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
-
 
     def __str__(self):
         return 'REQ' + str(self.id).zfill(4)

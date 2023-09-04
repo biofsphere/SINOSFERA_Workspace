@@ -39,8 +39,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     # custom UI choices
-    # 'jazzmin', # Switch on to use Jazzmin (remeber to switch off Grappelli)
-    'grappelli', # Switch on to use Grappelli (remember to switch off Jazzmin)
+    'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
+    # django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.admindocs',
     'django.contrib.humanize',
+    # allauth apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -105,6 +106,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
+    'core.middleware.CurrentUserMiddleware',
 ]
 
 ROOT_URLCONF = 'sinosfera.urls'

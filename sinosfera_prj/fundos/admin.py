@@ -63,12 +63,12 @@ class RequisicaoAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Vínculos desta requisição', {'fields': ['projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
         ('Requisição de fundos',{ 'fields': ['id', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
-        ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento',]}),
+        ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento', 'criado_por', 'atualizado_por',]}),
         ('Observações adicionais', {'fields': ['observacoes']}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
-    readonly_fields = ('id',)
-    list_display = ('get_item_id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'urgencia',)
+    readonly_fields = ('id', 'criado_por', 'atualizado_por',)
+    list_display = ('get_item_id', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'urgencia', 'criado_por', 'atualizado_por',)
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
     ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
     list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)

@@ -109,22 +109,6 @@ class Unidade_de_referencia(models.Model):
         blank=True, 
         null=True, 
     )
-    # latitude_da_ur = models.CharField(
-    #     'Latitude',
-    #     max_length=15,
-    #     help_text='Insira a latitude da UR, em graus decimais com sinais. Exemplo: -28.123456', 
-    #     default='-00.000000',
-    #     blank=True,
-    #     null=False,
-    #     )
-    # longitude_da_ur = models.CharField(
-    #     'Longitude',
-    #     max_length=15,
-    #     help_text='Insira a longitude em graus decimais com sinais. Exemplo: -50.123456', 
-    #     default='-00.000000', 
-    #     blank=True,
-    #     null=False,
-    #     )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
