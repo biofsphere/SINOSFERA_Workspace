@@ -25,15 +25,17 @@ class Profissao(models.Model):
         null=True,
         help_text='Descreva essa profissão no âmbito do que fazem os seus profissionais'
     )
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='profissoes_criadas', editable=False,)
+    criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
+    atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='profissoes_atualizadas', editable=False,)
+    atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
 
     def get_item_id(self):
         return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
-        return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
+        return str(self.nome)
     
 
     class Meta:
@@ -62,20 +64,40 @@ class Categoria_de_plano(models.Model):
         null=True,
         help_text='Descreva suscintamente que grupo de planos esta categoria inclui.',
         )
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
-
-    def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
-        super().save_model(request, obj, form, change)
+    # ==== Utility fields ==== #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_planos_criadas', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_planos_atualizadas', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,
+        )
 
     def get_item_id(self):
         return 'CPL' + str(self.id).zfill(3) + '-' + str(self.nome)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
-        return 'CPL' + str(self.id).zfill(2) + '-' + str(self.nome)
+        return str(self.nome)
 
     class Meta:
         ordering = ('nome',)
@@ -100,12 +122,38 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         null=True,
         help_text='Descreva essa sub-categoria no âmbito dos objetivos específicos de um projeto.',
     )
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    # ==== Utility fields ==== #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_objetivos_criadas', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_objetivos_atualizadas', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,
+        )
 
     def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
+        if not change:
+            obj.criado_por = request.user
+        obj.atualizado_por = request.user
         super().save_model(request, obj, form, change)
 
     def get_item_id(self):

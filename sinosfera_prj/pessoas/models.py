@@ -14,9 +14,12 @@ class CustomUser(AbstractUser):
     """
         Generates a user model to enalbe customizations.
     """
+    def get_item_id(self):
+        return 'USU' + str(self.id).zfill(3) + '-' + str(self.username)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
-        return 'USU' + str(self.id).zfill(3) + '-' + self.username
+        return 'USU' + str(self.id).zfill(3) + '-' + str(self.username)
 
 
     class Meta:
@@ -29,13 +32,6 @@ class Pessoa(models.Model):
     """
         Extends User data with several fields.
     """    
-    usuario = models.ForeignKey(
-        CustomUser, 
-        on_delete=models.SET_NULL,
-        null=True,
-        help_text='Selecione o usuario do sistema responsável pela inserção dos dados',
-        verbose_name='Dados inseridos por',
-        ) 
     nome_completo = models.CharField(
         max_length=80,
         blank=True,
@@ -72,11 +68,17 @@ class Pessoa(models.Model):
         null=True,
         )
     # LOG DE ATUALIZAÇÃO DO PERFIL DA PESSOA FÍSICA #
-    perfil_criado_em = models.DateTimeField(auto_now_add=True)
-    perfil_atualizado_em = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='perfis_criados', editable=False,)
+    criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
+    atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='perfis_atualizados', editable=False,)
+    atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
     # MÉTODOS DO PERFIL DA PESSOA FÍSICA #
+    def get_item_id(self):
+        return _p+ str(self.nome_completo)
+    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+
     def __str__(self): 
-        return 'PES' + str(self.id).zfill(4) + '-' + self.nome_completo
+        return 'PES' + str(self.id).zfill(4) + '-' + str(self.nome_completo)
 
 
     class Meta:
