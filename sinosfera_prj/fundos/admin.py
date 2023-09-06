@@ -3,16 +3,16 @@ from django import forms
 from core.mixins import CreateUpdateUserAdminMixin
 from .models import (
     Item,
+    Pedido,
     Orcamento,
     Requisicao,
 )
-from core.mixins import CreateUpdateUserAdminMixin
 
 
-class ItemInlineAdmin(admin.TabularInline):
-    model = Item
-    readonly_fields = ('id', 'subtotal_do_item',)
-    fields = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+class PedidoInlineAdmin(CreateUpdateUserAdminMixin, admin.TabularInline):
+    model = Pedido
+    readonly_fields = ('id_codificada', 'subtotal_do_item', 'criado_por', 'atualizado_por',)
+    fields = ('id_codificada', 'item', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     extra = 1
 
 
@@ -22,20 +22,29 @@ class OrcamentoInlineAdmin(admin.TabularInline):
     fields = ('id', 'data', 'empresa_fornecedora', 'profissional_fornecedor', 'total_do_orcamento', 'arquivos',)
 
 
-
 @admin.register(Item)
 class ItemAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
+    fields = ('id', 'id_codificada' 'nome', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    readonly_fields = ('id', 'id_codificada', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    list_display = ('id_codificada', 'nome', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    search_fields = ('nome',)
+    ordering = ('id', 'nome',)
+    # list_filter = ('nome',)
+
+
+@admin.register(Pedido)
+class PedidoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     fieldsets = (
         ('ORÇAMENTO VINCULADO', {'fields': ['orcamento',]}),
         ('TIPO DE DESPESA', {'fields': ['tipo']}),
-        ('ITEM', {'fields': [('id', 'id_codificada'), ('nome', 'descricao',), ('unidade', 'quantidade', 'preco_unitario',),]}),
+        ('ITEM', {'fields': [('id_codificada'), ('item', 'descricao',), ('unidade', 'quantidade', 'preco_unitario',),]}),
         ('SUBTOTAL DO ITEM', {'fields': ['subtotal_do_item',]}),
         ('SISTEMA', {'fields': [('criado_por', 'criado_em',), ('atualizado_por', 'atualizado_em',),]}),
         )
     readonly_fields = ('id', 'id_codificada', 'subtotal_do_item', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
-    list_display = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
-    search_fields = ('nome',)
-    ordering = ('id', 'nome',)
+    list_display = ('id_codificada', 'tipo', 'item', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+    search_fields = ('item',)
+    ordering = ('id', 'item',)
     list_filter = ('tipo', 'unidade',)
 
 
@@ -63,7 +72,7 @@ class OrcamentoAdmin(admin.ModelAdmin):
     search_fields = ('empresa_fornecedora', 'profissional_fornecedor',)
     ordering = ('id', 'empresa_fornecedora', 'profissional_fornecedor',)
     list_filter = ('empresa_fornecedora', 'profissional_fornecedor',)
-    inlines = [ItemInlineAdmin]
+    inlines = [PedidoInlineAdmin]
 
 
 @admin.register(Requisicao)

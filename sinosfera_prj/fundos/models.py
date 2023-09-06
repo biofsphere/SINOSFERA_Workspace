@@ -15,82 +15,13 @@ _thread_locals = threading.local()
 #== TABELA DE SOLICITAÇÕES DE FUNDOS ==#
 #======================================#
 
-
 class Item(models.Model):
-    """Tabela de inserção de dados de item de despesa no orçamento, seja este item serviço, material ou maquinário."""
-    orcamento = models.ForeignKey(
-        'Orcamento',
-        related_name='itens',
-        verbose_name='Orçamento a que esta compra pertence',
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        help_text='Selecione o orçamento a que esta compra de itens de despesa faz parte.',
-    )
-    TIPOS_DE_DESPESA = [
-        ('MOB', 'Mão de obra ou serviços'),
-        ('REF', 'Refeições ou alimentação'),
-        ('TRA', 'Frete ou transporte'),
-        ('FMA', 'Ferramentas manuais'),
-        ('FMO', 'Ferramentas motorizadas'),
-        ('MTC', 'Materiais de construção'),
-        ('INS', 'Materiais escolares'),
-        ('AGR', 'Insumo agropecuário'),
-        ('EQU', 'Equipamentos de TI'),
-        ('MOV', 'Móveis'),
-        ('PCO', 'Peças de comunicação'),
-        ('ROA', 'Roupas ou acessórios'),
-        ('OUT', 'Outros'),
-        ]
-    tipo = models.CharField(
-        max_length=3,
-        choices=TIPOS_DE_DESPESA,
-        blank=True,
-        null=True,
-        help_text='Selecione o tipo mais adequado de despesa.',
-        verbose_name='Tipo de despesa',
-    )
+    """Tabela de inserção de dados de itens de despesa (produtos e serviços)."""
     nome = models.CharField(
         max_length=60,
         blank=True,
         null=True,
         help_text='Insira o nome ou título do serviço, material ou maquinário (item de despesa no orçamento)',
-    )
-    descricao = models.CharField(
-        max_length=80,
-        help_text='Inclua uma breve descrição do item de despesa quando houver especificações técnicas.',
-        blank=True,
-        null=True,
-        verbose_name='Descrição',
-        )
-    unidade = models.ForeignKey(
-        'categorias.Unidade_de_medida',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
-        verbose_name='UN',
-    )
-    quantidade = models.DecimalField(
-        max_digits=6,
-        decimal_places=2,
-        help_text='Especifique a quantidade que deseja adquirir considerando a unidade de medida do item de despesa.',
-        verbose_name='QTD',
-        default=0,
-    )    
-    preco_unitario = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text='Especifique o preço unitário do item de orçamento.',
-        verbose_name='Preço Un.',
-        default=0,
-    )
-    subtotal_do_item = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        editable=False,
-        default=0,
-        verbose_name='Subtotal',
     )
     # ==== Utility fields == #
     criado_por = models.ForeignKey(
@@ -127,31 +58,16 @@ class Item(models.Model):
         unique=True,
         ) 
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     # self.update_related_orcamento_total()
-
-    # def update_related_orcamento_total(self):
-    #     if self.orcamento:
-    #         self.orcamento.update_total_do_orcamento()
-
     def save(self, *args, **kwargs):
         self.id_codificada = 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
-        self.subtotal_do_item = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
-    # Signal to populate subtotal_do_item correctly when the object is created
+    # Signal to populate dependable fields correctly when the object is created
     @receiver(post_save, sender='fundos.Item')
     def populate_readonly_fields(sender, instance, created, **kwargs):
         if created:
-            # The object is being created, so set subtotal_do_item and id_codificada accordingly
             instance.id_codificada = 'ITE' + str(instance.id).zfill(3) + ' ' + str(instance.nome) + ' (' + str(instance.unidade) + ')'
-            instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
             instance.save(update_fields=['subtotal_do_item', 'id_codificada'])  # Save the object again to persist the change
-
-    # def get_item_id(self):
-    #     return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
-    # get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
         return self.id_codificada
@@ -160,6 +76,124 @@ class Item(models.Model):
         ordering = ('id',)
         verbose_name = 'Produto ou serviço'
         verbose_name_plural = 'Produtos ou serviços'   
+
+
+class Pedido(models.Model):
+    orcamento = models.ForeignKey(
+        'Orcamento',
+        on_delete=models.CASCADE,
+        help_text='Selecione em que orçamento esse pedido se insere.',
+        blank=True,
+        null=True,
+    )
+    tipo = models.ForeignKey(
+        'categorias.Categoria_de_despesa',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text='Selecione a categoria de despesa.',
+        verbose_name='Tipo de despesa',
+    )
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        help_text='Selecione um item para este pedido',
+        blank=True,
+        null=True,
+    )
+    descricao = models.CharField(
+        max_length=80,
+        help_text='Inclua uma breve descrição do item de despesa quando houver especificações técnicas.',
+        blank=True,
+        null=True,
+        verbose_name='Descrição',
+        )
+    unidade = models.ForeignKey(
+        'categorias.Unidade_de_medida',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
+        verbose_name='Un'
+    )
+    quantidade = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        help_text='Especifique a quantidade que deseja adquirir.',
+        verbose_name='QTD',
+        default=0,
+    )    
+    preco_unitario = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Especifique o preço unitário do item.',
+        verbose_name='Preço Un.',
+        default=0,
+    )
+    subtotal_do_item = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        editable=False,
+        default=0,
+        verbose_name='Subtotal',
+    )
+    # ==== Utility fields == #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='pedidos_criados', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='pedidos_atualizados', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,)
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
+        null=True,
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
+        )
+
+    def save(self, *args, **kwargs):
+        self.id_codificada = 'PED' + str(self.id).zfill(3) + '-' + str(self.item.nome) + '(' + str(self.quantidade) + ' ' + str(self.item.unidade) + ')' 
+        self.subtotal_do_item = self.preco_unitario * self.quantidade
+        super().save(*args, **kwargs)
+
+    # Signal to populate subtotal_do_item correctly when the object is created
+    @receiver(post_save, sender='fundos.Item')
+    def populate_readonly_fields(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set subtotal_do_item and id_codificada accordingly
+            instance.id_codificada = 'PED' + str(instance.id).zfill(3) + '-' + str(instance.item.nome) + '(' + str(instance.quantidade) + ' ' + str(instance.item.unidade) + ')'
+            instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
+            instance.save(update_fields=['subtotal_do_item', 'id_codificada'])  # Save the object again to persist the change
+    
+    def __str__(self):
+        return self.id_codificada
+    
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Pedido'
+        verbose_name_plural = 'Pedidos'
 
 
 class Orcamento(models.Model):
@@ -321,8 +355,8 @@ class Orcamento(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name = 'Orçamento de fornecedor(a)'
-        verbose_name_plural = 'Orçamentos de fornecedores(as)'   
+        verbose_name = 'Orçamento'
+        verbose_name_plural = 'Orçamentos'   
 
 
 class Requisicao(models.Model):

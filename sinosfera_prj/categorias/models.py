@@ -391,6 +391,36 @@ class Categoria_de_publico(models.Model):
         verbose_name_plural = 'Categorias de público'
 
 
+#=============================================#
+#== TIPOS DE ITENS DE DESPESA EM ORÇAMENTOS ==#
+#=============================================#
+
+class Categoria_de_despesa(models.Model):
+    """Tabela de inserção de categorias de despesa em orçamentos."""
+    nome = models.CharField(
+        max_length=50, 
+        blank=True, 
+        null=True, 
+        unique=True, 
+        help_text='Defina uma categoria de itens de despesa.'
+    )
+    descricao = models.TextField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text='Descrição de categoria de itens de despesa.'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.nome)
+
+    class Meta:
+        ordering = ('nome',)
+        verbose_name = 'Categoria de despesa'
+        verbose_name_plural = 'Categorias de despesa'
+
 #==============================================#
 #== UNIDADES DE MEDIDA DE ITENS DE ORÇAMENTO ==#
 #==============================================#
