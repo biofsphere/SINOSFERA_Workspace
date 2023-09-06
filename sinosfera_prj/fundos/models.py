@@ -1,5 +1,8 @@
 from datetime import date, datetime
 from django.db import models
+from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user
 from django.contrib.auth.models import User
@@ -60,7 +63,6 @@ class Item(models.Model):
         null=True,
         verbose_name='Descrição',
         )
-    
     unidade = models.ForeignKey(
         'categorias.Unidade_de_medida',
         on_delete=models.SET_NULL,
@@ -90,17 +92,69 @@ class Item(models.Model):
         default=0,
         verbose_name='Subtotal',
     )
+    # ==== Utility fields == #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='itens_criados', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='itens_atualizados', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,)
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
+        null=True,
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
+        ) 
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     # self.update_related_orcamento_total()
+
+    # def update_related_orcamento_total(self):
+    #     if self.orcamento:
+    #         self.orcamento.update_total_do_orcamento()
 
     def save(self, *args, **kwargs):
+        self.id_codificada = 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
         self.subtotal_do_item = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
-    def get_item_id(self):
-        return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+    # Signal to populate subtotal_do_item correctly when the object is created
+    @receiver(post_save, sender='fundos.Item')
+    def populate_readonly_fields(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set subtotal_do_item and id_codificada accordingly
+            instance.id_codificada = 'ITE' + str(instance.id).zfill(3) + ' ' + str(instance.nome) + ' (' + str(instance.unidade) + ')'
+            instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
+            instance.save(update_fields=['subtotal_do_item', 'id_codificada'])  # Save the object again to persist the change
+
+    # def get_item_id(self):
+    #     return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
+    # get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
-        return 'ITE' + str(self.id).zfill(3) + ' ' + str(self.nome) + ' (' + str(self.unidade) + ')'
+        return self.id_codificada
     
     class Meta:
         ordering = ('id',)
@@ -224,15 +278,28 @@ class Orcamento(models.Model):
         verbose_name='Arquivo de orçamento',
         )
     
-    def save_model(self, request, obj, form, change):
-        """Grava usuário logado que gravou o item"""
-        obj.inserido_por = request.user
-        print(obj.inserido_por)
-        super().save_model(request, obj, form, change)
-        
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)  # Save the Orcamento object first
+    #     self.update_total_do_orcamento()
+
+    # def update_total_do_orcamento(self):
+    #     total = self.itens.aggregate(Sum('subtotal_do_item'))['subtotal_do_item__sum']
+    #     self.total_do_orcamento = total if total is not None else 0
+    #     self.save(update_fields=['total_do_orcamento'])
+
     def save(self, *args, **kwargs):
-        self.total_do_orcamento=sum(item.subtotal_do_item for item in self.item_set.all())
+        super().save(*args, **kwargs) 
+        self.total_do_orcamento=sum(item.subtotal_do_item for item in self.itens.all())
         super().save(*args, **kwargs)
+
+    # # Signal to populate total_do_orcamento correctly when the object is created
+    # @receiver(post_save, sender='fundos.Orcamento')
+    # def populate_total_do_orcamento(sender, instance, created, **kwargs):
+    #     if created:
+    #         # The object is being created, so set total_do_orcamaneto accordingly
+    #         instance.total_do_orcamento = sum(item.subtotal_do_item for item in instance.itens.all())
+    #         instance.save(update_fields=['total_do_orcamento'])  # Save the object again to persist the change
+    
 
     def get_item_id(self):
         if self.empresa_fornecedora:

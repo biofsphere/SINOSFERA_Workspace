@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # ##############################
 # ### TABELAS DE TIPOLOGIAS  ###
@@ -25,14 +26,52 @@ class Profissao(models.Model):
         null=True,
         help_text='Descreva essa profissão no âmbito do que fazem os seus profissionais'
     )
-    criado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='profissoes_criadas', editable=False,)
-    criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
-    atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='profissoes_atualizadas', editable=False,)
-    atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
+    # ==== Utility fields ==== #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='profissoes_criadas', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='profissoes_atualizadas', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,)
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
+        null=True,
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
+        ) 
 
-    def get_item_id(self):
-        return 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+    def save(self, *args, **kwargs):
+        self.id_codificada = 'PRF' + str(self.id).zfill(3) + '-' + str(self.nome)
+        super().save(*args, **kwargs)
+
+    # Signal to populate id_codificada when the object is created
+    @receiver(post_save, sender='categorias.Profissao')
+    def populate_id_codificada(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set id_codificada accordingly
+            instance.id_codificada = 'PRF' + str(instance.id).zfill(3) + '-' + str(instance.nome)
+            instance.save()  # Save the object again to persist the change
 
     def __str__(self):
         return str(self.nome)
@@ -128,7 +167,7 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='categorias_de_objetivos_criadas', 
+        related_name='subcategorias_de_objetivos_criadas', 
         editable=False,
         )
     criado_em = models.DateTimeField(
@@ -141,7 +180,7 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='categorias_de_objetivos_atualizadas', 
+        related_name='subcategorias_de_objetivos_atualizadas', 
         editable=False,
         )
     atualizado_em = models.DateTimeField(
@@ -189,13 +228,39 @@ class Categoria_de_objetivo_especifico(models.Model):
         related_name='Categorias_de_objetivos_especificos',
         
     )
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
-
+    # ==== Utility fields ==== #
+    criado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_objetivos_criadas', 
+        editable=False,
+        )
+    criado_em = models.DateTimeField(
+        auto_now_add=True, 
+        blank=True, 
+        null=True,
+        )
+    atualizado_por = models.ForeignKey(
+        'pessoas.CustomUser', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='categorias_de_objetivos_atualizadas', 
+        editable=False,
+        )
+    atualizado_em = models.DateTimeField(
+        auto_now=True, 
+        blank=True, 
+        null=True,
+        )
     def save_model(self, request, obj, form, change):
-        '''Grava usuário logado que gravou o item'''
-        obj.inserido_por = request.user
+        if not change:
+            obj.criado_por = request.user
+        obj.atualizado_por = request.user
         super().save_model(request, obj, form, change)
+
 
     def get_item_id(self):
         return 'COB' + str(self.id).zfill(3) + '-' + str(self.nome)

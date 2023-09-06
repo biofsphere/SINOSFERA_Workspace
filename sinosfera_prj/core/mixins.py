@@ -6,3 +6,4 @@ class CreateUpdateUserAdminMixin:
             obj.criado_por = request.user
         obj.atualizado_por = request.user
         return super().save_model(request, obj, form, change)
+

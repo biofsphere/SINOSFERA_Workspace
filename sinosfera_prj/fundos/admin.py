@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from core.mixins import CreateUpdateUserAdminMixin
 from .models import (
     Item,
     Orcamento,
@@ -23,10 +24,16 @@ class OrcamentoInlineAdmin(admin.TabularInline):
 
 
 @admin.register(Item)
-class ItemAdmin(admin.ModelAdmin):
-    fields = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
-    readonly_fields = ('id', 'subtotal_do_item',)
-    list_display = ('get_item_id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+class ItemAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
+    fieldsets = (
+        ('ORÇAMENTO VINCULADO', {'fields': ['orcamento',]}),
+        ('TIPO DE DESPESA', {'fields': ['tipo']}),
+        ('ITEM', {'fields': [('id', 'id_codificada'), ('nome', 'descricao',), ('unidade', 'quantidade', 'preco_unitario',),]}),
+        ('SUBTOTAL DO ITEM', {'fields': ['subtotal_do_item',]}),
+        ('SISTEMA', {'fields': [('criado_por', 'criado_em',), ('atualizado_por', 'atualizado_em',),]}),
+        )
+    readonly_fields = ('id', 'id_codificada', 'subtotal_do_item', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    list_display = ('id', 'tipo', 'nome', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('tipo', 'unidade',)

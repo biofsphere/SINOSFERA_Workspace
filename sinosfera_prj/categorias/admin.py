@@ -1,4 +1,5 @@
 from django.contrib import admin
+from core.mixins import CreateUpdateUserAdminMixin
 from .models import (
     Profissao, 
     Categoria_de_plano, 
@@ -13,20 +14,23 @@ from .models import (
 
 
 @admin.register(Profissao)
-class ProfissaoAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'descricao',)
-    readonly_fields = ('id',)
-    list_display = ('get_item_id', 'nome',)
+class ProfissaoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
+    fieldsets = (
+        ('PROFISSÃO', {'fields': ['id_codificada', 'nome', 'descricao',]}),
+        ('SISTEMA', {'fields': ['id', ('criado_por', 'criado_em',), ('atualizado_por', 'atualizado_em',),]}),
+        )
+    readonly_fields = ('id', 'id_codificada', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    list_display = ('id_codificada', 'nome', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
     search_fields = ('nome',)
-    ordering = ('id', 'nome',)
+    ordering = ('id_codificada', 'nome',)
     list_filter = ('nome',)
 
 
 @admin.register(Categoria_de_plano)
-class Categoria_de_planoAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'descricao',)
-    readonly_fields = ('id',)
-    list_display = ('get_item_id', 'nome',)
+class Categoria_de_planoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
+    fields = ('id', 'nome', 'descricao', 'criado_por', 'criado_em',)
+    readonly_fields = ('id', 'criado_por', 'criado_em',)
+    list_display = ('get_item_id', 'nome', 'criado_por', 'criado_em',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -34,9 +38,9 @@ class Categoria_de_planoAdmin(admin.ModelAdmin):
 
 @admin.register(Categoria_de_objetivo_especifico)
 class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'descricao',)
-    readonly_fields = ('id',)
-    list_display = ('get_item_id', 'nome',)
+    fields = ('id', 'nome', 'descricao', 'criado_por', 'criado_em',)
+    readonly_fields = ('id', 'criado_por', 'criado_em',)
+    list_display = ('get_item_id', 'nome', 'criado_por', 'criado_em',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
@@ -44,9 +48,9 @@ class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
 
 @admin.register(Sub_categoria_de_objetivo_especifico)
 class Sub_categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
-    fields = ('id', 'nome', 'descricao',)
+    fields = ('id', 'nome', 'descricao', 'criado_por', 'criado_em',)
     readonly_fields = ('id',)
-    list_display = ('get_item_id', 'nome',)
+    list_display = ('get_item_id', 'nome', 'criado_por', 'criado_em',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
