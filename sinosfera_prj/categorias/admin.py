@@ -8,6 +8,7 @@ from .models import (
     Sub_categoria_de_atividade, 
     Categoria_de_atividade,
     Categoria_de_publico,
+    Categoria_de_despesa,
     Unidade_de_medida,
     Fundo,
 )
@@ -84,6 +85,14 @@ class Categoria_de_publicoAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     # list_filter = ('nome',)
+
+
+@admin.register(Categoria_de_despesa)
+class Categoria_de_despesaAdmin(admin.ModelAdmin):
+    fields = ('id', 'nome', 'descricao',)
+    readonly_fields = ('id',)
+    list_display = ('id', 'nome',)
+    search_fields = ('nome',)
 
 
 @admin.register(Unidade_de_medida)

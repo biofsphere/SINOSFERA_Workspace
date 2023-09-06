@@ -12,7 +12,7 @@ from .models import (
 class PedidoInlineAdmin(CreateUpdateUserAdminMixin, admin.TabularInline):
     model = Pedido
     readonly_fields = ('id_codificada', 'subtotal_do_item', 'criado_por', 'atualizado_por',)
-    fields = ('id_codificada', 'item', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+    fields = ('id_codificada', 'item', 'descricao', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     extra = 1
 
 
@@ -24,28 +24,27 @@ class OrcamentoInlineAdmin(admin.TabularInline):
 
 @admin.register(Item)
 class ItemAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
-    fields = ('id', 'id_codificada' 'nome', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    fields = ('id', 'id_codificada', 'nome', 'unidade', 'descricao', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
     readonly_fields = ('id', 'id_codificada', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
-    list_display = ('id_codificada', 'nome', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
+    list_display = ('id_codificada', 'nome', 'unidade', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     # list_filter = ('nome',)
-
 
 @admin.register(Pedido)
 class PedidoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     fieldsets = (
         ('ORÇAMENTO VINCULADO', {'fields': ['orcamento',]}),
         ('TIPO DE DESPESA', {'fields': ['tipo']}),
-        ('ITEM', {'fields': [('id_codificada'), ('item', 'descricao',), ('unidade', 'quantidade', 'preco_unitario',),]}),
+        ('ITEM', {'fields': [('id', 'id_codificada'), ('item', 'especificacao',), ('quantidade', 'preco_unitario',),]}),
         ('SUBTOTAL DO ITEM', {'fields': ['subtotal_do_item',]}),
         ('SISTEMA', {'fields': [('criado_por', 'criado_em',), ('atualizado_por', 'atualizado_em',),]}),
         )
     readonly_fields = ('id', 'id_codificada', 'subtotal_do_item', 'criado_por', 'criado_em', 'atualizado_por', 'atualizado_em',)
-    list_display = ('id_codificada', 'tipo', 'item', 'descricao', 'unidade', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
+    list_display = ('id', 'id_codificada', 'tipo', 'item', 'especificacao', 'quantidade', 'preco_unitario', 'subtotal_do_item',)
     search_fields = ('item',)
     ordering = ('id', 'item',)
-    list_filter = ('tipo', 'unidade',)
+    list_filter = ('tipo',)
 
 
 @admin.register(Orcamento)

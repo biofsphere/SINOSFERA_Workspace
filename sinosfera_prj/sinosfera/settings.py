@@ -293,6 +293,7 @@ ADMIN_ORDERING = (
     ('fundos', (
         'Requisicao',
         'Orcamento',
+        'Pedido',
         'Item',
     )),
     ('categorias', (

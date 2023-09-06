@@ -1,15 +1,11 @@
-from datetime import date, datetime
+from datetime import date
 from django.db import models
-from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user
 from django.contrib.auth.models import User
 from pessoas.models import CustomUser
-import threading
-
-_thread_locals = threading.local()
 
 #======================================#
 #== TABELA DE SOLICITAÇÕES DE FUNDOS ==#
@@ -21,8 +17,24 @@ class Item(models.Model):
         max_length=60,
         blank=True,
         null=True,
-        help_text='Insira o nome ou título do serviço, material ou maquinário (item de despesa no orçamento)',
+        help_text='Insira o nome produto ou serviço.',
     )
+    unidade = models.ForeignKey(
+        'categorias.Unidade_de_medida',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
+        verbose_name='Un',
+        default='un',
+    )
+    descricao = models.CharField(
+        max_length=80,
+        help_text='Inclua uma breve descrição do item de despesa.',
+        blank=True,
+        null=True,
+        verbose_name='Descrição',
+        )
     # ==== Utility fields == #
     criado_por = models.ForeignKey(
         'pessoas.CustomUser', 
@@ -50,7 +62,7 @@ class Item(models.Model):
         blank=True, 
         null=True,)
     id_codificada = models.CharField(
-        max_length=60, 
+        max_length=90, 
         blank=True,
         null=True,
         verbose_name='ID Codificada',
@@ -67,10 +79,10 @@ class Item(models.Model):
     def populate_readonly_fields(sender, instance, created, **kwargs):
         if created:
             instance.id_codificada = 'ITE' + str(instance.id).zfill(3) + ' ' + str(instance.nome) + ' (' + str(instance.unidade) + ')'
-            instance.save(update_fields=['subtotal_do_item', 'id_codificada'])  # Save the object again to persist the change
+            instance.save()  # Save the object again to persist the change
 
     def __str__(self):
-        return self.id_codificada
+        return str(self.id_codificada)
     
     class Meta:
         ordering = ('id',)
@@ -101,21 +113,13 @@ class Pedido(models.Model):
         blank=True,
         null=True,
     )
-    descricao = models.CharField(
+    especificacao = models.CharField(
         max_length=80,
-        help_text='Inclua uma breve descrição do item de despesa quando houver especificações técnicas.',
+        help_text='Inclua especificações do item de despesa quando houver especificações técnicas.',
         blank=True,
         null=True,
-        verbose_name='Descrição',
+        verbose_name='Especificação',
         )
-    unidade = models.ForeignKey(
-        'categorias.Unidade_de_medida',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
-        verbose_name='Un'
-    )
     quantidade = models.DecimalField(
         max_digits=6,
         decimal_places=2,
@@ -173,21 +177,21 @@ class Pedido(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        self.id_codificada = 'PED' + str(self.id).zfill(3) + '-' + str(self.item.nome) + '(' + str(self.quantidade) + ' ' + str(self.item.unidade) + ')' 
+        self.id_codificada = 'PED' + str(self.id).zfill(3) + '-' + str(self.item) + '(' + str(self.quantidade) # + ' ' + str(self.item.unidade) + ')' 
         self.subtotal_do_item = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
-    # Signal to populate subtotal_do_item correctly when the object is created
-    @receiver(post_save, sender='fundos.Item')
-    def populate_readonly_fields(sender, instance, created, **kwargs):
-        if created:
-            # The object is being created, so set subtotal_do_item and id_codificada accordingly
-            instance.id_codificada = 'PED' + str(instance.id).zfill(3) + '-' + str(instance.item.nome) + '(' + str(instance.quantidade) + ' ' + str(instance.item.unidade) + ')'
-            instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
-            instance.save(update_fields=['subtotal_do_item', 'id_codificada'])  # Save the object again to persist the change
+    # # Signal to populate subtotal_do_item correctly when the object is created
+    # @receiver(post_save, sender='fundos.Item')
+    # def populate_readonly_fields(sender, instance, created, **kwargs):
+    #     if created:
+    #         # The object is being created, so set subtotal_do_item and id_codificada accordingly
+    #         instance.id_codificada = 'PED' + str(instance.id).zfill(3) + '-' + str(instance.item) + '(' + str(instance.quantidade) # + ' ' + str(instance.item.unidade) + ')'
+    #         instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
+    #         instance.save(update_fields=['subtotal_do_item',])  # Save the object again to persist the change
     
     def __str__(self):
-        return self.id_codificada
+        return str(self.id_codificada)
     
 
     class Meta:
