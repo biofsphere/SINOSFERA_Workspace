@@ -180,6 +180,14 @@ class Objetivo_especifico_de_projeto(models.Model):
         help_text='Selecione o Projeto a que este objetivo específico, sub-projeto ou meta se vincula.',
         verbose_name='Projeto vinculado',
         )
+    parent_subprojects = models.ManyToManyField(
+        'self', 
+        blank=True, 
+        symmetrical=False, 
+        related_name='child_subprojects',
+        verbose_name='Subprojeto vinculado',
+        )
+
     categoria_de_objetivo_especifico = models.ForeignKey(
         'categorias.Categoria_de_objetivo_especifico',
         on_delete=models.SET_NULL,

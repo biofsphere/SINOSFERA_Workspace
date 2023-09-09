@@ -58,8 +58,9 @@ class ProjetoAdmin(admin.ModelAdmin):
 class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Projeto vinculado',{'fields': ['projeto_vinculado_ao_objetivo_especifico',]}),
-        ('Objetivo específico, sub-projeto ou meta',{ 'fields': ['categoria_de_objetivo_especifico', ('id', 'nome',), ('inicio', 'fim', 'percentual_de_alcance_atingido',)]}),
+        ('Subprojeto (objetivo específico, ou meta',{ 'fields': ['categoria_de_objetivo_especifico', ('id', 'nome',), ('inicio', 'fim', 'percentual_de_alcance_atingido',)]}),
         ('Descrição e método de avaliação', {'fields': ['descricao_do_objetivo_especifico', 'indicadores', 'verificacao',]}),
+        ('Subprojeto relacionado', {'fields': ['parent_subprojects',]}),
         # ('Financiamento', {'fields': ['',]}),
         ('Ancoragem', { 'fields': ['coordenador',]}),
         ('Arquivos', {'fields': ['arquivos',]}),
