@@ -334,7 +334,7 @@ class Orcamento(models.Model):
         else:
             self.id_codificada = 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(self.data)
         super().save(*args, **kwargs) 
-        self.total_do_orcamento=sum(item.subtotal_do_item for item in Item.subtotal_do_item.all())
+        self.total_do_orcamento=sum(pedido.subtotal_do_item for pedido in Pedido.objects.filter(orcamento=self))
         super().save(*args, **kwargs)
 
     # Signal to populate id_codificada and total_do_orcamento when the object is created
@@ -352,7 +352,7 @@ class Orcamento(models.Model):
                 instance.id_codificada = 'ORC' + str(instance.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(instance.data)
                 instance.save()  # Save the object again to persist the change
             # The object is being created, so set total_do_orcamaneto accordingly
-            instance.total_do_orcamento = sum(item.subtotal_do_item for item in instance.itens.all())
+            instance.total_do_orcamento = sum(pedido.subtotal_do_item for pedido in Pedido.objects.filter(orcamento=instance))
             instance.save(update_fields=['total_do_orcamento'])  # Save the object again to persist the change
 
     def __str__(self):
