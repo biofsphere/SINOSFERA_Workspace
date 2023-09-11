@@ -91,8 +91,8 @@ class EtapaAdmin(admin.ModelAdmin):
 @admin.register(Atividade)
 class AtividadeAdmin(LeafletGeoAdmin):
     fieldsets = [
-        ('Vínculos desta atividade', {'fields': [('projeto_vinculado_a_atividade', 'subprojeto_vinculado_a_atividade', 'etapa_vinculada',),]}),
-        ('Atividade',{ 'fields': [('id', 'categoria_de_atividade', 'sub_categoria_de_atividade',), 'nome', ('inicio', 'fim', 'concluida',),]}),
+        ('Vínculos desta atividade', {'fields': [('projeto_vinculado_a_atividade', 'subprojeto_vinculado_a_atividade', 'etapa_vinculada_a_atividade',),]}),
+        ('Atividade',{ 'fields': [('id', 'categoria_de_atividade', 'subcategoria_de_atividade',), 'nome', ('inicio', 'fim', 'concluida',),]}),
         ('Descrição', {'fields': ['descricao', 'base_curricular_vinculada',]}),
         ('Resultados', {'fields': ['publico_envolvido', 'resultados',]}),
         ('Ancoragem', { 'fields': ['municipio', 'ur_vinculada', 'coordenador',]}),

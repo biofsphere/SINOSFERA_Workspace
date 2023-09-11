@@ -18,6 +18,11 @@ from django.contrib import admin
 # from .admin import CustomAdminSite # to grab customized model order to admin panel
 from django.urls import path, include
 
+admin.site.site_header = 'Administração do SINOSFERA'
+admin.site.site_title = 'SINOSFERA'
+admin.site.index_title= 'Administração do SINOSFERA'
+admin.site.site_url= '/admin'
+
 # custom_admin_site = CustomAdminSite()
 # admin.site = custom_admin_site # defines the admin site as the custom_admin_site with the customized order of models.
 

@@ -80,11 +80,21 @@ class OrcamentoAdmin(admin.ModelAdmin):
 @admin.register(Requisicao)
 class RequisicaoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     fieldsets = [
-        ('Vínculos desta requisição', {'fields': ['projeto_vinculado', 'subprojeto_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
-        ('Requisição de fundos',{ 'fields': ['id', 'id_codificada', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
-        ('Ancoragem', { 'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento', 'criado_por', 'atualizado_por',]}),
-        ('Observações adicionais', {'fields': ['observacoes']}),
-        ('Arquivos', {'fields': ['arquivos',]}),
+        ('Vínculos desta requisição', {
+            'classes': ("collapse", "expanded"),
+            'fields': ['projeto_vinculado', 'subprojeto_vinculado', 'etapa_vinculada', 'atividade_vinculada',]}),
+        ('Requisição de fundos',{ 
+            'classes': ("collapse", "expanded"),
+            'fields': ['id', 'id_codificada', 'fundo_solicitado', 'data', 'urgencia', 'cronograma',]}),
+        ('Ancoragem', { 
+            'classes': ("collapse", "expanded"),
+            'fields': ['instituicao_solicitante', 'municipio', 'ur_vinculada', 'responsavel_pelo_preenchimento', 'criado_por', 'atualizado_por',]}),
+        ('Observações adicionais', {
+            'classes': ("collapse", "expanded"),
+            'fields': ['observacoes']}),
+        ('Arquivos', {
+            'classes': ("collapse", "expanded"),
+            'fields': ['arquivos',]}),
         ]
     date_hierarchy = 'data'
     readonly_fields = ('id', 'id_codificada', 'criado_por', 'atualizado_por',)

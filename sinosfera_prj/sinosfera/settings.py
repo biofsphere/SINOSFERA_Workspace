@@ -39,8 +39,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     # custom UI choices
-    'admin_interface',
-    'colorfield',
+    'admin_interface', # needed for django-admin-interface
+    'colorfield', # needed for django-admin-interface
     # 'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
     # 'admin_tools',
     # 'admin_tools.theming',
@@ -94,6 +94,10 @@ INSTALLED_APPS = [
     'slick_reporting',
     'categorias',
 ]
+
+# Django admin interface configs
+X_FRAME_OPTIONS = "SAMEORIGIN"
+SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 
@@ -264,88 +268,102 @@ DJVERSION_GIT_USE_COMMIT = False
 # GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
 
 # Customized admin ordering of apps and models:
-ADMIN_ORDERING = (
-    ('auth', (
-        'User', 
-        'Group',
-    )),
-    ('pessoas', (
-        'CustomUser', 
-        'Pessoa', 
-    )),
-    ('instituicoes', (
-        'Instituicao',
-    )),
-    ('locais', (
-        'Microbacia',
-        'Municipio',
-        'Unidade_de_referencia',
-    )),
-    ('planos', (
-        'Plano',
-        'Programa_de_acoes_prioritarias',
-        'Acao_prioritaria',
-    )),
-    ('programas', (
-        'Programa',
-        'Diretriz_especifica_de_programa',
-    )),
-    ('projetos', (
-        'Projeto',
-        'Objetivo_especifico_de_projeto',
-        'Etapa',
-        'Atividade',
-    )),
-    ('fundos', (
-        'Requisicao',
-        'Orcamento',
-        'Pedido',
-        'Item',
-    )),
-    ('categorias', (
-        'Profissao',
-        'Categoria_de_plano',
-        'Categoria_de_subprojeto',
-        'Subcategoria_de_subprojeto',
-        'Categoria_de_atividade',
-        'Subcategoria_de_atividade',
-        'Categoria_de_publico_atendido',
-        'Unidade_de_medida',
-        'Fundo',
-        'Categoria_de_despesa'
-    )),
-)
+# ADMIN_ORDERING = (
+#     ('auth', (
+#         'User', 
+#         'Group',
+#     )),
+#     ('contas', (
+#         'enderecos_de_email',
+#     )),
+#     ('contas_sociais', (
+#         'aplicativos_sociais',
+#         'contas_sociais',
+#         'tokens_de_aplicatiovos_sociais',
+#     )),
+#     ('pessoas', (
+#         'CustomUser', 
+#         'Pessoa', 
+#     )),
+#     ('instituicoes', (
+#         'Instituicao',
+#     )),
+#     ('locais', (
+#         'Microbacia',
+#         'Municipio',
+#         'Unidade_de_referencia',
+#     )),
+#     ('planos', (
+#         'Plano',
+#         'Programa_de_acoes_prioritarias',
+#         'Acao_prioritaria',
+#     )),
+#     ('programas', (
+#         'Programa',
+#         'Diretriz_especifica_de_programa',
+#     )),
+#     ('projetos', (
+#         'Projeto',
+#         'Subprojeto',
+#         'Etapa',
+#         'Atividade',
+#     )),
+#     ('fundos', (
+#         'Requisicao',
+#         'Orcamento',
+#         'Pedido',
+#         'Item',
+#     )),
+#     ('categorias', (
+#         'Profissao',
+#         'Categoria_de_plano',
+#         'Categoria_de_subprojeto',
+#         'Subcategoria_de_subprojeto',
+#         'Categoria_de_atividade',
+#         'Subcategoria_de_atividade',
+#         'Categoria_de_publico_atendido',
+#         'Unidade_de_medida',
+#         'Fundo',
+#         'Categoria_de_despesa',
+#     )),
+#     ('sites', (
+#         'sites',
+#     )),
+#     ('interface_do_administrador', (
+#         'temas',
+#     )),
+# )
 
-def get_app_list(self, request, app_label=None):
-    app_dict = self._build_app_dict(request, app_label)
+# def get_app_list(self, request, app_label=None):
+#     app_dict = self._build_app_dict(request, app_label)
     
-    if not app_dict:
-        return
+#     if not app_dict:
+#         return
         
-    NEW_ADMIN_ORDERING = []
-    if app_label:
-        for ao in ADMIN_ORDERING:
-            if ao[0] == app_label:
-                NEW_ADMIN_ORDERING.append(ao)
-                break
+#     NEW_ADMIN_ORDERING = []
+#     if app_label:
+#         for ao in ADMIN_ORDERING:
+#             if ao[0] == app_label:
+#                 NEW_ADMIN_ORDERING.append(ao)
+#                 break
     
-    if not app_label:
-        for app_key in list(app_dict.keys()):
-            if not any(app_key in ao_app for ao_app in ADMIN_ORDERING):
-                app_dict.pop(app_key)
+#     if not app_label:
+#         for app_key in list(app_dict.keys()):
+#             if not any(app_key in ao_app for ao_app in ADMIN_ORDERING):
+#                 app_dict.pop(app_key)
     
-    app_list = sorted(
-        app_dict.values(), 
-        key=lambda x: [ao[0] for ao in ADMIN_ORDERING].index(x['app_label'])
-    )
+#     app_list = sorted(
+#         app_dict.values(), 
+#         key=lambda x: [ao[0] for ao in ADMIN_ORDERING].index(x['app_label'])
+#     )
     
-    for app, ao in zip(app_list, NEW_ADMIN_ORDERING or ADMIN_ORDERING):
-        if app['app_label'] == ao[0]:
-            for model in list(app['models']):
-                if not model['object_name'] in ao[1]:
-                    app['models'].remove(model)
-        app['models'].sort(key=lambda x: ao[1].index(x['object_name']))
-    return app_list
+#     for app, ao in zip(app_list, NEW_ADMIN_ORDERING or ADMIN_ORDERING):
+#         if app['app_label'] == ao[0]:
+#             for model in list(app['models']):
+#                 if not model['object_name'] in ao[1]:
+#                     app['models'].remove(model)
+#         app['models'].sort(key=lambda x: ao[1].index(x['object_name']))
+#     return app_list
 
-admin.AdminSite.get_app_list = get_app_list
+# admin.AdminSite.get_app_list = get_app_list
 
