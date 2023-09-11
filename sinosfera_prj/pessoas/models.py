@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 custom_username_validators = [ASCIIUsernameValidator()]
 
@@ -37,6 +39,14 @@ class Pessoa(models.Model):
         blank=True,
         null=True,
         )
+    conta_associada = models.OneToOneField(
+        CustomUser, 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True,
+        verbose_name='Conta associada à pessoa',
+        help_text='Selecione a conta associada à pessoa se houver',
+        )
     phoneNumberRegex = RegexValidator(regex = r"^\+?1?\d{8,15}$")
     telefone_celular = models.CharField(
         'Telefone celular',
@@ -67,18 +77,34 @@ class Pessoa(models.Model):
         blank=True,
         null=True,
         )
-    # LOG DE ATUALIZAÇÃO DO PERFIL DA PESSOA FÍSICA #
+    # ==== Utility fields ==== #
     criado_por = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='perfis_criados', editable=False,)
     criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
     atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='perfis_atualizados', editable=False,)
     atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
-    # MÉTODOS DO PERFIL DA PESSOA FÍSICA #
-    def get_item_id(self):
-        return _p+ str(self.nome_completo)
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
+        null=True,
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
+        )
+    
+    def save(self, *args, **kwargs):
+        self.id_codificada = 'PES' + str(self.id).zfill(3) + '-' + str(self.nome_completo)
+        super().save(*args, **kwargs)
+
+    # Signal to populate id_codificada when the object is created
+    @receiver(post_save, sender='pessoas.Pessoa')
+    def populate_id_codificada(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set id_codificada accordingly
+            instance.id_codificada = 'PES' + str(instance.id).zfill(3) + '-' + str(instance.nome_completo)
+            instance.save()  # Save the object again to persist the change
 
     def __str__(self): 
-        return 'PES' + str(self.id).zfill(4) + '-' + str(self.nome_completo)
+        return str(self.id_codificada)
 
 
     class Meta:

@@ -270,16 +270,16 @@ DJVERSION_GIT_USE_COMMIT = False
 # Customized admin ordering of apps and models:
 # ADMIN_ORDERING = (
 #     ('auth', (
-#         'User', 
-#         'Group',
+#         'group', 
+#         'permission',
 #     )),
 #     ('contas', (
-#         'enderecos_de_email',
+#         'emailaddress',
 #     )),
-#     ('contas_sociais', (
-#         'aplicativos_sociais',
-#         'contas_sociais',
-#         'tokens_de_aplicatiovos_sociais',
+#     ('socialaccunt', (
+#         'socialaccount',
+#         'socialapp',
+#         'socialtoken',
 #     )),
 #     ('pessoas', (
 #         'CustomUser', 
@@ -327,10 +327,10 @@ DJVERSION_GIT_USE_COMMIT = False
 #         'Categoria_de_despesa',
 #     )),
 #     ('sites', (
-#         'sites',
+#         'site',
 #     )),
-#     ('interface_do_administrador', (
-#         'temas',
+#     ('admin_interface', (
+#         'theme',
 #     )),
 # )
 
