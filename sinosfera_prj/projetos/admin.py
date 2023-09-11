@@ -3,7 +3,7 @@ from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.gis import admin
 from leaflet.admin import LeafletGeoAdmin
 from django.contrib.humanize.templatetags.humanize import intcomma
-from .models import Projeto, Objetivo_especifico_de_projeto, Etapa, Atividade, Publico
+from .models import Projeto, Subprojeto, Etapa, Atividade, Publico
 
 class PublicoInlineAdmin(admin.TabularInline):
     model = Publico
@@ -54,44 +54,44 @@ class ProjetoAdmin(admin.ModelAdmin):
         return f'R${intcomma(obj.fundos_estimados_de_contra_partida)}'
 
 
-@admin.register(Objetivo_especifico_de_projeto)
-class Objetivo_especifico_de_projetoAdmin(admin.ModelAdmin):
+@admin.register(Subprojeto)
+class SubprojetoAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Projeto vinculado',{'fields': ['projeto_vinculado_ao_objetivo_especifico',]}),
-        ('Subprojeto (objetivo específico, ou meta',{ 'fields': ['categoria_de_objetivo_especifico', ('id', 'nome',), ('inicio', 'fim', 'percentual_de_alcance_atingido',)]}),
-        ('Descrição e método de avaliação', {'fields': ['descricao_do_objetivo_especifico', 'indicadores', 'verificacao',]}),
-        ('Subprojeto relacionado', {'fields': ['parent_subprojects',]}),
+        ('Projeto vinculado',{'fields': ['projeto_vinculado_ao_subprojeto',]}),
+        ('Subprojeto (objetivo específico, ou meta)',{ 'fields': ['categoria_de_subprojeto', ('id', 'nome',), ('inicio', 'fim', 'percentual_de_conclusao',)]}),
+        ('Descrição e método de avaliação', {'fields': ['descricao_do_subprojeto', 'indicadores', 'verificacao',]}),
+        ('Subprojetos relacionados', {'fields': ['subprojetos_relacionados',]}),
         # ('Financiamento', {'fields': ['',]}),
         ('Ancoragem', { 'fields': ['coordenador',]}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id',)
-    list_display = ('id', 'projeto_vinculado_ao_objetivo_especifico', 'categoria_de_objetivo_especifico', 'nome', 'descricao_do_objetivo_especifico', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_alcance_atingido', 'inicio', 'fim',)
+    list_display = ('id', 'projeto_vinculado_ao_subprojeto', 'categoria_de_subprojeto', 'nome', 'descricao_do_subprojeto', 'coordenador', 'indicadores', 'verificacao', 'percentual_de_conclusao', 'inicio', 'fim',)
     search_fields = ('nome', 'coordenador',)
     ordering = ('id', 'nome', 'coordenador',)
-    list_filter = ('projeto_vinculado_ao_objetivo_especifico',)
+    list_filter = ('projeto_vinculado_ao_subprojeto',)
 
 
 @admin.register(Etapa)
 class EtapaAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Objetivo específico, sub-projeto ou meta vinculada',{'fields': ['objetivo_especifico_vinculado_a_etapa',]}),
+        ('Subprojeto, objetivo específico ou meta vinculada',{'fields': ['subprojeto_vinculado_a_etapa',]}),
         ('Etapa',{ 'fields': ['id', 'nome', 'concluida',]}),
         ('Descrição', {'fields': ['descricao',]}),
         # ('Financiamento', {'fields': ['',]}),
         ('Ancoragem', { 'fields': ['coordenador',]}),
         ]
     readonly_fields = ('id',)
-    list_display = ('id', 'nome', 'objetivo_especifico_vinculado_a_etapa', 'descricao', 'concluida', 'coordenador',)
+    list_display = ('id', 'nome', 'subprojeto_vinculado_a_etapa', 'descricao', 'concluida', 'coordenador',)
     search_fields = ('nome', 'coordenador',)
     ordering = ('id', 'nome', 'coordenador',)
-    list_filter = ('objetivo_especifico_vinculado_a_etapa',)
+    list_filter = ('subprojeto_vinculado_a_etapa',)
 
 
 @admin.register(Atividade)
 class AtividadeAdmin(LeafletGeoAdmin):
     fieldsets = [
-        ('Vínculos desta atividade', {'fields': [('projeto_vinculado', 'objetivo_especifico_vinculado', 'etapa_vinculada',),]}),
+        ('Vínculos desta atividade', {'fields': [('projeto_vinculado_a_atividade', 'subprojeto_vinculado_a_atividade', 'etapa_vinculada',),]}),
         ('Atividade',{ 'fields': [('id', 'categoria_de_atividade', 'sub_categoria_de_atividade',), 'nome', ('inicio', 'fim', 'concluida',),]}),
         ('Descrição', {'fields': ['descricao', 'base_curricular_vinculada',]}),
         ('Resultados', {'fields': ['publico_envolvido', 'resultados',]}),
@@ -100,10 +100,10 @@ class AtividadeAdmin(LeafletGeoAdmin):
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
     readonly_fields = ('id', 'publico_envolvido',)
-    list_display = ('get_item_id', 'nome', 'inicio', 'fim', 'concluida', 'categoria_de_atividade', 'get_publico_total', 'municipio', 'localizacao', 'projeto_vinculado',)
+    list_display = ('get_item_id', 'nome', 'inicio', 'fim', 'concluida', 'categoria_de_atividade', 'get_publico_total', 'municipio', 'localizacao', 'projeto_vinculado_a_atividade',)
     search_fields = ('nome', 'coordenador',)
     ordering = ('id', 'nome', 'coordenador',)
-    list_filter = ('projeto_vinculado', 'coordenador', 'municipio', 'categoria_de_atividade',)
+    list_filter = ('projeto_vinculado_a_atividade', 'coordenador', 'municipio', 'categoria_de_atividade',)
     inlines = [PublicoInlineAdmin]
 
     # def total_public_attended(self, obj):

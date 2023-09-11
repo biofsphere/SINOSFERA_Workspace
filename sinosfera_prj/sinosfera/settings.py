@@ -299,13 +299,14 @@ ADMIN_ORDERING = (
     ('categorias', (
         'Profissao',
         'Categoria_de_plano',
-        'Categoria_de_objetivo_especifico',
-        'Sub_categoria_de_objetivo_especifico',
+        'Categoria_de_subprojeto',
+        'Subcategoria_de_subprojeto',
         'Categoria_de_atividade',
-        'Sub_categoria_de_atividade',
+        'Subcategoria_de_atividade',
         'Categoria_de_publico_atendido',
         'Unidade_de_medida',
         'Fundo',
+        'Categoria_de_despesa'
     )),
 )
 

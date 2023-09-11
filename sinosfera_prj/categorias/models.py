@@ -143,23 +143,23 @@ class Categoria_de_plano(models.Model):
         verbose_name = 'Categoria de plano'
         verbose_name_plural = 'Categorias de planos'
 
-#=================================================================================#
-#== CATEGORIAS E SUB-CATEGORIAS DE OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
-#=================================================================================#
+#================================================================================#
+#== CATEGORIAS E SUBCATEGORIAS DE SUBPROJETOS  / OBJETIVOS ESPECÍFICOS / METAS ==#
+#================================================================================#
 
-class Sub_categoria_de_objetivo_especifico(models.Model):
+class Subcategoria_de_subprojeto(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
         null=True, 
         unique=True, 
-        help_text='Defina uma sub-categoria da categoria de objetivo específico, sub-projeto ou meta.',
+        help_text='Defina uma subcategoria da categoria de Subprojeto, objetivo específico ou meta.',
     )
     descricao = models.TextField(
         max_length=300,
         blank=True,
         null=True,
-        help_text='Descreva essa sub-categoria no âmbito dos objetivos específicos de um projeto.',
+        help_text='Descreva essa subcategoria no âmbito dos subprojetos de um projeto.',
     )
     # ==== Utility fields ==== #
     criado_por = models.ForeignKey(
@@ -167,7 +167,7 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='subcategorias_de_objetivos_criadas', 
+        related_name='subcategorias_de_subprojetos', 
         editable=False,
         )
     criado_em = models.DateTimeField(
@@ -180,7 +180,7 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='subcategorias_de_objetivos_atualizadas', 
+        related_name='subcategorias_de_subprojetos_atualizadas', 
         editable=False,
         )
     atualizado_em = models.DateTimeField(
@@ -196,37 +196,36 @@ class Sub_categoria_de_objetivo_especifico(models.Model):
         super().save_model(request, obj, form, change)
 
     def get_item_id(self):
-        return 'SCO' + str(self.id).zfill(3) + '-' + str(self.nome)
+        return 'SCS' + str(self.id).zfill(3) + '-' + str(self.nome)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
 
     def __str__(self):
-        return 'SCO' + str(self.id).zfill(2) + '-' + str(self.nome)
+        return 'SCS' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Sub-categoria de objetivo específico'
-        verbose_name_plural = 'Sub-categorias de objetivos específicos'
+        verbose_name = 'Subcategoria de subprojeto, objetivo específico ou meta'
+        verbose_name_plural = 'Subcategorias de subprojetos, objetivos específicos ou metas'
 
 
-class Categoria_de_objetivo_especifico(models.Model):
+class Categoria_de_subprojeto(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
         null=True, 
         unique=True, 
-        help_text='Defina uma categoria ao Objetivo Especifico ainda não existente no sistema.',
+        help_text='Defina uma categoria ao subprojeto.',
     )
     descricao = models.TextField(
         max_length=300,
         blank=True,
         null=True,
-        help_text='Descreva esta categoria no âmbito dos objetivos específicos de um projeto.',
+        help_text='Descreva esta categoria no âmbito dos subprojetos de um projeto.',
     )
-    sub_categorias = models.ManyToManyField(
-        'Sub_categoria_de_objetivo_especifico', 
-        related_name='Categorias_de_objetivos_especificos',
-        
+    subcategorias = models.ManyToManyField(
+        'Subcategoria_de_subprojeto', 
+        related_name='Categorias_de_subprojetos',
     )
     # ==== Utility fields ==== #
     criado_por = models.ForeignKey(
@@ -234,7 +233,7 @@ class Categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='categorias_de_objetivos_criadas', 
+        related_name='categorias_de_subprojetos_criadas', 
         editable=False,
         )
     criado_em = models.DateTimeField(
@@ -247,7 +246,7 @@ class Categoria_de_objetivo_especifico(models.Model):
         on_delete=models.SET_NULL, 
         blank=True, 
         null=True, 
-        related_name='categorias_de_objetivos_atualizadas', 
+        related_name='categorias_de_subprojetos_atualizadas', 
         editable=False,
         )
     atualizado_em = models.DateTimeField(
@@ -263,35 +262,35 @@ class Categoria_de_objetivo_especifico(models.Model):
 
 
     def get_item_id(self):
-        return 'COB' + str(self.id).zfill(3) + '-' + str(self.nome)
+        return 'CSP' + str(self.id).zfill(3) + '-' + str(self.nome)
     get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
 
     def __str__(self):
-        return 'COB' + str(self.id).zfill(2) + '-' + str(self.nome)
+        return 'CSP' + str(self.id).zfill(2) + '-' + str(self.nome)
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Categoria de objetivo, sub-projeto ou meta'
-        verbose_name_plural = 'Categorias de objetivos, sub-projetos ou metas'
+        verbose_name = 'Categoria de subprojeto, objetivo específico ou meta'
+        verbose_name_plural = 'Categorias de subprojetos, objetivos específicos ou metas'
 
 
 #==============================#
 #== CATEGORIAS DE ATIVIDADES ==#
 #==============================#
 
-class Sub_categoria_de_atividade(models.Model):
+class Subcategoria_de_atividade(models.Model):
     nome = models.CharField(
         max_length=60, 
         blank=True, 
         null=True, 
         unique=True, 
-        help_text='Defina uma sub-categoria da categoria de atividade.',
+        help_text='Defina uma subcategoria da categoria de atividade.',
     )
     descricao = models.TextField(
         max_length=300,
         blank=True,
         null=True,
-        help_text='Descreva essa sub-categoria de atividade.no âmbito das categorias de atividades.',
+        help_text='Descreva essa subcategoria de atividade.no âmbito das categorias de atividades.',
     )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -310,8 +309,8 @@ class Sub_categoria_de_atividade(models.Model):
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Sub-categoria de atividade'
-        verbose_name_plural = 'Sub-categorias de atividade'
+        verbose_name = 'Subcategoria de atividade'
+        verbose_name_plural = 'Subcategorias de atividade'
 
 
 class Categoria_de_atividade(models.Model):
@@ -328,8 +327,8 @@ class Categoria_de_atividade(models.Model):
         null=True,
         help_text='Descreva esta categoria no âmbito das atividades.',
     )
-    sub_categorias = models.ManyToManyField(
-        'Sub_categoria_de_atividade', 
+    subcategorias = models.ManyToManyField(
+        'Subcategoria_de_atividade', 
         related_name='Categorias_de_atividades',
         
     )

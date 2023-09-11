@@ -3,9 +3,9 @@ from core.mixins import CreateUpdateUserAdminMixin
 from .models import (
     Profissao, 
     Categoria_de_plano, 
-    Sub_categoria_de_objetivo_especifico, 
-    Categoria_de_objetivo_especifico, 
-    Sub_categoria_de_atividade, 
+    Subcategoria_de_subprojeto, 
+    Categoria_de_subprojeto, 
+    Subcategoria_de_atividade, 
     Categoria_de_atividade,
     Categoria_de_publico,
     Categoria_de_despesa,
@@ -37,8 +37,8 @@ class Categoria_de_planoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     list_filter = ('nome',)
 
 
-@admin.register(Categoria_de_objetivo_especifico)
-class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
+@admin.register(Categoria_de_subprojeto)
+class Categoria_de_subprojetoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao', 'criado_por', 'criado_em',)
     readonly_fields = ('id', 'criado_por', 'criado_em',)
     list_display = ('get_item_id', 'nome', 'criado_por', 'criado_em',)
@@ -47,7 +47,7 @@ class Categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
     list_filter = ('nome',)
 
 
-@admin.register(Sub_categoria_de_objetivo_especifico)
+@admin.register(Subcategoria_de_subprojeto)
 class Sub_categoria_de_objetivo_especificoAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao', 'criado_por', 'criado_em',)
     readonly_fields = ('id',)
@@ -67,7 +67,7 @@ class Categoria_de_atividadeAdmin(admin.ModelAdmin):
     list_filter = ('nome',)
 
 
-@admin.register(Sub_categoria_de_atividade)
+@admin.register(Subcategoria_de_atividade)
 class Sub_categoria_de_atividadeAdmin(admin.ModelAdmin):
     fields = ('id', 'nome', 'descricao',)
     readonly_fields = ('id',)

@@ -139,11 +139,6 @@ class Projeto(models.Model):
         blank=True, 
         null=True,
     )
-    
-    # def save_model(self, request, obj, form, change):
-    #     """Grava usuário logado que gravou o item"""
-    #     obj.inserido_por = request.user
-    #     super().save_model(request, obj, form, change)
 
     def save(self, *args, **kwargs):
         """Grava o Projeto com o valor total dele somando os fundos do VerdeSinos com a contra-partida."""
@@ -166,46 +161,46 @@ class Projeto(models.Model):
         verbose_name = 'Projeto'
         verbose_name_plural = 'Projetos'
 
-#==================================================#
-#== OBJETIVOS ESPECÍFICOS / SUB-PROJETOS / METAS ==#
-#==================================================#
+#=================================================#
+#== SUBPROJETOS / OBJETIVOS ESPECÍFICOS / METAS ==#
+#=================================================#
 
-class Objetivo_especifico_de_projeto(models.Model):
-    """Tabela para inserção de dados sobre os objetivos específicos que podem ser tratados como sub-projetos ou mais precisamente metas do projeto. São partes manejáveis do projeto que precisam ser conduzidas com determinação métrica e acompanhadas para o sucesso do Projeto."""
-    projeto_vinculado_ao_objetivo_especifico = models.ForeignKey(
+class Subprojeto(models.Model):
+    """Tabela para inserção de dados sobre os subprojetos, objetivos específicos ou metas. São partes manejáveis do projeto que precisam ser conduzidas com determinação métrica e acompanhadas para o sucesso do Projeto."""
+    projeto_vinculado_ao_subprojeto = models.ForeignKey(
         Projeto,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text='Selecione o Projeto a que este objetivo específico, sub-projeto ou meta se vincula.',
+        help_text='Selecione o Projeto a que este Subprojeto se vincula.',
         verbose_name='Projeto vinculado',
         )
-    parent_subprojects = models.ManyToManyField(
+    subprojetos_relacionados = models.ManyToManyField(
         'self', 
         blank=True, 
         symmetrical=False, 
-        related_name='child_subprojects',
-        verbose_name='Subprojeto vinculado',
+        related_name='subprojetos_relacionados_a_subprojetos',
+        verbose_name='Subprojeto relacionado',
         )
 
-    categoria_de_objetivo_especifico = models.ForeignKey(
-        'categorias.Categoria_de_objetivo_especifico',
+    categoria_de_subprojeto = models.ForeignKey(
+        'categorias.Categoria_de_subprojeto',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text='Selecione a categoria mais adequada para este objetivo específico.',
+        help_text='Selecione a categoria mais adequada para este subprojeto.',
         verbose_name='Categoria',
         )
     nome = models.CharField(
-        'Nome ou título do objetivo específico', 
-        help_text='Defina um nome ou título curto para este objetivo específico.', 
+        'Nome ou título do subprojeto', 
+        help_text='Defina um nome ou título curto para este subprojeto.', 
         max_length=120,
         blank=True,
         null=True,
         )
-    descricao_do_objetivo_especifico = models.TextField(
-        'Descrição do objetivo específico', 
-        help_text='Descreva o que este objetivo específico pretende alcançar.', 
+    descricao_do_subprojeto = models.TextField(
+        'Descrição do subprojeto', 
+        help_text='Descreva o que este subprojeto pretende alcançar.', 
         max_length=300,
         blank=True,
         null=True,
@@ -213,71 +208,66 @@ class Objetivo_especifico_de_projeto(models.Model):
     coordenador = models.ForeignKey(
         'pessoas.Pessoa', 
         on_delete=models.SET_NULL, 
-        help_text='Especifique a pessoa âncora ou coordenadora deste objetivo específico.', 
+        help_text='Especifique a pessoa âncora ou coordenadora deste subprojeto.', 
         blank=True, 
         null=True, 
-        verbose_name='Coordenador(a) de Objetivo específico', 
+        verbose_name='Coordenador(a) de Subprojeto', 
         )
     indicadores = models.TextField(
         'Indicadores', 
         max_length=300, 
-        help_text='Especifique aqui o(s) indicador(es) que evidenciarão o alcance deste objetivo específico.', 
+        help_text='Especifique aqui o(s) indicador(es) que evidenciarão o alcance deste subprojeto.', 
         blank=True, 
         null=True, 
         )
     verificacao = models.TextField(
         'Métodos de verificação', 
         max_length=300, 
-        help_text='Especifique aqui como serão verificados os indicadores de alcance dos objetivos, isto é que instromentos, metodologia, processos.', 
+        help_text='Especifique aqui como serão verificados os indicadores de conclusão deste subprojeto, isto é que instrumentos, metodologia, processos.', 
         blank=True, 
         null=True, 
     )
-    percentual_de_alcance_atingido = models.IntegerField(
+    percentual_de_conclusao = models.IntegerField(
         'Percentual de alcance atingido',
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text='Insira um valor de 0 a 100 correspondente ao percentual de alcance deste objetivo até o momento.',
+        help_text='Insira um valor de 0 a 100 correspondente ao percentual de conclusão deste subprojeto até o momento.',
         blank=True, 
         null=False,
         default=0,
         )
     inicio = models.DateField(
-        'Data de início do Objetivo específico',
+        'Data de início do Subprojeto',
         default=date.today, 
-        help_text='Especifique uma data de início para o objetivo específico.', 
+        help_text='Especifique uma data de início para o Subprojeto.', 
         blank=True,
         null=False, 
         )
     fim = models.DateField(
-        'Data de fim do objetivo específico',
+        'Data de fim do Subprojeto',
         default=date.today, 
-        help_text='Defina uma data para a conclusão do objetivo específico.', 
+        help_text='Defina uma data para a conclusão do Subprojeto.', 
         blank=True,
         null=False, 
         )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     arquivos = models.FileField(
-        upload_to='projetos/objetivos_especificos', 
+        upload_to='projetos/subprojetos', 
         blank=True, 
         null=True,
         )
 
-    # def save_model(self, request, obj, form, change):
-    #     '''Grava usuário logado que gravou o item'''
-    #     obj.inserido_por = request.user
-    #     super().save_model(request, obj, form, change)
-
     def get_item_id(self):
-        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
+        return 'SPJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
     get_item_id.short_description = 'ID Codificada'
 
     def __str__(self):
-        return 'OBJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
+        return 'SPJ' + str(self.id).zfill(4) + '-' + str(self.nome)[0:30] + '...'
 
     class Meta:
         ordering = ('nome',)
-        verbose_name = 'Objetivo específico'
-        verbose_name_plural = 'Objetivos específicos'
+        verbose_name = 'Subprojeto'
+        verbose_name_plural = 'Subprojetos'
 
 #============#
 #== ETAPAS ==#
@@ -285,17 +275,17 @@ class Objetivo_especifico_de_projeto(models.Model):
 
 class Etapa(models.Model):    
     """Tabela de inserção de dados das pequenas etapas necessárias para alcance os objetivos específicos, sub-projetos ou metas especificadas para o Projeto."""
-    objetivo_especifico_vinculado_a_etapa = models.ForeignKey(
-        Objetivo_especifico_de_projeto, 
+    subprojeto_vinculado_a_etapa = models.ForeignKey(
+        Subprojeto, 
         on_delete=models.SET_NULL, 
-        help_text='Selecione o objetivo específico a que esta etapa se vincula.', 
+        help_text='Selecione o Subprojeto a que esta etapa se vincula.', 
         blank=True, 
         null=True, 
-        verbose_name='Objetivo específico vinculado à etapa', 
+        verbose_name='Subprojeto vinculado à etapa', 
         )
     nome = models.CharField(
         'Nome ou título da etapa', 
-        help_text='Defina um nome ou título para a etapa de um objetivo específico.',  
+        help_text='Defina um nome ou título para a etapa de um Subprojeto.',  
         max_length=120,
         blank=True,
         null=True,
@@ -345,7 +335,7 @@ class Etapa(models.Model):
 class Atividade(models.Model):    
     """Model to input details about project activities."""
     # == VÍNCULOS DA ATIVIDADE == #
-    projeto_vinculado = models.ForeignKey(
+    projeto_vinculado_a_atividade = models.ForeignKey(
         Projeto, 
         on_delete=models.SET_NULL, 
         help_text='Insira o projeto ao qual essa atividade se vincula',
@@ -353,15 +343,15 @@ class Atividade(models.Model):
         null=True, 
         verbose_name='Projeto vinculado', 
     )
-    objetivo_especifico_vinculado = models.ForeignKey(
-        Objetivo_especifico_de_projeto, 
+    subprojeto_vinculado_a_atividade = models.ForeignKey(
+        Subprojeto, 
         on_delete=models.SET_NULL, 
         help_text='Selecione o objetivo específico a que esta atividade se vincula, se houver.', 
         blank=True, 
         null=True, 
         verbose_name='Objetivo específico vinculado', 
         )
-    etapa_vinculada = models.ForeignKey(
+    etapa_vinculada_a_atividade = models.ForeignKey(
         Etapa, 
         on_delete=models.SET_NULL, 
         help_text='Insira a etapa que esta atividade está diretamente vinculada, se houver',
@@ -427,8 +417,8 @@ class Atividade(models.Model):
         help_text='Selecione a categoria mais adequada para esta atividade.',
         verbose_name='Categoria',
         )
-    sub_categoria_de_atividade = models.ForeignKey(
-        'categorias.Sub_categoria_de_atividade',
+    subcategoria_de_atividade = models.ForeignKey(
+        'categorias.Subcategoria_de_atividade',
         on_delete=models.CASCADE,
         blank=True,
         null=True,

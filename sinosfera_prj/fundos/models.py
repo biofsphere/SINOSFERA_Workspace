@@ -141,7 +141,7 @@ class Pedido(models.Model):
         default=0,
         verbose_name='Subtotal',
     )
-    # ==== Utility fields == #
+    # ==== Utility fields ==== #
     criado_por = models.ForeignKey(
         'pessoas.CustomUser', 
         on_delete=models.SET_NULL, 
@@ -177,18 +177,19 @@ class Pedido(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        self.id_codificada = 'PED' + str(self.id).zfill(3) + '-' + str(self.item) + '(' + str(self.quantidade) # + ' ' + str(self.item.unidade) + ')' 
+        self.id_codificada = 'PED' + str(self.id).zfill(3) + '-' + str(self.item) + '(' + str(self.quantidade) + ')' # + ' ' + str(self.item.unidade) + ')' 
+        super().save(*args, **kwargs)
         self.subtotal_do_item = self.preco_unitario * self.quantidade
         super().save(*args, **kwargs)
 
-    # # Signal to populate subtotal_do_item correctly when the object is created
-    # @receiver(post_save, sender='fundos.Item')
-    # def populate_readonly_fields(sender, instance, created, **kwargs):
-    #     if created:
-    #         # The object is being created, so set subtotal_do_item and id_codificada accordingly
-    #         instance.id_codificada = 'PED' + str(instance.id).zfill(3) + '-' + str(instance.item) + '(' + str(instance.quantidade) # + ' ' + str(instance.item.unidade) + ')'
-    #         instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
-    #         instance.save(update_fields=['subtotal_do_item',])  # Save the object again to persist the change
+    # Signal to populate id_codificada when the object is created
+    @receiver(post_save, sender='fundos.Pedido')
+    def populate_id_codificada(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set id_codificada accordingly
+            instance.id_codificada = 'PED' + str(instance.id).zfill(3) + '-' + str(instance.item) + '(' + str(instance.quantidade) + ')'
+            instance.subtotal_do_item = instance.preco_unitario * instance.quantidade
+            instance.save(update_fields=['subtotal_do_item'])  # Save the object again to persist the change
     
     def __str__(self):
         return str(self.id_codificada)
@@ -293,6 +294,13 @@ class Orcamento(models.Model):
         editable=False,
         verbose_name='Valor total do orçamento',
         )
+    arquivos = models.FileField(
+        upload_to='fundos/orcamentos', 
+        blank=True, 
+        null=True,
+        verbose_name='Arquivo de orçamento',
+        )
+    # ==== Utility fields ==== #
     criado_por = models.ForeignKey(
         CustomUser, 
         related_name='criou_orcamento', 
@@ -309,52 +317,46 @@ class Orcamento(models.Model):
     )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
-    arquivos = models.FileField(
-        upload_to='fundos/orcamentos', 
-        blank=True, 
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
         null=True,
-        verbose_name='Arquivo de orçamento',
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
         )
-    
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)  # Save the Orcamento object first
-    #     self.update_total_do_orcamento()
-
-    # def update_total_do_orcamento(self):
-    #     total = self.itens.aggregate(Sum('subtotal_do_item'))['subtotal_do_item__sum']
-    #     self.total_do_orcamento = total if total is not None else 0
-    #     self.save(update_fields=['total_do_orcamento'])
 
     def save(self, *args, **kwargs):
+        if self.empresa_fornecedora:
+            self.id_codificada = 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)[0:30] + '...' + str(self.data)
+        elif self.profissional_fornecedor:
+            self.id_codificada = 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)[0:30] + '...' + str(self.data)
+        else:
+            self.id_codificada = 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(self.data)
         super().save(*args, **kwargs) 
-        self.total_do_orcamento=sum(item.subtotal_do_item for item in self.itens.all())
+        self.total_do_orcamento=sum(item.subtotal_do_item for item in Item.subtotal_do_item.all())
         super().save(*args, **kwargs)
 
-    # # Signal to populate total_do_orcamento correctly when the object is created
-    # @receiver(post_save, sender='fundos.Orcamento')
-    # def populate_total_do_orcamento(sender, instance, created, **kwargs):
-    #     if created:
-    #         # The object is being created, so set total_do_orcamaneto accordingly
-    #         instance.total_do_orcamento = sum(item.subtotal_do_item for item in instance.itens.all())
-    #         instance.save(update_fields=['total_do_orcamento'])  # Save the object again to persist the change
-    
-
-    def get_item_id(self):
-        if self.empresa_fornecedora:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)[0:30] + '...' + str(self.data)
-        elif self.profissional_fornecedor:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)[0:30] + '...' + str(self.data)
-        else:
-            return 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(self.data)
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+    # Signal to populate id_codificada and total_do_orcamento when the object is created
+    @receiver(post_save, sender='fundos.Orcamento')
+    def populate_id_codificada(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set id_codificada accordingly
+            if instance.empresa_fornecedora:
+                instance.id_codificada = 'ORC' + str(instance.id).zfill(5) + ' - ' + str(instance.empresa_fornecedora)[0:30] + '...' + str(instance.data)
+                instance.save()  # Save the object again to persist the change
+            elif instance.profissional_fornecedor:
+                instance.id_codificada = 'ORC' + str(instance.id).zfill(5) + ' - ' + str(instance.profissional_fornecedor)[0:30] + '...' + str(instance.data)
+                instance.save()  # Save the object again to persist the change
+            else:
+                instance.id_codificada = 'ORC' + str(instance.id).zfill(5) + ' - fornecedor indeterminado' + ' - ' + str(instance.data)
+                instance.save()  # Save the object again to persist the change
+            # The object is being created, so set total_do_orcamaneto accordingly
+            instance.total_do_orcamento = sum(item.subtotal_do_item for item in instance.itens.all())
+            instance.save(update_fields=['total_do_orcamento'])  # Save the object again to persist the change
 
     def __str__(self):
-        if self.empresa_fornecedora:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.empresa_fornecedora)[0:30] + '...'
-        elif self.profissional_fornecedor:
-            return 'ORC' + str(self.id).zfill(5) + ' - ' + str(self.profissional_fornecedor)[0:30] + '...'
-        else:
-            return 'ORC' + str(self.id).zfill(5) + ' - fornecedor indeterminado'
+        return str(self.id_codificada)
 
 
     class Meta:
@@ -410,11 +412,11 @@ class Requisicao(models.Model):
         blank=True,
         null=True,
     )    
-    objetivo_especifico_vinculado = models.ManyToManyField(
-        'projetos.Objetivo_especifico_de_projeto', 
-        help_text='Selecione o objetivo específico a que esta solicitação está diretamente vincula.', 
+    subprojeto_vinculado = models.ManyToManyField(
+        'projetos.Subprojeto', 
+        help_text='Selecione os subprojetos a que esta solicitação está diretamente vinculada.', 
         blank=True, 
-        verbose_name='Objetivo(s) específico(s) vinculado(s) à solicitação de fundos', 
+        verbose_name='Subprojeto(s) vinculado(s) à solicitação de fundos', 
         )
     etapa_vinculada = models.ManyToManyField(
         'projetos.Etapa', 
@@ -463,17 +465,34 @@ class Requisicao(models.Model):
         null=True,
         verbose_name='Arquivo de requisição de fundos',
     )
+    # ==== Utility fields ==== #
     criado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='requisicoes_criadas', editable=False,)
     atualizado_por = models.ForeignKey('pessoas.CustomUser', on_delete=models.SET_NULL, blank=True, null=True, related_name='requisicoes_atualizadas', editable=False,)
     criado_em = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
     atualizado_em = models.DateTimeField(auto_now=True, blank=True, null=True,)
+    id_codificada = models.CharField(
+        max_length=60, 
+        blank=True,
+        null=True,
+        verbose_name='ID Codificada',
+        editable=False,
+        unique=True,
+        )
 
-    def get_item_id(self):
-        return 'REQ' + str(self.id).zfill(3) + ' ' + str(self.data) + ' ' + str(self.projeto_vinculado)[0:30]
-    get_item_id.short_description = 'ID Codificada'  # Set the custom column header name
+    def save(self, *args, **kwargs):
+        self.id_codificada = 'REQ' + str(self.id).zfill(4) 
+        super().save(*args, **kwargs)
+
+    # Signal to populate id_codificada when the object is created
+    @receiver(post_save, sender='fundos.Requisicao')
+    def populate_id_codificada(sender, instance, created, **kwargs):
+        if created:
+            # The object is being created, so set id_codificada accordingly
+            instance.id_codificada = 'REQ' + str(instance.id).zfill(4)
+            instance.save()  # Save the object again to persist the change
 
     def __str__(self):
-        return 'REQ' + str(self.id).zfill(4)
+        return str(self.id_codificada)
     
 
     class Meta:
