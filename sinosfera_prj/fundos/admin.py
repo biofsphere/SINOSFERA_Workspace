@@ -31,6 +31,7 @@ class ItemAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     ordering = ('id', 'nome',)
     # list_filter = ('nome',)
 
+
 @admin.register(Pedido)
 class PedidoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     fieldsets = (
@@ -45,6 +46,7 @@ class PedidoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     search_fields = ('item',)
     ordering = ('id', 'item',)
     list_filter = ('tipo',)
+    
 
 
 @admin.register(Orcamento)
@@ -84,10 +86,11 @@ class RequisicaoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
         ('Observações adicionais', {'fields': ['observacoes']}),
         ('Arquivos', {'fields': ['arquivos',]}),
         ]
+    date_hierarchy = 'data'
     readonly_fields = ('id', 'id_codificada', 'criado_por', 'atualizado_por',)
     list_display = ('id', 'id_codificada', 'fundo_solicitado', 'data', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado', 'urgencia', 'criado_por', 'atualizado_por',)
     search_fields = ('municipio', 'responsavel_pelo_preenchimento',)
     ordering = ('id', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
-    list_filter = ('fundo_solicitado', 'municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
+    list_filter = ('municipio', 'responsavel_pelo_preenchimento', 'projeto_vinculado',)
     inlines = [OrcamentoInlineAdmin]
 

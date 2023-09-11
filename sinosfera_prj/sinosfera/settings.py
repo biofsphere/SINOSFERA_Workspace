@@ -39,7 +39,13 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     # custom UI choices
-    'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
+    'admin_interface',
+    'colorfield',
+    # 'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
+    # 'admin_tools',
+    # 'admin_tools.theming',
+    # 'admin_tools.menu',
+    # 'admin_tools.dashboard',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -255,7 +261,7 @@ DJVERSION_GIT_USE_TAG = False
 DJVERSION_GIT_USE_COMMIT = False
 
 # Grappelli settings:
-GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
+# GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
 
 # Customized admin ordering of apps and models:
 ADMIN_ORDERING = (

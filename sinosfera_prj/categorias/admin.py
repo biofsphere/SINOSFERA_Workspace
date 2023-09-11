@@ -25,6 +25,7 @@ class ProfissaoAdmin(CreateUpdateUserAdminMixin, admin.ModelAdmin):
     search_fields = ('nome',)
     ordering = ('id', 'nome',)
     list_filter = ('nome',)
+    
 
 
 @admin.register(Categoria_de_plano)
