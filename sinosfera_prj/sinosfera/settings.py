@@ -39,13 +39,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     # custom UI choices
+    # 'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
     'admin_interface', # needed for django-admin-interface
     'colorfield', # needed for django-admin-interface
-    # 'grappelli', # Switch on to use Grappelli (remember to switch off any other admin UI that might be installed)
-    # 'admin_tools',
-    # 'admin_tools.theming',
-    # 'admin_tools.menu',
-    # 'admin_tools.dashboard',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -95,7 +91,6 @@ INSTALLED_APPS = [
     'categorias',
 ]
 
-# Django admin interface configs
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
@@ -267,19 +262,11 @@ DJVERSION_GIT_USE_COMMIT = False
 # Grappelli settings:
 # GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
 
-# Customized admin ordering of apps and models:
+# # Customized admin ordering of apps and models:
 # ADMIN_ORDERING = (
 #     ('auth', (
 #         'User', 
 #         'Group',
-#     )),
-#     ('contas', (
-#         'enderecos_de_email',
-#     )),
-#     ('contas_sociais', (
-#         'aplicativos_sociais',
-#         'contas_sociais',
-#         'tokens_de_aplicatiovos_sociais',
 #     )),
 #     ('pessoas', (
 #         'CustomUser', 
@@ -304,7 +291,7 @@ DJVERSION_GIT_USE_COMMIT = False
 #     )),
 #     ('projetos', (
 #         'Projeto',
-#         'Subprojeto',
+#         'Objetivo_especifico_de_projeto',
 #         'Etapa',
 #         'Atividade',
 #     )),
@@ -324,13 +311,7 @@ DJVERSION_GIT_USE_COMMIT = False
 #         'Categoria_de_publico_atendido',
 #         'Unidade_de_medida',
 #         'Fundo',
-#         'Categoria_de_despesa',
-#     )),
-#     ('sites', (
-#         'sites',
-#     )),
-#     ('interface_do_administrador', (
-#         'temas',
+#         'Categoria_de_despesa'
 #     )),
 # )
 

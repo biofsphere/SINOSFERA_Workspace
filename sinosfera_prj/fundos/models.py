@@ -26,7 +26,6 @@ class Item(models.Model):
         null=True,
         help_text='Selecione a unidade de medida do ítem de despesa no orçamento.',
         verbose_name='Un',
-        default='un',
     )
     descricao = models.CharField(
         max_length=80,

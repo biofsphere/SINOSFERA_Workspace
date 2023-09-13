@@ -27,7 +27,6 @@ admin.site.site_url= '/admin'
 # admin.site = custom_admin_site # defines the admin site as the custom_admin_site with the customized order of models.
 
 urlpatterns = [
-    # path('admin_tools/', include('admin_tools.urls')),
     # path('grappelli/', include('grappelli.urls')), # grappelli URLS
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('accounts/', include('allauth.urls')),
