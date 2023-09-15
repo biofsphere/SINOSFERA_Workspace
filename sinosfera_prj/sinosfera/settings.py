@@ -267,8 +267,6 @@ DJVERSION_GIT_USE_COMMIT = False
 #         'group', 
 #         'permission',
 #     )),
-<<<<<<< HEAD
-=======
 #     ('contas', (
 #         'emailaddress',
 #     )),
@@ -277,7 +275,6 @@ DJVERSION_GIT_USE_COMMIT = False
 #         'socialapp',
 #         'socialtoken',
 #     )),
->>>>>>> 7f235b9123fc8524c657c916bfb048063760d43f
 #     ('pessoas', (
 #         'CustomUser', 
 #         'Pessoa', 
