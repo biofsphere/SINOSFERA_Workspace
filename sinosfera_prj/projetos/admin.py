@@ -17,12 +17,30 @@ class PublicoInlineAdmin(admin.TabularInline):
 @admin.register(Projeto)
 class ProjetoAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Programa vinculado',{'fields': ['programa_vinculado_ao_projeto',]}),
-        ('Dados básicos do projeto',{ 'fields': ['id', 'nome', 'inicio', 'fim', 'encerrado',]}),
-        ('Descrição', {'fields': ['objetivo_geral_do_projeto', 'resumo_descritivo_do_projeto',]}),
-        ('Financiamento', {'fields': ['fundos_de_execucao_do_projeto', 'fundos_estimados_do_verde_sinos', 'fundos_estimados_de_contra_partida', 'valor_total_do_projeto',]}),
-        ('Ancoragem', { 'fields': ['municipio_ancora_do_projeto', 'urs_vinculadas_ao_projeto', 'instituicao_ancora_do_projeto', 'pessoa_ancora_do_projeto',]}),
-        ('Arquivos', {'fields': ['arquivos',]}),
+        ('Programa vinculado',{
+            'classes': ('collapse', 'expanded'),
+            'fields': ['programa_vinculado_ao_projeto',]
+            }),
+        ('Dados básicos do projeto',{
+            'classes': ('collapse', 'expanded'),
+            'fields': ['id', 'nome', 'inicio', 'fim', 'encerrado',]
+            }),
+        ('Descrição', {
+            'classes': ('collapse', 'expanded'),
+            'fields': ['objetivo_geral_do_projeto', 'resumo_descritivo_do_projeto',]
+            }),
+        ('Financiamento', {
+            'classes': ('collapse', 'expanded'),
+            'fields': ['fundos_de_execucao_do_projeto', 'fundos_estimados_do_verde_sinos', 'fundos_estimados_de_contra_partida', 'valor_total_do_projeto',]
+            }),
+        ('Ancoragem', {
+            'classes': ('collapse', 'expanded'),
+            'fields': ['municipio_ancora_do_projeto', 'urs_vinculadas_ao_projeto', 'instituicao_ancora_do_projeto', 'pessoa_ancora_do_projeto',]
+            }),
+        ('Arquivos', {
+            'classes': ('collapse', 'expanded'),
+            'fields': ['arquivos',]
+            }),
         ]
     readonly_fields = ('id', 'valor_total_do_projeto',)
     list_display = (
