@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 from git import Repo
 from dotenv import load_dotenv
-from django.contrib import admin
+# from django.contrib import admin
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'import_export',
     'django_extensions',
+    'slick_reporting',
     'dashboards',
     'fundos',
     'instituicoes',
@@ -87,7 +88,6 @@ INSTALLED_APPS = [
     'home',
     'blog',
     'support',
-    'slick_reporting',
     'categorias',
 ]
 
@@ -318,9 +318,6 @@ DJVERSION_GIT_USE_COMMIT = False
 #         'Categoria_de_publico_atendido',
 #         'Unidade_de_medida',
 #         'Fundo',
-<<<<<<< HEAD
-#         'Categoria_de_despesa'
-=======
 #         'Categoria_de_despesa',
 #     )),
 #     ('sites', (
@@ -328,7 +325,6 @@ DJVERSION_GIT_USE_COMMIT = False
 #     )),
 #     ('admin_interface', (
 #         'theme',
->>>>>>> 7f235b9123fc8524c657c916bfb048063760d43f
 #     )),
 # )
 
