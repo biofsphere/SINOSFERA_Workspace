@@ -3,6 +3,7 @@ from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.gis import admin
 from leaflet.admin import LeafletGeoAdmin
 from .models import Microbacia, Municipio, Unidade_de_referencia
+# from core.admin import custom_admin_site
 
 @admin.register(Microbacia)
 class MicrobaciaAdmin(admin.ModelAdmin):

@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 from git import Repo
 from dotenv import load_dotenv
-# from django.contrib import admin
+from django.contrib import admin
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,9 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'django.contrib.humanize',
     # allauth apps
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
     # 'allauth.socialaccount.providers.google',
     # 'allauth.socialaccount.providers.facebook',
     # 'allauth.socialaccount.providers.instagram',
@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'import_export',
     'django_extensions',
     'slick_reporting',
+    'core',
     'dashboards',
     'fundos',
     'instituicoes',
@@ -91,8 +92,8 @@ INSTALLED_APPS = [
     'categorias',
 ]
 
-X_FRAME_OPTIONS = "SAMEORIGIN"
-SILENCED_SYSTEM_CHECKS = ["security.W019"]
+X_FRAME_OPTIONS = "SAMEORIGIN" # required by django-admin-interface
+SILENCED_SYSTEM_CHECKS = ["security.W019"] # required by django-admin-interface
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 
@@ -156,7 +157,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 
 ]
 
@@ -179,15 +180,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Allauth settings:
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-LOGIN_REDIRECT_URL = 'home'
-ACCOUT_LOGOUT_REDIRECT = 'home'
-ACCOUNT_PRESERVE_USERNAME_CASING = False
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_USERNAME_MIN_LENGTH = 5
-ACCOUNT_USERNAME_VALIDATORS = 'autenticacao.validators.custom_username_validators'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_UNIQUE_EMAIL = True
+# LOGIN_REDIRECT_URL = 'home'
+# ACCOUT_LOGOUT_REDIRECT = 'home'
+# ACCOUNT_PRESERVE_USERNAME_CASING = False
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_USERNAME_MIN_LENGTH = 5
+# ACCOUNT_USERNAME_VALIDATORS = 'autenticacao.validators.custom_username_validators'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -261,103 +262,106 @@ DJVERSION_GIT_USE_COMMIT = False
 # Grappelli settings:
 # GRAPPELLI_ADMIN_TITLE = 'SINOSFERA Admin' # Switch on if Grappelli is in use
 
-# # Customized admin ordering of apps and models:
-# ADMIN_ORDERING = (
-#     ('auth', (
-#         'group', 
-#         'permission',
-#     )),
-#     ('contas', (
-#         'emailaddress',
-#     )),
-#     ('socialaccunt', (
-#         'socialaccount',
-#         'socialapp',
-#         'socialtoken',
-#     )),
-#     ('pessoas', (
-#         'CustomUser', 
-#         'Pessoa', 
-#     )),
-#     ('instituicoes', (
-#         'Instituicao',
-#     )),
-#     ('locais', (
-#         'Microbacia',
-#         'Municipio',
-#         'Unidade_de_referencia',
-#     )),
-#     ('planos', (
-#         'Plano',
-#         'Programa_de_acoes_prioritarias',
-#         'Acao_prioritaria',
-#     )),
-#     ('programas', (
-#         'Programa',
-#         'Diretriz_especifica_de_programa',
-#     )),
-#     ('projetos', (
-#         'Projeto',
-#         'Objetivo_especifico_de_projeto',
-#         'Etapa',
-#         'Atividade',
-#     )),
-#     ('fundos', (
-#         'Requisicao',
-#         'Orcamento',
-#         'Pedido',
-#         'Item',
-#     )),
-#     ('categorias', (
-#         'Profissao',
-#         'Categoria_de_plano',
-#         'Categoria_de_subprojeto',
-#         'Subcategoria_de_subprojeto',
-#         'Categoria_de_atividade',
-#         'Subcategoria_de_atividade',
-#         'Categoria_de_publico_atendido',
-#         'Unidade_de_medida',
-#         'Fundo',
-#         'Categoria_de_despesa',
-#     )),
-#     ('sites', (
-#         'site',
-#     )),
-#     ('admin_interface', (
-#         'theme',
-#     )),
-# )
+# Customized admin ordering of apps and models:
+ADMIN_ORDERING = (
+    ## all-auth apps:
+    # ('auth', (
+    #     'group', 
+    #     'permission',
+    # )),
+    # ('accounts', (
+    #     'EmailAddress',
+    # )),
+    # ('socialaccount', (
+    #     'SocialAccount',
+    #     'SociaApp',
+    #     'SocialToken',
+    # )),
+    ('pessoas', (
+        'CustomUser', 
+        'Pessoa', 
+    )),
+    ('instituicoes', (
+        'Instituicao',
+    )),
+    ('locais', (
+        'Microbacia',
+        'Municipio',
+        'Unidade_de_referencia',
+    )),
+    ('planos', (
+        'Plano',
+        'Programa_de_acoes_prioritarias',
+        'Acao_prioritaria',
+    )),
+    ('programas', (
+        'Programa',
+        'Diretriz_especifica_de_programa',
+    )),
+    ('projetos', (
+        'Projeto',
+        'Subprojeto',
+        'Etapa',
+        'Atividade',
+    )),
+    ('fundos', (
+        'Requisicao',
+        'Orcamento',
+        'Pedido',
+        'Item',
+    )),
+    ('categorias', (
+        'Profissao',
+        'Categoria_de_plano',
+        'Categoria_de_subprojeto',
+        'Subcategoria_de_subprojeto',
+        'Categoria_de_atividade',
+        'Subcategoria_de_atividade',
+        'Categoria_de_publico_atendido',
+        'Categoria_de_despesa',
+        'Unidade_de_medida',
+        'Fundo',
+    )),
+    # django-admin-interface apps
+    ('sites', (
+        'Sites',
+    )),
+    ('admin_interface', (
+        'Theme',
+    )),
+)
 
-# def get_app_list(self, request, app_label=None):
-#     app_dict = self._build_app_dict(request, app_label)
+def get_app_list(self, request, app_label=None):
+    app_dict = self._build_app_dict(request, app_label)
     
-#     if not app_dict:
-#         return
+    if not app_dict:
+        return
         
-#     NEW_ADMIN_ORDERING = []
-#     if app_label:
-#         for ao in ADMIN_ORDERING:
-#             if ao[0] == app_label:
-#                 NEW_ADMIN_ORDERING.append(ao)
-#                 break
+    NEW_ADMIN_ORDERING = []
+    if app_label:
+        for ao in ADMIN_ORDERING:
+            if ao[0] == app_label:
+                NEW_ADMIN_ORDERING.append(ao)
+                break
     
-#     if not app_label:
-#         for app_key in list(app_dict.keys()):
-#             if not any(app_key in ao_app for ao_app in ADMIN_ORDERING):
-#                 app_dict.pop(app_key)
+    if not app_label:
+        for app_key in list(app_dict.keys()):
+            if not any(app_key in ao_app for ao_app in ADMIN_ORDERING):
+                app_dict.pop(app_key)
     
-#     app_list = sorted(
-#         app_dict.values(), 
-#         key=lambda x: [ao[0] for ao in ADMIN_ORDERING].index(x['app_label'])
-#     )
+    app_list = sorted(
+        app_dict.values(), 
+        key=lambda x: [ao[0] for ao in ADMIN_ORDERING].index(x['app_label'])
+    )
     
-#     for app, ao in zip(app_list, NEW_ADMIN_ORDERING or ADMIN_ORDERING):
-#         if app['app_label'] == ao[0]:
-#             for model in list(app['models']):
-#                 if not model['object_name'] in ao[1]:
-#                     app['models'].remove(model)
-#         app['models'].sort(key=lambda x: ao[1].index(x['object_name']))
-#     return app_list
+    for app, ao in zip(app_list, NEW_ADMIN_ORDERING or ADMIN_ORDERING):
+        if app['app_label'] == ao[0]:
+            for model in list(app['models']):
+                if not model['object_name'] in ao[1]:
+                    app['models'].remove(model)
+        app['models'].sort(key=lambda x: ao[1].index(x['object_name']))
+    return app_list
 
-# admin.AdminSite.get_app_list = get_app_list
+# Uncomment the line bellow to swith on reordering of apps above
+admin.AdminSite.get_app_list = get_app_list
 

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Programa, Diretriz_especifica_de_programa
+# from core.admin import custom_admin_site
 
 @admin.register(Programa)
 class ProgramaAdmin(admin.ModelAdmin):

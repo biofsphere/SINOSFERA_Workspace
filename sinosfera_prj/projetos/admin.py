@@ -4,6 +4,8 @@ from django.contrib.gis import admin
 from leaflet.admin import LeafletGeoAdmin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from .models import Projeto, Subprojeto, Etapa, Atividade, Publico
+# from core.admin import custom_admin_site
+
 
 class PublicoInlineAdmin(admin.TabularInline):
     model = Publico

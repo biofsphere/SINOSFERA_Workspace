@@ -29,7 +29,7 @@ admin.site.site_url= '/admin'
 urlpatterns = [
     # path('grappelli/', include('grappelli.urls')), # grappelli URLS
     path('admin/doc/', include('django.contrib.admindocs.urls')),
-    path('accounts/', include('allauth.urls')),
+    # path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     # path('pessoas/', include('pessoas.urls')),
     path('chaining/', include('smart_selects.urls')),

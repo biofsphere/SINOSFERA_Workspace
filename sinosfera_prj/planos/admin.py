@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Plano, Programa_de_acoes_prioritarias, Acao_prioritaria
+# from core.admin import custom_admin_site
 
 @admin.register(Plano)
 class PlanoAdmin(admin.ModelAdmin):

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Instituicao
+# from core.admin import custom_admin_site
 
 @admin.register(Instituicao)
 class InstituicaoAdmin(admin.ModelAdmin):
